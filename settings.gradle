@@ -1,0 +1,3 @@
+rootProject.name = "project-name"
+
+include "app", "api"

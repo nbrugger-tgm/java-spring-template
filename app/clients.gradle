@@ -1,0 +1,74 @@
+task autogenClients() {}
+
+void createGenerator(String lang, Map<String, Object> config) {
+    tasks.create("generate_${lang}_client", project.ext.generatorTask) {
+        generatorName = lang
+        outputDir = "$rootDir/client/$lang"
+        inputSpec = "$rootDir/openapi.json"
+        configOptions = [
+                apiPackage                 : "${project.ext.client._package}.api",
+                invokerPackage             : "${project.ext.client._package}.client",
+                packageName                : project.ext.client._package,
+                modelPackage               : "${project.ext.client._package}.models",
+                packageName                : "ProjectName.Client",
+                packageVersion             : project.version,
+                prependFormOrBodyParameters: true.toString(),
+                projectName                : project.ext.client.id
+        ]
+        configOptions.putAll(config)
+        dependsOn tasks.withType(project.ext.oasTask)
+        tasks.autogenClients.dependsOn it
+    }
+
+}
+
+createGenerator("java", [
+        dateLibrary        : "java8",
+        serializableModel  : "true",
+        artifactDescription: ext.client.description,
+        artifactId         : ext.client.id,
+        artifactVersion    : project.version,
+        groupId            : "com.domain"
+])
+createGenerator("c", [:])
+createGenerator("android", [
+        serializableModel  : "true",
+        artifactDescription: ext.client.description,
+        artifactId         : ext.client.id,
+        artifactVersion    : project.version,
+        groupId            : "com.domain"
+])
+createGenerator("cpp-tizen", [
+        variableNameFirstCharacterUppercase: "false"
+])
+createGenerator("csharp-netcore", [
+        netCoreProjectFile    : "true",
+        nullableReferenceTypes: "true",
+        targetFramework       : "netcoreapp3.0"
+])
+createGenerator("dart", [
+        pubAuthor     : "com.domain",
+        pubDescription: ext.client.description,
+        pubName       : ext.client.name,
+        pubLibrary    : ext.client.id,
+        pubVersion    : project.version
+])
+createGenerator("go", [:])
+createGenerator("php", [
+        variableNamingConvention: "camelCase"
+])
+createGenerator("python", [:])
+createGenerator("rust", [:])
+createGenerator("swift5", [
+        apiNamePrefix : "Api",
+        podDescription: ext.client.description,
+        podVersion    : project.version
+])
+def typescriptConfig = [
+        modelPropertyNaming    : "camelCase",
+        npmName                : ext.client.id,
+        nullSafeAdditionalProps: "true"
+];
+createGenerator("typescript-angular", typescriptConfig)
+createGenerator("typescript-node", typescriptConfig)
+createGenerator("typescript-rxjs", typescriptConfig)
