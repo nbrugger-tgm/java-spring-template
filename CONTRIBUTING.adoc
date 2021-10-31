@@ -1,0 +1,48 @@
+= Contributing
+
+Contributions are very much welcome, but as maintainers we ask that contributors as you, create
+contributions that are in-line with our quality standards.
+
+Don't be affraid, the worst thing that can happen is that our code-review bot refuses your
+PullRequest. Also our bot will tell you what you did wrong and how to fix the issue.
+
+In the following steps you will find a detailed description how to contribute.
+
+== Commits
+
+Commits in your PR _should_ follow
+the https://www.conventionalcommits.org/en/v1.0.0/[conventional_commit] standard.
+
+They don't *have* to because they will be squashed anyways, but they are still preferred.
+
+== Pull Requests
+
+=== Name
+
+The name of the PR *must* follow
+the https://www.conventionalcommits.org/en/v1.0.0/[conventional_commit] standard
+
+Examples:
+
+----
+feat(security): add OAuth option
+fix: user not being deleted after 3 month inactivity
+docs: add description to Readme
+----
+
+=== Branch
+
+The branch the PR is created from has to match the name-pattern `feat/&lt;feature_name&gt;`
+or `bugfix/&lt;bug_name&gt;`.
+
+*Violating this check will close your PR*
+
+=== Target Branch
+
+You are only allowed to merge into the `dev` or `hotfix` branch
+
+____
+
+Hotfix commits will be included at the next hotfix, which is way faster than dev,
+therefore it should only be used for critical fixes, such as common crashes or security issues.
+____

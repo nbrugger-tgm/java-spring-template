@@ -1,0 +1,20 @@
+= Development Guide
+
+The use of *IntelliJ Idea* is heavily recommended as the project is preconfigured to work seemles
+
+== Requrements
+
+- [ ] Gradle
+- [ ] Java 11
+
+== API Development
+
+TODO
+
+== Finalizing
+
+To finalize your feature please run the `gradle check` command.
+
+In IntelliJ you have a run-configuration *Check (Codecoverage)* to do this task.
+
+You don't need to use `Generate Clients` or `Generate OAS` but it is very helpful to see if the PR will work out
