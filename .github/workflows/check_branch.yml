@@ -9,21 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: 8BitJonny/gh-get-current-pr@1.2.0
-        id: PR
-        name: Fetch PR information
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Verbose setting SHA when using Pull_Request event trigger to fix #16
-          sha: ${{ github.event.pull_request.head.sha }}
-          # Only return if PR is still open
-          filterOutClosed: true
-      - name: Filter PR information
-        if: success() && steps.PR.outputs.number
-        env:
-          prJSON: ${{ steps.PR.outputs.pr }}
-          prFrom: ${{ github.event.pull_request.head.ref}}
-          prTo: ${{ github.event.pull_request.base.ref}}
-          prTitle: ${{ steps.PR.outputs.pr_title }}
-        run: echo Read output into env
-      - run: echo PR "$prTitle" wants to merge $prFrom into $prTo
+      - name: check master constraint
+        if: $GITHUB_BASE_REF == master
+        run: export VALID_PR=$($GITHUB_HEAD_REF=="hotfix")
+      - name: check unexpected branch
+        if: $GITHUB_BASE_REF != master
+        run: echo $GITHUB_BASE_REF is not a supported target branch
