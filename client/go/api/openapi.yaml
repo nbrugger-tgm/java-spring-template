@@ -1,0 +1,98 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- description: Generated server url
+  url: http://localhost:8080
+paths:
+  /greet:
+    get:
+      operationId: greetWorld
+      responses:
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      tags:
+      - greeting-controller-impl
+  /greet/{name}:
+    get:
+      operationId: greetHuman
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      tags:
+      - greeting-controller-impl
+  /api/version:
+    get:
+      operationId: version
+      responses:
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VersionResponse'
+          description: OK
+      tags:
+      - api-controller
+components:
+  schemas:
+    ErrorResponse:
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+        error:
+          pattern: "[a-bA-B_-]+"
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    VersionResponse:
+      example:
+        stable: true
+        version: version
+      properties:
+        version:
+          pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\\
+            d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\\
+            +([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+          type: string
+        stable:
+          type: boolean
+      type: object
