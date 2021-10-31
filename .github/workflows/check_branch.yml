@@ -25,4 +25,5 @@ jobs:
           prFrom: ${{steps.PR.outputs.pr.head.ref}}
           prTo: ${{steps.PR.outputs.pr.base.ref}}
           prTitle: ${{ steps.PR.outputs.pr_title }}
+        run: echo Read output into env
       - run: echo PR "$prTitle" wants to merge $prFrom into $prTo
