@@ -22,8 +22,8 @@ jobs:
         if: success() && steps.PR.outputs.number
         env:
           prJSON: ${{ steps.PR.outputs.pr }}
-          prFrom: ${{steps.PR.outputs.pr.head.ref}}
-          prTo: ${{steps.PR.outputs.pr.base.ref}}
+          prFrom: ${{ github.event.pull_request.head.ref}}
+          prTo: ${{ github.event.pull_request.base.ref}}
           prTitle: ${{ steps.PR.outputs.pr_title }}
         run: echo Read output into env
       - run: echo PR "$prTitle" wants to merge $prFrom into $prTo
