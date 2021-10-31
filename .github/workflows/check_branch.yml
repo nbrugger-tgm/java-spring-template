@@ -18,17 +18,11 @@ jobs:
           sha: ${{ github.event.pull_request.head.sha }}
           # Only return if PR is still open
           filterOutClosed: true
-      - run: echo "Your PR is ${prNumber} and its JSON is ${prJSON}"
+      - run: Filter PR information
         if: success() && steps.PR.outputs.number
         env:
-          prNumber: ${{ steps.PR.outputs.number }}
-          # JSON object with the full PR object
           prJSON: ${{ steps.PR.outputs.pr }}
-          # Direct access to common PR properties
-          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prFrom: ${{steps.PR.outputs.pr.head.ref}}
+          prTo: ${{steps.PR.outputs.pr.base.ref}}
           prTitle: ${{ steps.PR.outputs.pr_title }}
-          prBody: ${{ steps.PR.outputs.pr_body }}
-          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
-          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
-          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
-      - run: export
+      - run: echo PR "$prTitle" wants to merge $prFrom into $prTo
