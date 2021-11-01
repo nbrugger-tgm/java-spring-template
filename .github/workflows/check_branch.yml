@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: check master constraint
-        if: ${{ env.GITHUB_BASE_REF == "master" }}
+        if: ${{ env.GITHUB_BASE_REF == 'master' }}
         run: export VALID_PR=$($GITHUB_HEAD_REF=="hotfix")
       - name: check unexpected branch
-        if: ${{ env.GITHUB_BASE_REF != "master" }}
+        if: ${{ env.GITHUB_BASE_REF != 'master' }}
         run: echo $GITHUB_BASE_REF is not a supported target branch
