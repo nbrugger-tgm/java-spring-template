@@ -14,7 +14,9 @@ runs:
   using: "composite"
   steps:
     - name: check constraint
-      run: export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]
+      run: |
+        echo "export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]"
+        export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]
       shell: bash
     - name: set message
       id: messageGen
