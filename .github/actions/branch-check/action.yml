@@ -21,7 +21,7 @@ runs:
     - name: set message
       id: messageGen
       run: |
-        export MSG="PRs to $GITHUB_BASE_REF need to come from one of theese branches: ${{input.allowedBranches}}"
+        export MSG="PRs to $GITHUB_BASE_REF need to come from one of theese branches: ${{inputs.allowedBranches}}"
         echo "::set-output name=message::'$MSG'"
       shell: bash
     - name: fail on error
