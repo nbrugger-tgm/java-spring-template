@@ -12,17 +12,17 @@ jobs:
       - name: Check master branch
         id: master_check
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF==master || env.GITHUB_BASE_REF==main }}
+        if: ${{ env.GITHUB_BASE_REF=='master' || env.GITHUB_BASE_REF=='main' }}
         with:
           allowedBranches: hotfix|documentation|staging
       - name: Check staging branch
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF==staging }}
+        if: ${{ env.GITHUB_BASE_REF=='staging' }}
         with:
           allowedBranches: hotfix|dev
       - name: Check dev branch
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF==dev }}
+        if: ${{ env.GITHUB_BASE_REF=='dev' }}
         with:
           allowedBranches: feat/*|hotfix|bugfix/*
       - name: check unexpected branch
