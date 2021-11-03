@@ -27,8 +27,12 @@ jobs:
           allowedBranches: feat/*|hotfix|bugfix/*
       - name: check unexpected branch
         run: echo $GITHUB_BASE_REF is not a constrained target branch
-      - name: Close issue
+      - name: Add message
+        if: failure()
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.master_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Close PR
         if: failure()
         uses: superbrothers/close-pull-request@v3
-        with:
-          comment: ${{ steps.master_check.outputs.errorMessage }}
