@@ -24,7 +24,7 @@ runs:
       id: messageGen
       run: |
         export MSG="PRs to $GITHUB_BASE_REF need to come from one of theese branches: ${{inputs.allowedBranches}}"
-        echo "::set-output name=message::'$MSG'"
+        echo "::set-output name=message::$MSG"
       shell: bash
     - name: fail on error
       shell: bash
@@ -33,3 +33,8 @@ runs:
         then
           exit 1
         fi
+    - name: Label issues
+      uses: andymckay/labeler@5c59dabdfd4dd5bd9c6e6d255b01b9d764af4414
+      with:
+        add-labels: "invalid"
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
