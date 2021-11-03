@@ -11,19 +11,19 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check master branch
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF == 'master' }}
+        if: ${{ env.GITHUB_BASE_REF == master }}
         with:
           allowedBranches: hotfix|documentation|staging
       - name: Check staging branch
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF == 'staging' }}
+        if: ${{ env.GITHUB_BASE_REF == staging }}
         with:
           allowedBranches: hotfix|dev
       - name: Check dev branch
         uses: ./github/actions/branch-check
-        if: ${{ env.GITHUB_BASE_REF == 'dev' }}
+        if: ${{ env.GITHUB_BASE_REF == dev }}
         with:
           allowedBranches: feat/*|hotfix|bugfix/*
       - name: check unexpected branch
-        if: ${{ env.GITHUB_BASE_REF != 'master' }}
+        if: ${{ env.GITHUB_BASE_REF != master }}
         run: echo $GITHUB_BASE_REF is not a constrained target branch
