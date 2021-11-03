@@ -34,6 +34,7 @@ jobs:
           message: ${{ steps.master_check.outputs.errorMessage }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Label issues
+        if: failure()
         uses: andymckay/labeler@5c59dabdfd4dd5bd9c6e6d255b01b9d764af4414
         with:
           add-labels: "invalid"
