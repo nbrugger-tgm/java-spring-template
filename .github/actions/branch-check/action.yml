@@ -1,0 +1,27 @@
+name: Check PR branching
+inputs:
+  allowedBranches:
+    default: [ ]
+    required: true
+    description: branches that are allowed as origin of the PR
+
+outputs:
+  errorMessage:
+    description: The message what went wrong
+    value: ${{ steps.messageGen.outputs.message }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: check constraint
+      run: export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]
+      shell: bash
+    - name: set message
+      id: messageGen
+      run: |
+        export MSG="PRs to $GITHUB_BASE_REF need to come from one of theese branches: ${{input.allowedBranches}}"
+        echo "::set-output name=message::'$MSG'"
+      shell: bash
+    - name: fail on error
+      if: ${{env.VALID_PR}}
+      run: exit 1
