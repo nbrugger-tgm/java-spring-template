@@ -1,7 +1,7 @@
 name: Check PR branching
+description: Refuses PRs if the origin branch is not matching a pattern
 inputs:
   allowedBranches:
-    default: [ ]
     required: true
     description: branches that are allowed as origin of the PR
 
@@ -26,4 +26,5 @@ runs:
       shell: bash
     - name: fail on error
       if: ${{env.VALID_PR}}
+      shell: bash
       run: exit 1
