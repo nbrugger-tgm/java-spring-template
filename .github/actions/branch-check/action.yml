@@ -16,9 +16,8 @@ runs:
     - name: check constraint
       run: |
         echo "export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]"
-        if ($GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}))
-        then
-          export VALID_PR=true
+        if [[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]];
+        then export VALID_PR=true;
         fi
       shell: bash
     - name: set message
@@ -30,7 +29,7 @@ runs:
     - name: fail on error
       shell: bash
       run: |
-        if [[ $VALID_PR ]]
+        if $VALID_PR
         then
           exit 1
         fi
