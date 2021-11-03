@@ -25,6 +25,5 @@ runs:
         echo "::set-output name=message::'$MSG'"
       shell: bash
     - name: fail on error
-      if: ${{env.VALID_PR}}
       shell: bash
-      run: exit 1
+      run: if [[ $VALID_PR ]] then exit 1 fi
