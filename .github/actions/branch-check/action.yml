@@ -15,7 +15,7 @@ runs:
   steps:
     - name: check constraint
       run: |
-        if [[ $GITHUB_HEAD_REF =~ ${{ inputs.allowedBranches }} ]];
+        if [[ "${{ github.head_ref }}" =~ ${{ inputs.allowedBranches }} ]];
         then export VALID_PR=true;
         else export VALID_PR=false;
         fi
