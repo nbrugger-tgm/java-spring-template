@@ -29,7 +29,7 @@ jobs:
       - name: check PR name
         id: name_check
         run: |
-          if [[ ${{ github.event.pull_request.title }} =~ ^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))!?:\s.+)$ ]]; then
+          if [[ "${{ github.event.pull_request.title }}" =~ ^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))!?:\s.+)$ ]]; then
             echo "PR title is valid"
             echo "::set-output name=nameValid::true"
           else
