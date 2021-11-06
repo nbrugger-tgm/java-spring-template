@@ -15,21 +15,20 @@ runs:
   steps:
     - name: check constraint
       run: |
-        echo "export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]"
-        if [[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]];
+        if [[ $GITHUB_HEAD_REF =~ ${{ inputs.allowedBranches }} ]];
         then export VALID_PR=true;
         fi
       shell: bash
     - name: set message
       id: messageGen
       run: |
-        export MSG="PRs to `$GITHUB_BASE_REF` need to come from one of theese branches: `${{inputs.allowedBranches}}`"
+        export MSG="PRs to \`$GITHUB_BASE_REF\` need to come from one of theese branches: \`${{inputs.allowedBranches}}\`"
         echo "::set-output name=message::$MSG"
       shell: bash
     - name: fail on error
       shell: bash
       run: |
-        if $VALID_PR
+        if !$VALID_PR
         then
           exit 1
         fi
