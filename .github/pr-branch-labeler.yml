@@ -1,0 +1,15 @@
+feature:
+  head: [ "feature/*","feat/*" ]
+
+bugfix:
+  head: "bugfix/*"
+
+release:
+  base: "master"
+
+release-candidate:
+  base: "staging"
+
+hotfix:
+  head: "hotfix"
+

@@ -1,0 +1,101 @@
+name: Process PR
+
+on:
+  pull_request:
+    types: [ synchronize, edited ]
+    branches:
+      - master
+      - main
+      - dev
+      - staging
+  pull_request_target:
+    types: [ synchronize, edited ]
+    branches:
+      - master
+      - main
+  workflow_run:
+    workflows:
+      - "Check PR"
+    types:
+      - completed
+
+
+jobs:
+  formal_check:
+    name: "Formal Check"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - name: check PR name
+        id: name_check
+        run: |
+          if [[ ${{ github.event.pull_request.title }} =~ ^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))!?:\s.+)$ ]]; then
+            echo "PR title is valid"
+            echo "::set-output name=nameValid::true"
+          else
+            echo "PR title is invalid"
+            echo "::set-output name=nameValid::false"
+            exit 1
+          fi
+      - name: add "wrong title" message
+        if: allways() && !steps.name_check.nameValid
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            ## Title invalid
+            The PR title must obey the conventional-commits ([here](https://www.conventionalcommits.org/en/v1.0.0-beta.1/)) standard!
+            ### Examples
+            ```
+            fix(ci): Fix broken build
+            feat(api): Add API feature
+            test: improve test coverage
+            pref(db): Improve database performance
+            ```
+            > Change the title to match the conventional-commits standard.
+            > Your PR will be re-validated when you change the title.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: check changed files
+        uses: nbrugger-tgm/changed-file-filter@49d574886c35bbd7cd430bb5791558ee1633d319
+        id: filter
+        with:
+          filters: |
+            sensitive:
+              - .github/**
+              - .gitignore
+              - .gitmodules
+              - gradle/wrapper/**
+      - name: add security label
+        if: steps.filter.outputs.sensitive
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['sensitive']
+            })
+      - name: add security message
+        if: steps.filter.outputs.sensitive
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            ## Security
+            This PR contains sensitive files.
+            ```
+            ${{ steps.filter.outputs.sensitive_files }}
+            ```
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  prepare:
+    runs-on: ubuntu-latest
+    name: "Prepare"
+    steps:
+      - uses: actions/checkout@v2
+      - name: label by changed files
+        uses: actions/labeler@v3
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: label by branch
+        uses: ffittschen/pr-branch-labeler@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

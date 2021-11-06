@@ -1,0 +1,12 @@
+Java:
+  - '*.java'
+api:
+  - 'api/**'
+database:
+  - '**/*.sql'
+documentation:
+  - "**/*.(md|asciidoc|drawio)"
+  - "doc/**"
+  - "docs/**"
+build:
+  - "**/*.gradle"
