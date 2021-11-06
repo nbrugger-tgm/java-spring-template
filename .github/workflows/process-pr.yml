@@ -38,7 +38,7 @@ jobs:
             exit 1
           fi
       - name: add "wrong title" message
-        if: allways() && !steps.name_check.nameValid
+        if: always() && !steps.name_check.nameValid
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
