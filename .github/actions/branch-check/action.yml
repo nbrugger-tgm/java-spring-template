@@ -1,7 +1,7 @@
 name: Check PR branching
+description: Refuses PRs if the origin branch is not matching a pattern
 inputs:
   allowedBranches:
-    default: [ ]
     required: true
     description: branches that are allowed as origin of the PR
 
@@ -14,14 +14,22 @@ runs:
   using: "composite"
   steps:
     - name: check constraint
-      run: export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]
+      run: |
+        echo "export VALID_PR=[[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]]"
+        if [[ $GITHUB_HEAD_REF == @(${{ inputs.allowedBranches }}) ]];
+        then export VALID_PR=true;
+        fi
       shell: bash
     - name: set message
       id: messageGen
       run: |
-        export MSG="PRs to $GITHUB_BASE_REF need to come from one of theese branches: ${{input.allowedBranches}}"
-        echo "::set-output name=message::'$MSG'"
+        export MSG="PRs to `$GITHUB_BASE_REF` need to come from one of theese branches: `${{inputs.allowedBranches}}`"
+        echo "::set-output name=message::$MSG"
       shell: bash
     - name: fail on error
-      if: ${{env.VALID_PR}}
-      run: exit 1
+      shell: bash
+      run: |
+        if $VALID_PR
+        then
+          exit 1
+        fi
