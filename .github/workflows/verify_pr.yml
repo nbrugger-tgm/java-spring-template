@@ -6,7 +6,6 @@ on:
     branches:
       - master
       - main
-      - dev
       - staging
   pull_request_target:
     types: [ opened, reopened ]
@@ -19,6 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: check fork
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev'
+        run: |
+          echo "::error::Forks are only allowed to merge into \`dev\`"
+          exit 1
       - name: Check master branch
         id: master_check
         uses: ./.github/actions/branch-check

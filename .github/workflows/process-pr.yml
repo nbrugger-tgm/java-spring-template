@@ -6,14 +6,13 @@ on:
     branches:
       - master
       - main
-      - dev
       - staging
   pull_request_target:
     types: [ synchronize, edited ]
     branches:
       - dev
 
-        
+
   workflow_run:
     workflows:
       - "Check PR"
@@ -23,10 +22,16 @@ on:
 
 jobs:
   formal_check:
+    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
     name: "Formal Check"
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
+        if: github.event_name == 'workflow_run'
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: actions/checkout@v2
+        if: github.event_name != 'workflow_run'
       - name: check PR name
         id: name_check
         run: |
@@ -91,8 +96,14 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     name: "Prepare"
+    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
     steps:
       - uses: actions/checkout@v2
+        if: github.event_name == 'workflow_run'
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: actions/checkout@v2
+        if: github.event_name != 'workflow_run'
       - name: label by changed files
         uses: actions/labeler@v3
         with:
