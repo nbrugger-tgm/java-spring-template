@@ -15,16 +15,27 @@ on:
 
 
 jobs:
+  unlabel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Unmark as ready
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.removeLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['ready for build']
+            })
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
+    needs:
+      - unlabel
     steps:
       - uses: actions/checkout@v2
-        if: github.event_name == 'workflow_run'
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: actions/checkout@v2
-        if: github.event_name != 'workflow_run'
       - name: check PR name
         id: name_check
         run: |
@@ -89,13 +100,10 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     name: "Prepare"
+    needs:
+      - unlabel
     steps:
       - uses: actions/checkout@v2
-        if: github.event_name == 'workflow_run'
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: actions/checkout@v2
-        if: github.event_name != 'workflow_run'
       - name: label by changed files
         uses: actions/labeler@v3
         with:
@@ -110,31 +118,13 @@ jobs:
     needs:
       - prepare
       - formal_check
-    if: always()
     steps:
       - uses: actions/checkout@v2
-        if: github.event_name == 'workflow_run'
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: actions/checkout@v2
-        if: github.event_name != 'workflow_run'
       - name: Mark as ready
-        if: needs.formal_check.result == 'success' && needs.prepare.result == 'success'
         uses: actions/github-script@v5
         with:
           script: |
             github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['ready for build']
-            })
-      - name: Unmark as ready
-        if: needs.formal_check.result != 'success' || needs.prepare.result != 'success'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.removeLabels({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
