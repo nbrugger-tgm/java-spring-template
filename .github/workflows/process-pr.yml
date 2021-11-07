@@ -11,8 +11,9 @@ on:
   pull_request_target:
     types: [ synchronize, edited ]
     branches:
-      - master
-      - main
+      - dev
+
+        
   workflow_run:
     workflows:
       - "Check PR"
@@ -29,7 +30,8 @@ jobs:
       - name: check PR name
         id: name_check
         run: |
-          if [[ "${{ github.event.pull_request.title }}" =~ ^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))!?:\s.+)$ ]]; then
+          RGX='^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
+          if [[ "${{ github.event.pull_request.title }}" =~ $RGX ]]; then
             echo "PR title is valid"
             echo "::set-output name=nameValid::true"
           else
@@ -38,7 +40,7 @@ jobs:
             exit 1
           fi
       - name: add "wrong title" message
-        if: always() && !steps.name_check.nameValid
+        if: always() && !steps.name_check.outputs.nameValid
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
@@ -55,7 +57,7 @@ jobs:
             > Your PR will be re-validated when you change the title.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: check changed files
-        uses: nbrugger-tgm/changed-file-filter@49d574886c35bbd7cd430bb5791558ee1633d319
+        uses: nbrugger-tgm/changed-file-filter@11922d1a168dfbbc7c44735e529fb91b09ed69ab
         id: filter
         with:
           filters: |
