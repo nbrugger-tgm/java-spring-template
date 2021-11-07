@@ -1,16 +1,19 @@
 name: Quality Assurance
 on:
-  workflow_run:
-    workflows:
-      - 'Process PR'
-    types:
-      - completed
+  pull_request:
+    branches:
+      - master
+      - dev
+      - main
+      - staging
+      - hotfix
+    types: [ labeled ]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion != 'failure' }}
+    if: ${{ github.event.label.name == 'ready for build' }}
     steps:
       - uses: actions/checkout@v2
         with:
