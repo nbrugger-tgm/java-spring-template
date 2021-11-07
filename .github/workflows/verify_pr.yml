@@ -1,13 +1,17 @@
 name: Check PR
 
 on:
-  pull_request_target:
+  pull_request:
     types: [ opened, reopened ]
     branches:
       - master
       - main
       - dev
       - staging
+  pull_request_target:
+    types: [ opened, reopened ]
+    branches:
+      - dev
 
 jobs:
   branching-check:
