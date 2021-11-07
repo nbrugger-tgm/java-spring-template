@@ -59,10 +59,12 @@ jobs:
     name: Testing
     needs: build
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.base_branch }}
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Fetch Refs
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git fetch origin ${{ github.head_ref }}
       - name: download build
         uses: actions/download-artifact@v2
         with:
