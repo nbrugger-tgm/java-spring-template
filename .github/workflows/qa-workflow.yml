@@ -60,8 +60,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
       - name: download build
         uses: actions/download-artifact@v2
         with:
