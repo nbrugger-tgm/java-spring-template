@@ -34,7 +34,6 @@ def clientConfig = [
         id         : "projectname-client",
         _package   : "com.domain.projectname"
 ]
-
 project.ext {
     generatorTask = GenerateTask
     oasTask = OpenApiGeneratorTask

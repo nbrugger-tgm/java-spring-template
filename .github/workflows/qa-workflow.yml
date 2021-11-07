@@ -22,13 +22,14 @@ jobs:
       - name: prepare gradle
         run: chmod +x gradlew
       - name: compile
-        run: ./gradlew clean build
+        run: ./gradlew clean jar
       - name: store build
         uses: actions/upload-artifact@v2
         with:
           name: base-build
           path: |
-            target
+            build
+            */build
           retention-days: 1
   quality-check:
     runs-on: ubuntu-latest
