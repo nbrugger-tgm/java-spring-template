@@ -2,15 +2,16 @@ task autogenClients() {}
 
 void createGenerator(String lang, Map<String, Object> config) {
     tasks.create("generate_${lang}_client", project.ext.generatorTask) {
+        println(project.ext.properties)
         generatorName = lang
         outputDir = "$rootDir/client/$lang"
         inputSpec = "$rootDir/openapi.json"
-        configOptions = [
-                apiPackage                 : "${project.ext.client._package}.api",
-                invokerPackage             : "${project.ext.client._package}.client",
-                packageName                : project.ext.client._package,
-                modelPackage               : "${project.ext.client._package}.models",
-                packageName                : "ProjectName.Client",
+        var configOptions = [
+                apiPackage                 : "${project.ext.client.rootPackage}.api",
+                invokerPackage             : "${project.ext.client.rootPackage}.client",
+                packageName                : project.ext.client.rootPackage,
+                modelPackage               : "${project.ext.client.rootPackage}.models",
+                packageName                : "${project.ext.artifactName}.Client",
                 packageVersion             : project.version,
                 prependFormOrBodyParameters: true.toString(),
                 projectName                : project.ext.client.id
@@ -28,7 +29,7 @@ createGenerator("java", [
         artifactDescription: ext.client.description,
         artifactId         : ext.client.id,
         artifactVersion    : project.version,
-        groupId            : "com.domain"
+        groupId            : project.ext.rootPackage
 ])
 createGenerator("c", [:])
 createGenerator("android", [
@@ -36,7 +37,7 @@ createGenerator("android", [
         artifactDescription: ext.client.description,
         artifactId         : ext.client.id,
         artifactVersion    : project.version,
-        groupId            : "com.domain"
+        groupId            : project.ext.rootPackage
 ])
 createGenerator("cpp-tizen", [
         variableNameFirstCharacterUppercase: "false"
@@ -47,7 +48,7 @@ createGenerator("csharp-netcore", [
         targetFramework       : "netcoreapp3.0"
 ])
 createGenerator("dart", [
-        pubAuthor     : "com.domain",
+        pubAuthor     : ext.author,
         pubDescription: ext.client.description,
         pubName       : ext.client.name,
         pubLibrary    : ext.client.id,
@@ -68,7 +69,7 @@ def typescriptConfig = [
         modelPropertyNaming    : "camelCase",
         npmName                : ext.client.id,
         nullSafeAdditionalProps: "true"
-];
+]
 createGenerator("typescript-angular", typescriptConfig)
 createGenerator("typescript-node", typescriptConfig)
 createGenerator("typescript-rxjs", typescriptConfig)

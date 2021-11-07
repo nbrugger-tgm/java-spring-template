@@ -1,3 +1,11 @@
 project.ext {
+    rootPackage = "com.domain.projectname"
+    displayName = "Project Name"
+    artifactName = "projectname"
+    author = "NitonFx"
+
     minCoverage = 0.8
+    sonarProjectKey = "nbrugger-tgm_java-spring-template"
+    sonarOrganization = "nbrugger-tgm"
+    sonarHost = "https://sonarcloud.io"
 }
