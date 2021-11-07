@@ -78,6 +78,8 @@ jobs:
         run: ./gradlew test
       - name: check code coverage
         run: ./gradlew check
+      - name: print produced files
+        run: ls */build/reports/ */build/libs */build/reports/jacoco */build/docs
       - name: upload sonarqube report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

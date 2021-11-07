@@ -6,7 +6,7 @@ println "Configure ${project.name}"
 
 sonarqube {
     properties {
-        property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/coverage.xml"
+        property 'sonar.coverage.jacoco.xmlReportPaths', "$projectDir/build/reports/jacoco/coverage.xml"
     }
 }
 
