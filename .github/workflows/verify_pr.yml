@@ -11,6 +11,7 @@ on:
     types: [ opened, reopened ]
     branches:
       - dev
+      - hotfix
 
 jobs:
   branching-check:
@@ -19,9 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: check fork
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev'
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev' && github.base_ref != 'hotfix'
         run: |
-          echo "::error::Forks are only allowed to merge into \`dev\`"
+          echo "::error::Forks are only allowed to merge into \`dev\` or \`hotfix\`"
           exit 1
       - name: Check master branch
         id: master_check
@@ -41,6 +42,12 @@ jobs:
         if: ${{ github.base_ref=='dev' }}
         with:
           allowedBranches: feat\/.+|hotfix|bugfix\/.+ #this is a regex
+      - name: check hotfix branch
+        id: hotfix_check
+        uses: ./.github/actions/branch-check
+        if: ${{ github.base_ref=='hotfix' }}
+        with:
+          allowedBranches: bugfix\/.+
       - name: Add master branch message
         if: failure() && (steps.master_check.outcome == 'failure')
         uses: thollander/actions-comment-pull-request@v1
@@ -58,6 +65,12 @@ jobs:
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: ${{ steps.dev_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add hotfix branch message
+        if: failure() && (steps.hotfix_check.outcome == 'failure')
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.hotfix_check.outputs.errorMessage }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Label PR
         if: failure()
