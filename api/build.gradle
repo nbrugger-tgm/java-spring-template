@@ -15,3 +15,6 @@ dependencies {
     compileOnly 'io.swagger.core.v3:swagger-annotations:2.1.11'
     compileOnly 'javax.validation:validation-api:2.0.1.Final'
 }
+jacocoTestCoverageVerification {
+    enabled(false)
+}
