@@ -1,4 +1,10 @@
 name: Quality Assurance
+
+#This are the most important CI settings
+env:
+  post_review_stats: true
+
+
 on:
   pull_request:
     branches:
@@ -96,3 +102,68 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonarqube --info
+  review:
+    runs-on: ubuntu-latest
+    needs:
+      - quality-check
+      - testing
+    name: Review
+    if: ${{ github.event_name == 'pull_request'}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Add success message
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            ## QA passed!
+            The automatic quality check passed.
+
+            Your pull request is ready for review.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Approve pull request
+        if: github.actor == 'dependabot[bot]'
+        uses: andrewmusgrave/automatic-pull-request-review@0.0.5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          event: APPROVE
+          body: 'Thank you dependabot 🎊'
+      - name: Post review stats
+        if: ${{ env.post_review_stats && github.actor != 'dependabot[bot]'}}
+        uses: flowwer-dev/pull-request-stats@master
+        with:
+          charts: true
+      - name: 
+  openapi_diff:
+    runs-on: ubuntu-latest
+    name: OAS Diff
+    needs: review
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build PR OAS
+        run: |
+          ./gradlew generateOpenApiDocs
+          cp openapi.json ~/openapi_head.json
+      - name: Checkout base branch
+        run: git checkout ${{ github.base_ref }}
+      - name: Read BASE OAS
+        run: cp openapi.json ~/openapi_base.json
+      - name: Checkout PR
+        uses: actions/checkout@v2
+      - name: Build OAS diff
+        uses: LimeFlight/openapi-diff-action@v3.0.9
+        with:
+          head_spec: ~/openapi_head.json
+          base_spec: ~/openapi_base.json
+          output_path: ~/openapi_diff.json
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit OAS
+        uses: swinton/commit@v2.0.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            openapi.json
+          commit-message: 'docs(oas): add PR changes to OAS'
+          ref: ${{ github.head_ref }}
