@@ -59,9 +59,12 @@ jobs:
     name: Testing
     needs: build
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+      - name: Fetch Refs
+        run: git fetch origin ${{ github.base_ref }}
       - name: download build
         uses: actions/download-artifact@v2
         with:
@@ -77,8 +80,11 @@ jobs:
         run: ./gradlew test
       - name: check code coverage
         run: ./gradlew check
+      - name: print produced files
+        run: ls */build/reports/ */build/libs */build/reports/jacoco
+        continue-on-error: true
       - name: upload sonarqube report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube
+        run: ./gradlew sonarqube --info

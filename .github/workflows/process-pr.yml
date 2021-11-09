@@ -76,7 +76,7 @@ jobs:
               - .gitmodules
               - gradle/wrapper/**
       - name: add security label
-        if: steps.filter.outputs.sensitive
+        if: steps.filter.outputs.sensitive == 'true'
         uses: actions/github-script@v5
         with:
           script: |
@@ -87,7 +87,7 @@ jobs:
               labels: ['sensitive']
             })
       - name: add security message
-        if: steps.filter.outputs.sensitive
+        if: steps.filter.outputs.sensitive == 'true'
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
