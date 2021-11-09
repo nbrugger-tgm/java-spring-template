@@ -8,12 +8,19 @@ on:
       - staging
       - hotfix
     types: [ labeled ]
+  push:
+    branches:
+      - master
+      - dev
+      - main
+      - staging
+      - hotfix
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: ${{ github.event.label.name == 'ready for build' }}
+    if: ${{ github.event_name == 'push' || github.event.label.name == 'ready for build' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -64,6 +71,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Fetch Refs
+        if: github.event_name == 'pull_request'
         run: git fetch origin ${{ github.base_ref }}
       - name: download build
         uses: actions/download-artifact@v2

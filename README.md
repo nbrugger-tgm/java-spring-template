@@ -13,24 +13,22 @@ manage reviews, automatic code maintance.
 
 - [x] Advanced gradle build
 - [x] Preconfigured IntelliJ project
-- [ ] Ready to go Docker build
-- [ ] Open Api Specification (aka OAS/Swagger) tooling
+- [x] Ready to go Docker build
+- [x] Open Api Specification (aka OAS/Swagger) tooling
     - [x] Generate specfile from code
-    - [ ] Verfiy PRs
+    - [x] Verfiy PRs
     - [x] Autogenerate clients on change
     - [x] Autogenerate beautiful HTML documentation
 - [x] Clean gradle multimodule structure
 - [ ] CI/CD Github action workflow(s) for:
-    - [ ] Building
-    - [ ] Quality checks with SonarCloud (optional)
-    - [ ] Codecoverage check with JaCoCo
-    - [ ] Codecoverage upload to codeclimate (optional)
-    - [ ] Codecoverage upload to codacy (optional)
+    - [x] Building
+    - [x] Quality checks with SonarCloud (optional)
+    - [x] Codecoverage check with JaCoCo
     - [ ] Deployment (only with docker)
     - [ ] Upload to docker repo (optional)
 - [ ] (automatic) Semantic versioning by
   using [`conventional commits`](https://www.conventionalcommits.org/en/v1.0.0/)
-- [ ] `Readme.md`template ([here](readme-template.md)) that contains a few badges and a quite ok
+- [ ] `Readme.md` template ([here](readme-template.md)) that contains a few badges and a quite ok
   layout
 
 ## Benefits
