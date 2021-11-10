@@ -110,7 +110,7 @@ jobs:
         with:
           text: ${{ github.event.pull_request.title }}
           regex: '^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
-
+        uses: actions-ecosystem/action-regex-match@v2.0.2
       - name: Update invalid name message
         if: always()
         uses: ./.github/actions/pr-message
