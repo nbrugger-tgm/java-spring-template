@@ -60,7 +60,7 @@ jobs:
           type: "delete"
           comment_id: ${{ steps.find_title_comment.outputs.comment_id }}
       - name: add "wrong title" message
-        if: always() && !(steps.name_check.outputs.nameValid == 'true') && steps.find_title_comment.outputs.comment_id == ''
+        if: always() && !(steps.name_check.outputs.nameValid == 'true')
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
