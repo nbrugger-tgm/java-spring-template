@@ -117,7 +117,7 @@ jobs:
         uses: ./.github/actions/pr-message
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needed: ${{ steps.regex-match.outputs.match == '' }}
+          needed: ${{ steps.name_check.outputs.match == '' }}
           number: ${{ github.event.pull_request.number }}
           key: invalid_name
           body: |
@@ -133,7 +133,7 @@ jobs:
             > Change the title to match the conventional-commits standard.
             > Your PR will be re-validated when you change the title.
       - name: Fail on invalid title
-        if: steps.regex-match.outputs.match == ''
+        if: steps.name_check.outputs.match == ''
         run: exit 1
       - name: check changed files
         uses: tony84727/changed-file-filter@v0.2.0

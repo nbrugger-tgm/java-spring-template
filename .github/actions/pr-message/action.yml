@@ -56,7 +56,7 @@ runs:
         type: "update"
         body: |
           <span key="${{ inputs.key }}">
-          
+
           ${{ inputs.body }}
         comment_id: ${{ steps.find_comment.outputs.comment_id }}
 
