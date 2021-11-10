@@ -184,6 +184,6 @@ jobs:
         if: always()
         uses: ./.github/actions/set-label
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           needed: ${{ job.status == 'success' }}
           label: 'ready for build'
