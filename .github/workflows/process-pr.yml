@@ -55,7 +55,6 @@ jobs:
           number: ${{ github.event.pull_request.number }}
       - name: remove old "wrong title" message
         uses: sandeshjangam/comment-actions@v1
-        id: delete_comment
         if: ${{ steps.find_title_comment.outputs.comment_id != '' }}
         with:
           type: "delete"
@@ -114,7 +113,6 @@ jobs:
           number: ${{ github.event.pull_request.number }}
       - name: remove old "security" message
         uses: sandeshjangam/comment-actions@v1
-        id: delete_comment
         if: ${{ steps.find_sec_comment.outputs.comment_id != '' && steps.filter.outputs.sensitive == 'false'}}
         with:
           type: "delete"
