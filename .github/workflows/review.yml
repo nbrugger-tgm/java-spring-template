@@ -69,6 +69,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'success' }}
           key: qa_passed
+          number: ${{ github.event.pull_request.number }}
           body: |
             ## Build, Testing passed!
 
@@ -118,6 +119,7 @@ jobs:
         if: always()
         uses: ./.github/actions/pr-message
         with:
+          number: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed : ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
           key: sensitive_fork_review
