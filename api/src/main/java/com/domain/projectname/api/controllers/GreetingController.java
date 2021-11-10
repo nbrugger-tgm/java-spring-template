@@ -2,6 +2,7 @@ package com.domain.projectname.api.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -27,4 +28,8 @@ public interface GreetingController {
 	@GetMapping(value = "{name}",
 	            produces = "text/plain")
 	String greetHuman(@PathVariable String name) throws Exception;
+
+
+	@PutMapping("{name}")
+	String greetHumanPut(@PathVariable String name);
 }
