@@ -20,9 +20,6 @@ env:
 jobs:
   review:
     runs-on: ubuntu-latest
-    needs:
-      - quality-check
-      - testing
     name: Review
     # Revoke when PR is from fork and not to dev or hotfix branch
     # Revoke when dependabot
