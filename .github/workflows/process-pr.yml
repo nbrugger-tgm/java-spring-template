@@ -35,6 +35,7 @@ jobs:
         uses: ./.github/actions/pr-message
         if: always()
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'failure' }}
           number: ${{ github.event.pull_request.number }}
           key: fork_forbidden

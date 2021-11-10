@@ -14,6 +14,9 @@ inputs:
   number:
     description: 'The number of the pull request or issue'
     required: true
+  GITHUB_TOKEN:
+    description: "The GitHub token to use"
+    required: true
 runs:
   using: composite
   steps:
@@ -21,6 +24,7 @@ runs:
       uses: sandeshjangam/comment-actions@v1
       id: find_comment
       with:
+        token: ${{ inputs.GITHUB_TOKEN }}
         type: "find"
         author: "github-actions"
         search_term: ${{ inputs.key }}
@@ -29,13 +33,15 @@ runs:
       uses: sandeshjangam/comment-actions@v1
       if: ${{ steps.find_comment.outputs.comment_id != '' && inputs.needed == 'false' }}
       with:
+        token: ${{ inputs.GITHUB_TOKEN }}
         type: "delete"
         comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
     - name: add message
       if: inputs.needed && steps.find_comment.outputs.comment_id == ''
       uses: thollander/actions-comment-pull-request@v1
       with:
-        type: create
+        token: ${{ inputs.GITHUB_TOKEN }}
+        type: "create"
         body: |
           <span key="${{ inputs.key }}">
           ${{ inputs.body }}
@@ -43,6 +49,7 @@ runs:
       if: inputs.needed && steps.find_comment.outputs.comment_id != ''
       uses: sandeshjangam/comment-actions@v1
       with:
+        token: ${{ inputs.GITHUB_TOKEN }}
         type: "update"
         body: |
           <span key="${{ inputs.key }}">

@@ -9,6 +9,9 @@ inputs:
   label:
     description: the label to add or remove
     required: true
+  GITHUB_TOKEN:
+    description: "The GitHub token to use"
+    required: true
 
 runs:
   using: composite
@@ -17,9 +20,11 @@ runs:
       if: inputs.needed == 'true'
       uses: andymckay/labeler@1.0.4
       with:
+        repo-token: ${{ inputs.GITHUB_TOKEN }}
         add-labels: ${{ inputs.label }}
     - name: remove label
       if: inputs.needed == 'false'
       uses: andymckay/labeler@1.0.4
       with:
+        repo-token: ${{ inputs.GITHUB_TOKEN }}
         remove-labels: ${{ inputs.label }}
