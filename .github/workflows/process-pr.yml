@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: revoke bad fork
-        if: env.is_fork && github.base_ref != 'dev' && github.base_ref != 'hotfix'
+        if: env.is_fork == 'true' && github.base_ref != 'dev' && github.base_ref != 'hotfix'
         run: |
           exit 1
       - name: update forking message
@@ -39,9 +39,9 @@ jobs:
           number: ${{ github.event.pull_request.number }}
           key: fork_forbidden
           body: |
-            **❌**
+            # ❌
 
-            Forks are only allowed to merge into \`dev\` or \`hotfix\`
+            Forks are only allowed to merge into `dev` or `hotfix`
 
             > Please change your target branch!
       - name: Check master branch
