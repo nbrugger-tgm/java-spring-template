@@ -18,6 +18,17 @@ env:
 
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          echo ${{(github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
+                        github.event.pull_request.draft == 'false' &&
+                        github.event.label.name == 'ready for build' &&
+                        !(github.event.pull_request.head.repo.full_name != github.repository &&
+                          github.actor != 'dependabot[bot]' &&
+                          github.base_ref != 'dev' && github.base_ref != 'hotfix') }}
   review:
     runs-on: ubuntu-latest
     name: Review
