@@ -26,7 +26,7 @@ jobs:
   lockdown:
     name: Lock PR
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'ready for build'
+    if: github.event.label.name == 'ready for merge'
     steps:
       - uses: actions/checkout@v2
       - name: lock pull request
@@ -138,6 +138,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Eval merge type
+        id: eval
+        run: |
+          if [ ${{ github.base_ref }} == 'main' ]; then
+            echo "::set-output name=merge_type::merge"
+          elif [ ${{ github.base_ref }} == 'staging' ]; then
+            echo "::set-output name=merge_type::merge"
+          elif [ ${{ github.base_ref }} == 'dev'] || [ ${{ github.base_ref }} == 'hotfix' ]; then
+            echo "::set-output name=merge_type::squash"
+          fi
       - name: Merge
         uses: squalrus/merge-bot@v0.4.5
         with:
@@ -147,5 +157,5 @@ jobs:
           labels: ''
           blocking_labels: 'blocked, revoked'
           checks_enabled: true
-          method: squash
-          delete_source_branch: true
+          method: ${{ steps.eval.outputs.merge_type }}
+          delete_source_branch: ${{ github.base_ref == 'dev' || github.base_ref == 'hotfix' }}
