@@ -8,7 +8,7 @@ on:
       - main
       - staging
   pull_request_target:
-    types: [ synchronize, edited,ready_for_review ]
+    types: [ synchronize, edited, ready_for_review ]
     branches:
       - dev
       - hotfix
@@ -45,8 +45,23 @@ jobs:
             echo "::set-output name=nameValid::false"
             exit 1
           fi
+      - name: Find old "wrong title" message
+        uses: sandeshjangam/comment-actions@v1
+        id: find_title_comment
+        with:
+          type: "find"
+          search_term: "Title invalid"
+          author: "github-actions"
+          number: ${{ github.event.pull_request.number }}
+      - name: remove old "wrong title" message
+        uses: sandeshjangam/comment-actions@v1
+        id: delete_comment
+        if: ${{ steps.find_title_comment.outputs.comment_id != '' }}
+        with:
+          type: "delete"
+          comment_id: ${{ steps.find_title_comment.outputs.comment_id }}
       - name: add "wrong title" message
-        if: always() && !(steps.name_check.otputs.nameValid == 'true')
+        if: always() && !(steps.name_check.otputs.nameValid == 'true') && steps.find_title_comment.outputs.comment_id == ''
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
@@ -76,6 +91,8 @@ jobs:
               - 'gradle'
               - 'gradlew'
               - 'gradlew.bat'
+
+      ##todo: update label instead of re-creation
       - name: add security label
         if: steps.filter.outputs.sensitive == 'true'
         uses: actions/github-script@v5
@@ -87,8 +104,23 @@ jobs:
               repo: context.repo.repo,
               labels: ['sensitive']
             })
+      - name: Find old "security" message
+        uses: sandeshjangam/comment-actions@v1
+        id: find_sec_comment
+        with:
+          type: "find"
+          author: "github-actions"
+          search_term: "This PR contains sensitive files."
+          number: ${{ github.event.pull_request.number }}
+      - name: remove old "security" message
+        uses: sandeshjangam/comment-actions@v1
+        id: delete_comment
+        if: ${{ steps.find_sec_comment.outputs.comment_id != '' && steps.filter.outputs.sensitive == 'false'}}
+        with:
+          type: "delete"
+          comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
       - name: add security message
-        if: steps.filter.outputs.sensitive == 'true'
+        if: steps.filter.outputs.sensitive == 'true' && steps.find_sec_comment.outputs.comment_id == ''
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
@@ -98,6 +130,18 @@ jobs:
             ${{ steps.filter.outputs.sensitive_files }}
             ```
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: update security message
+        if: steps.filter.outputs.sensitive == 'true' && steps.find_sec_comment.outputs.comment_id != ''
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          type: "update"
+          body: |
+            ## Security
+            This PR contains sensitive files.
+            ```
+            ${{ steps.filter.outputs.sensitive_files }}
+            ```
+          comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
       - name: label by changed files
         uses: actions/labeler@v3
         with:
