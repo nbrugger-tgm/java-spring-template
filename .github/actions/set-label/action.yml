@@ -1,0 +1,25 @@
+name: set label
+description: adds or removes a label depending on a condition
+
+inputs:
+  needed:
+    description: if the label should be added or removed
+    required: false
+    default: 'true'
+  label:
+    description: the label to add or remove
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: add label
+      if: input.needed == 'true'
+      uses: andymckay/labeler@1.0.4
+      with:
+        add-labels: ${{ input.label }}
+    - name: remove label
+      if: input.needed == 'false'
+      uses: andymckay/labeler@1.0.4
+      with:
+        remove-labels: ${{ input.label }}

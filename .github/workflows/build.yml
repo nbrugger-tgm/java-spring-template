@@ -144,5 +144,5 @@ jobs:
         with:
           files: |
             openapi.json
-          commit-message: 'docs(oas): add PR changes to OAS'
+          commit-message: 'docs(oas): auto update OpenAPI spec'
           ref: ${{ github.head_ref }}

@@ -1,0 +1,51 @@
+description: "Generates a message at a Pull Request or issue and also insures that the message is up to date and not duplicated."
+name: update message
+inputs:
+  needed:  # id of input
+    description: 'Is the message still needed'
+    required: true
+    default: "true"
+  key:
+    description: 'The key to use to find the message'
+    required: true
+  body:
+    description: 'The body of the message'
+    required: true
+  number:
+    description: 'The number of the pull request or issue'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Find old message
+      uses: sandeshjangam/comment-actions@v1
+      id: find_comment
+      with:
+        type: "find"
+        author: "github-actions"
+        search_term: ${{ key }}
+        number: ${{ inputs.number }}
+    - name: remove old message
+      uses: sandeshjangam/comment-actions@v1
+      if: ${{ steps.find_comment.outputs.comment_id != '' && inputs.needed == 'false' }}
+      with:
+        type: "delete"
+        comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
+    - name: add message
+      if: inputs.needed && steps.find_comment.outputs.comment_id == ''
+      uses: thollander/actions-comment-pull-request@v1
+      with:
+        message: |
+          <span key="${{ inputs.key }}">
+          ${{ inputs.body }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: update security message
+      if: inputs.needed && steps.find_comment.outputs.comment_id != ''
+      uses: thollander/actions-comment-pull-request@v1
+      with:
+        type: "update"
+        body: |
+          <span key="${{ inputs.key }}">
+          ${{ inputs.body }}
+        comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
+

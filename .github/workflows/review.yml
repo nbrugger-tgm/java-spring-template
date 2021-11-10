@@ -1,4 +1,5 @@
 name: Review
+
 on:
   pull_request:
     types: [ labeled ]
@@ -61,16 +62,17 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success
-      - name: Add success message
-        uses: thollander/actions-comment-pull-request@v1
+      - name: Update success message
+        uses: ./.github/actions/pr-message
+        if: always()
         with:
-          message: |
-            ## QA passed!
-            The automatic quality check passed.
+          needed: ${{ success() }}
+          key: qa_passed
+          body: |
+            ## Build, Testing passed!
 
             Your pull request is ready for review.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Approve pull request
+      - name: Approve dependabot
         if: github.actor == 'dependabot[bot]'
         uses: andrewmusgrave/automatic-pull-request-review@0.0.5
         with:
@@ -111,11 +113,13 @@ jobs:
         uses: Techshift/mention-reviewers@0.2.0
         if: github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'
         id: getReviewers
-      - name: add sensitive fork message
-        if: github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'
-        uses: thollander/actions-comment-pull-request@v1
+      - name: update "sensitive fork" message
+        if: always()
+        uses: ./.github/actions/pr-message
         with:
-          message: |
+          needed : ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
+          key: sensitive_fork_review
+          body: |
             ## **Forked**
             > ${{ steps.getReviewers.outputs.message }}
             This sensitive pull request originates from a fork!<br>
@@ -124,8 +128,9 @@ jobs:
             We kindly ask to read the [security guide](SECURITY.adoc) before reviewing the pull request.
             ### Sensitive files
             > ${{ steps.filter.outputs.sensitive_files }}
-      - name: add label
-        if: github.actor != 'dependabot[bot]'
-        uses: andymckay/labeler@master
+      - name: set label
+        if: always()
+        uses: ./.github/actions/set-label
         with:
-          add-labels: 'in review'
+          label: "in review"
+          needed: ${{ github.actor != 'dependabot[bot]' && sucess() }}

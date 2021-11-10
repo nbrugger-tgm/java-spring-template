@@ -2,50 +2,117 @@ name: Process PR
 
 on:
   pull_request:
-    types: [ synchronize, edited, ready_for_review ]
+    types: [ synchronize, edited, ready_for_review, opened, reopened ]
     branches:
       - master
       - main
       - staging
   pull_request_target:
-    types: [ synchronize, edited, ready_for_review ]
+    types: [ synchronize, edited, ready_for_review, opened, reopened ]
     branches:
       - dev
       - hotfix
 
+env:
+  revoke_sensitive_fork: true
+
+
+
+  is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
 
 jobs:
-  unlabel:
+  branching-check:
+    name: Check Branching
     runs-on: ubuntu-latest
-    if: ${{ !(github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev' && github.base_ref != 'hotfix') }}
     steps:
       - uses: actions/checkout@v2
-      - name: Wait for 'Quality check'
-        uses: lewagon/wait-on-check-action@v1.0.0
+      - name: revoke bad fork
+        if: env.is_fork && github.base_ref != 'dev' && github.base_ref != 'hotfix'
+        run: |
+          echo "::error::Forks are only allowed to merge into \`dev\` or \`hotfix\`"
+          exit 1
+      - name: update forking message
+        uses: ./.github/actions/pr-message
+        if: always()
         with:
-          ref: ${{ github.head_ref }}
-          check-name: 'Check Branching'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          allowed-conclusions: success
-      - name: remove label
-        if: github.actor != 'dependabot[bot]'
-        uses: peter-murray/remove-labels-action@v1.0.0
+          needed: ${{ failure() }}
+          number: ${{ github.event.pull_request.number }}
+          key: fork_forbidden
+          body: |
+            **❌**
+
+            Forks are only allowed to merge into \`dev\` or \`hotfix\`
+
+            > Please change your target branch!
+      - name: Check master branch
+        id: master_check
+        uses: ./.github/actions/branch-check
+        if: ${{ github.base_ref=='master' || github.base_ref=='main' }}
         with:
-          labels: "ready for build"
-        continue-on-error: true
+          allowedBranches: hotfix|documentation|staging
+      - name: Check staging branch
+        id: staging_check
+        uses: ./.github/actions/branch-check
+        if: ${{ github.base_ref=='staging' }}
+        with:
+          allowedBranches: hotfix|dev
+      - name: Check dev branch
+        id: dev_check
+        uses: ./.github/actions/branch-check
+        if: ${{ github.base_ref=='dev' }}
+        with:
+          allowedBranches: feat\/.+|hotfix|bugfix\/.+ #this is a regex
+      - name: check hotfix branch
+        id: hotfix_check
+        uses: ./.github/actions/branch-check
+        if: ${{ github.base_ref=='hotfix' }}
+        with:
+          allowedBranches: bugfix\/.+
+      - name: Add master branch message
+        if: failure() && (steps.master_check.outcome == 'failure')
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.master_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add staging branch message
+        if: failure() && (steps.staging_check.outcome == 'failure')
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.staging_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add dev branch message
+        if: failure() && (steps.dev_check.outcome == 'failure')
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.dev_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add hotfix branch message
+        if: failure() && (steps.hotfix_check.outcome == 'failure')
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: ${{ steps.hotfix_check.outputs.errorMessage }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: label invalid
+        uses: ./.github/actions/set-label
+        if: always()
+        with:
+          needed: ${{ failure() }}
+          label: invalid
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
     needs:
-      - unlabel
+      - branching-check
     steps:
       - uses: actions/checkout@v2
       - name: check PR name
         id: name_check
+        env:
+          PR_NAME: ${{ github.event.pull_request.title }}
         run: |
           RGX='^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
-          if [[ "${{ github.event.pull_request.title }}" =~ $RGX ]]; then
+          CLEANSTRING=${$PR_NAME//[^a-zA-Z0-9 _-]/}
+          if [[ $CLEARSTRING =~ $RGX ]]; then
             echo "PR title is valid"
             echo "::set-output name=nameValid::true"
           else
@@ -53,25 +120,14 @@ jobs:
             echo "::set-output name=nameValid::false"
             exit 1
           fi
-      - name: Find old "wrong title" message
-        uses: sandeshjangam/comment-actions@v1
-        id: find_title_comment
+      - name: Update invalid name message
+        if: always()
+        uses: ./.github/actions/pr-message
         with:
-          type: "find"
-          search_term: "Title invalid"
-          author: "github-actions"
+          needed: ${{ steps.name_check.outputs.nameValid == 'false' }}
           number: ${{ github.event.pull_request.number }}
-      - name: remove old "wrong title" message
-        uses: sandeshjangam/comment-actions@v1
-        if: ${{ steps.find_title_comment.outputs.comment_id != '' }}
-        with:
-          type: "delete"
-          comment_id: ${{ steps.find_title_comment.outputs.comment_id }}
-      - name: add "wrong title" message
-        if: always() && !(steps.name_check.outputs.nameValid == 'true')
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: |
+          key: invalid_name
+          body: |
             ## Title invalid
             The PR title must obey the conventional-commits ([here](https://www.conventionalcommits.org/en/v1.0.0-beta.1/)) standard!
             ### Examples
@@ -83,7 +139,6 @@ jobs:
             ```
             > Change the title to match the conventional-commits standard.
             > Your PR will be re-validated when you change the title.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: check changed files
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
@@ -99,55 +154,28 @@ jobs:
               - 'gradlew'
               - 'gradlew.bat'
 
-      ##todo: update label instead of re-creation
-      - name: add security label
-        if: steps.filter.outputs.sensitive == 'true'
-        uses: actions/github-script@v5
+      - name: set security label
+        uses: ./.github/actions/set-label
         with:
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['sensitive']
-            })
-      - name: Find old "security" message
-        uses: sandeshjangam/comment-actions@v1
-        id: find_sec_comment
-        with:
-          type: "find"
-          author: "github-actions"
-          search_term: "This PR contains sensitive files."
-          number: ${{ github.event.pull_request.number }}
-      - name: remove old "security" message
-        uses: sandeshjangam/comment-actions@v1
-        if: ${{ steps.find_sec_comment.outputs.comment_id != '' && steps.filter.outputs.sensitive == 'false'}}
-        with:
-          type: "delete"
-          comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
-      - name: add security message
-        if: steps.filter.outputs.sensitive == 'true' && steps.find_sec_comment.outputs.comment_id == ''
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: |
-            ## Security
-            This PR contains sensitive files.
-            ```
-            ${{ steps.filter.outputs.sensitive_files }}
-            ```
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          needed: ${{ steps.filter.outputs.sensitive == 'true' }}
+          label: sensitive
       - name: update security message
-        if: steps.filter.outputs.sensitive == 'true' && steps.find_sec_comment.outputs.comment_id != ''
-        uses: thollander/actions-comment-pull-request@v1
+        uses: ./.github/actions/pr-message
         with:
-          type: "update"
+          needed: ${{ steps.filter.outputs.sensitive }}
+          key: "security_alert"
+          number: ${{ github.event.pull_request.number }}
           body: |
             ## Security
             This PR contains sensitive files.
             ```
             ${{ steps.filter.outputs.sensitive_files }}
             ```
-          comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
+      - name: revoke senitive fork
+        if: env.is_fork == 'true' && env.revoke_sensitive_fork
+        run: |
+          echo "::error::This PR originates form a fork and touches sensitive files, this is forbidden!"
+          exit 1
       - name: label by changed files
         uses: actions/labeler@v3
         with:
@@ -156,14 +184,9 @@ jobs:
         uses: ffittschen/pr-branch-labeler@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Mark as ready
-        uses: actions/github-script@v5
+      - name: Update build status
+        if: always()
+        uses: ./.github/actions/set-label
         with:
-          github-token: ${{ secrets.PAT }}
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['ready for build']
-            })
+          needed: ${{ success() }}
+          label: 'ready for build'
