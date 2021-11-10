@@ -46,6 +46,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build PR OAS
         run: |
+          chmod +x gradlew
           ./gradlew generateOpenApiDocs
       - name: Checkout base branch
         uses: actions/checkout@v2
@@ -77,6 +78,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build clients
         run: |
+          chmod +x gradlew
           ./gradlew autogenClients
       - name: Commit clients
         uses: swinton/commit@v2.0.0
