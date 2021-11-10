@@ -2,13 +2,13 @@ name: Process PR
 
 on:
   pull_request:
-    types: [ synchronize, edited ]
+    types: [ synchronize, edited, ready_for_review ]
     branches:
       - master
       - main
       - staging
   pull_request_target:
-    types: [ synchronize, edited ]
+    types: [ synchronize, edited,ready_for_review ]
     branches:
       - dev
       - hotfix
