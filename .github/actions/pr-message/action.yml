@@ -36,12 +36,14 @@ runs:
         token: ${{ inputs.GITHUB_TOKEN }}
         type: "delete"
         comment_id: ${{ steps.find_comment.outputs.comment_id }}
+        number: ${{ inputs.number }}
     - name: add message
       if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id == ''
       uses: sandeshjangam/comment-actions@v1
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
         type: "create"
+        number: ${{ inputs.number }}
         body: |
           <span key="${{ inputs.key }}">
           ${{ inputs.body }}
@@ -50,6 +52,7 @@ runs:
       uses: sandeshjangam/comment-actions@v1
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
+        number: ${{ inputs.number }}
         type: "update"
         body: |
           <span key="${{ inputs.key }}">
