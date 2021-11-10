@@ -35,7 +35,7 @@ jobs:
         uses: ./.github/actions/pr-message
         if: always()
         with:
-          needed: ${{ failure() }}
+          needed: ${{ job.status == 'failure' }}
           number: ${{ github.event.pull_request.number }}
           key: fork_forbidden
           body: |
@@ -96,7 +96,7 @@ jobs:
         uses: ./.github/actions/set-label
         if: always()
         with:
-          needed: ${{ failure() }}
+          needed: ${{ job.status == 'failure' }}
           label: invalid
   formal_check:
     name: "Formal Check"
@@ -188,5 +188,5 @@ jobs:
         if: always()
         uses: ./.github/actions/set-label
         with:
-          needed: ${{ success() }}
+          needed: ${{ job.status == 'success' }}
           label: 'ready for build'
