@@ -1,0 +1,151 @@
+on:
+  pull_request:
+    types:
+      - labeled
+    branches:
+      - master
+      - main
+      - staging
+  pull_request_target:
+    types:
+      - labeled
+    branches:
+      - dev
+      - hotfix
+################################################################################
+#  this steps assumes that a careful and security-aware review is done         #
+#  If you want to be save and dont trust the security review,                  #
+#  we advise to disable this step for forks by adding :                        #
+#                                                                              #
+#   && (github.event.pull_request.head.repo.full_name != github.repository &&  #
+#       github.actor != 'dependabot[bot]')                                     #
+#                                                                              #
+#  to the if condition of the lockdown job                                     #
+################################################################################
+jobs:
+  lockdown:
+    name: Lock PR
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'ready for build'
+    steps:
+      - uses: actions/checkout@v2
+      - name: lock pull request
+        uses: sudo-bot/action-pull-request-lock@v1.0.5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          lock-reason: resolved
+  openapi:
+    runs-on: ubuntu-latest
+    name: Autogen OpenAPI
+    needs: lockdown
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build PR OAS
+        run: |
+          ./gradlew generateOpenApiDocs
+      - name: Checkout base branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.base_ref }}
+          path: 'base'
+      - name: Build OAS diff
+        uses: LimeFlight/openapi-diff-action@v3.0.9
+        with:
+          head_spec: openapi.json
+          base_spec: base/openapi.json
+          output_path: ~/openapi_diff.json
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit OAS
+        uses: swinton/commit@v2.0.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            openapi.json
+          commit-message: 'docs(oas): add PR changes to OAS'
+          ref: ${{ github.head_ref }}
+  client:
+    name: Autogen clients
+    needs: lockdown
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build clients
+        run: |
+          ./gradlew autogenClients
+      - name: Commit clients
+        uses: swinton/commit@v2.0.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            client/**
+          commit-message: 'chore: autogenerate clients'
+          ref: ${{ github.head_ref }}
+  semver:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Scan release stage
+        id: branch
+        run: |
+          if [ ${{ github.base_ref }} == 'main']; then
+            echo "::set-output name=release_stage::release"
+          elif [ ${{ github.base_ref }} == 'staging' ]; then
+            echo "::set-output name=release_stage::rc"
+          elif [ ${{ github.base_ref }} == 'dev'] || [ ${{ github.base_ref }} == 'hotfix' ]; then
+            echo "::set-output name=release_stage::beta"
+          fi
+      - id: cz_pr
+        name: Bump prerelase-version
+        if: steps.branch.outputs.release_stage != 'release'
+        uses: commitizen-tools/commitizen-action@0.9.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          changelog_increment_filename: changelog_diff.md
+          prerelease: ${{ steps.branch.outputs.release_stage }}
+      - id: cz
+        name: Bump release-version
+        if: steps.branch.outputs.release_stage == 'release'
+        uses: commitizen-tools/commitizen-action@0.9.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          changelog_increment_filename: changelog_diff.md
+      - name: Build Artifact
+        run: ./gradlew bootJar
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/lib/app-$VERSION.jar"
+          bodyFile: "changelog_diff.md"
+          draft: true
+          prerelease: ${{ steps.branch.outputs.release_stage != 'release' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.REVISION }}
+  merge:
+    name: Merge PR
+    runs-on: ubuntu-latest
+    needs:
+      - openapi
+      - client
+      - semver
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Merge
+        uses: squalrus/merge-bot@v0.4.5
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          test: false
+          reviewers: true
+          labels: ''
+          blocking_labels: 'blocked, revoked'
+          checks_enabled: true
+          method: squash
+          delete_source_branch: true

@@ -17,18 +17,14 @@ on:
 jobs:
   unlabel:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev' && github.base_ref != 'hotfix'
     steps:
       - uses: actions/checkout@v2
-      - name: Unmark as ready
-        uses: actions/github-script@v5
+      - name: add label
+        if: github.actor != 'dependabot[bot]'
+        uses: andymckay/labeler@1.0.4
         with:
-          script: |
-            github.rest.issues.removeLabel({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'ready for build'
-            })
+          remove-labels: 'ready for build'
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
@@ -66,15 +62,19 @@ jobs:
             > Your PR will be re-validated when you change the title.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: check changed files
-        uses: nbrugger-tgm/changed-file-filter@11922d1a168dfbbc7c44735e529fb91b09ed69ab
+        uses: tony84727/changed-file-filter@v0.2.0
         id: filter
         with:
           filters: |
             sensitive:
-              - .github/**
-              - .gitignore
-              - .gitmodules
-              - gradle/wrapper/**
+              - '.github/**'
+              - '.gitignore'
+              - '.gitmodules'
+              - 'gradle/wrapper/**'
+              - '**.gradle'
+              - 'gradle'
+              - 'gradlew'
+              - 'gradlew.bat'
       - name: add security label
         if: steps.filter.outputs.sensitive == 'true'
         uses: actions/github-script@v5
@@ -97,13 +97,6 @@ jobs:
             ${{ steps.filter.outputs.sensitive_files }}
             ```
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  prepare:
-    runs-on: ubuntu-latest
-    name: "Prepare"
-    needs:
-      - unlabel
-    steps:
-      - uses: actions/checkout@v2
       - name: label by changed files
         uses: actions/labeler@v3
         with:
@@ -112,14 +105,6 @@ jobs:
         uses: ffittschen/pr-branch-labeler@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-  finalize:
-    runs-on: ubuntu-latest
-    name: "Finalize"
-    needs:
-      - prepare
-      - formal_check
-    steps:
-      - uses: actions/checkout@v2
       - name: Mark as ready
         uses: actions/github-script@v5
         with:
