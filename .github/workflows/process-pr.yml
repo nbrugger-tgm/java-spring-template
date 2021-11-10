@@ -107,24 +107,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: check PR name
         id: name_check
-        env:
-          PR_NAME: ${{ github.event.pull_request.title }}
-        run: |
-          RGX='^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
-          CLEANSTRING=${$PR_NAME//[^a-zA-Z0-9 _-]/}
-          if [[ $CLEARSTRING =~ $RGX ]]; then
-            echo "PR title is valid"
-            echo "::set-output name=nameValid::true"
-          else
-            echo "PR title is invalid"
-            echo "::set-output name=nameValid::false"
-            exit 1
-          fi
+        with:
+          text: ${{ github.event.pull_request.title }}
+          regex: '^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
+
       - name: Update invalid name message
         if: always()
         uses: ./.github/actions/pr-message
         with:
-          needed: ${{ steps.name_check.outputs.nameValid == 'false' }}
+          needed: ${{ steps.regex-match.outputs.match == '' }}
           number: ${{ github.event.pull_request.number }}
           key: invalid_name
           body: |
