@@ -20,11 +20,11 @@ jobs:
     if: github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' && github.base_ref != 'dev' && github.base_ref != 'hotfix'
     steps:
       - uses: actions/checkout@v2
-      - name: add label
+      - name: remove label
         if: github.actor != 'dependabot[bot]'
-        uses: andymckay/labeler@1.0.4
+        uses: peter-murray/remove-labels-action@v1.0.0
         with:
-          remove-labels: 'ready for build'
+          labels: "ready for build"
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
