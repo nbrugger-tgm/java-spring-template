@@ -26,7 +26,6 @@ runs:
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
         type: "find"
-        author: "github-actions"
         search_term: ${{ inputs.key }}
         number: ${{ inputs.number }}
     - name: remove old message

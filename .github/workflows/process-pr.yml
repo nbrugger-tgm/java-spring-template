@@ -96,6 +96,7 @@ jobs:
         uses: ./.github/actions/set-label
         if: always()
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'failure' }}
           label: invalid
   formal_check:
@@ -115,6 +116,7 @@ jobs:
         if: always()
         uses: ./.github/actions/pr-message
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.regex-match.outputs.match == '' }}
           number: ${{ github.event.pull_request.number }}
           key: invalid_name
@@ -151,11 +153,13 @@ jobs:
       - name: set security label
         uses: ./.github/actions/set-label
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.filter.outputs.sensitive == 'true' }}
           label: sensitive
       - name: update security message
         uses: ./.github/actions/pr-message
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.filter.outputs.sensitive }}
           key: "security_alert"
           number: ${{ github.event.pull_request.number }}
@@ -180,5 +184,6 @@ jobs:
         if: always()
         uses: ./.github/actions/set-label
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'success' }}
           label: 'ready for build'
