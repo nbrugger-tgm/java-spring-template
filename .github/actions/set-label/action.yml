@@ -14,12 +14,12 @@ runs:
   using: composite
   steps:
     - name: add label
-      if: input.needed == 'true'
+      if: inputs.needed == 'true'
       uses: andymckay/labeler@1.0.4
       with:
-        add-labels: ${{ input.label }}
+        add-labels: ${{ inputs.label }}
     - name: remove label
-      if: input.needed == 'false'
+      if: inputs.needed == 'false'
       uses: andymckay/labeler@1.0.4
       with:
-        remove-labels: ${{ input.label }}
+        remove-labels: ${{ inputs.label }}

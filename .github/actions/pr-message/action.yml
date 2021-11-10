@@ -23,7 +23,7 @@ runs:
       with:
         type: "find"
         author: "github-actions"
-        search_term: ${{ key }}
+        search_term: ${{ inputs.key }}
         number: ${{ inputs.number }}
     - name: remove old message
       uses: sandeshjangam/comment-actions@v1
@@ -35,13 +35,13 @@ runs:
       if: inputs.needed && steps.find_comment.outputs.comment_id == ''
       uses: thollander/actions-comment-pull-request@v1
       with:
-        message: |
+        type: create
+        body: |
           <span key="${{ inputs.key }}">
           ${{ inputs.body }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: update security message
       if: inputs.needed && steps.find_comment.outputs.comment_id != ''
-      uses: thollander/actions-comment-pull-request@v1
+      uses: sandeshjangam/comment-actions@v1
       with:
         type: "update"
         body: |
