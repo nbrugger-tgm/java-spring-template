@@ -17,12 +17,10 @@ jobs:
           echo "Dismissed: $DISMISSED"
           if [ "$DISMISSED" -gt 0 ]; then
             echo "Dismissed reviews found."
-            echo "::error::Dismissed reviews found."
             exit 1
           fi
           if [ "$CHANGES_REQUESTED" -gt 0 ]; then
             echo "There are open change requests"
-            echo "::error::Change request(s) still open"
             exit 1
           fi
         if: steps.reviewsCount.outputs.approved > 0

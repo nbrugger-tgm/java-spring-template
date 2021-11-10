@@ -29,7 +29,6 @@ jobs:
       - name: revoke bad fork
         if: env.is_fork && github.base_ref != 'dev' && github.base_ref != 'hotfix'
         run: |
-          echo "::error::Forks are only allowed to merge into \`dev\` or \`hotfix\`"
           exit 1
       - name: update forking message
         uses: ./.github/actions/pr-message
@@ -131,6 +130,9 @@ jobs:
             ```
             > Change the title to match the conventional-commits standard.
             > Your PR will be re-validated when you change the title.
+      - name: Fail on invalid title
+        if: steps.regex-match.outputs.match == ''
+        run: exit 1
       - name: check changed files
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
@@ -165,9 +167,7 @@ jobs:
             ```
       - name: revoke senitive fork
         if: env.is_fork == 'true' && env.revoke_sensitive_fork
-        run: |
-          echo "::error::This PR originates form a fork and touches sensitive files, this is forbidden!"
-          exit 1
+        run: exit 1
       - name: label by changed files
         uses: actions/labeler@v3
         with:
