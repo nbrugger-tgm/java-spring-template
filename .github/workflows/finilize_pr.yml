@@ -19,7 +19,7 @@ name: Finilize PR
 #  If you want to be save and dont trust the security review,                  #
 #  we advise to disable this step for forks by adding :                        #
 #                                                                              #
-#   && (github.event.pull_request.head.repo.full_name != github.repository &&  #
+#   && !(github.event.pull_request.head.repo.full_name != github.repository &&  #
 #       github.actor != 'dependabot[bot]')                                     #
 #                                                                              #
 #  to the if condition of the lockdown job                                     #
@@ -125,14 +125,22 @@ jobs:
           changelog_increment_filename: changelog_diff.md
       - name: Build Artifact
         run: ./gradlew bootJar
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.8.10
+        id: release
         with:
-          artifacts: "app/build/lib/app-$VERSION.jar"
+          artifacts: "app/build/lib/app-$REVISION.jar"
           bodyFile: "changelog_diff.md"
           draft: true
           prerelease: ${{ steps.branch.outputs.release_stage != 'release' }}
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.REVISION }}
+      - name: Add release message
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: |
+            ### Release
+            This PR will be included in `${{ env.REVISION }}`. [**GH Release**](${{steps.release.outputs.html_url}})
+
   merge:
     name: Merge PR
     runs-on: ubuntu-latest

@@ -102,15 +102,13 @@ jobs:
     runs-on: ubuntu-latest
     name: OpenAPI
     needs: testing
-    if: |
-      github.event_name == 'pull_request' &&
-      (github.event.pull_request.head.repo.full_name != github.repository &&
-       github.actor != 'dependabot[bot]')
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build PR OAS
         run: |
+          chmod +x gradlew
           ./gradlew generateOpenApiDocs
       - name: Checkout base branch
         uses: actions/checkout@v2
@@ -126,6 +124,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit OAS
         uses: swinton/commit@v2.0.0
+        if: |
+          !(github.event.pull_request.head.repo.full_name != github.repository &&
+          github.actor != 'dependabot[bot]')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
