@@ -1,0 +1,58 @@
+= Security Guide
+
+== CI/CD
+
+CI/CD Processes are very prone to security vulnerabilities.
+This guide will help you to protect yourelf against such threats.
+
+If you want to understand whats going on in the background, you should read the https://securitylab.github.com/research/github-actions-preventing-pwn-requests/[GitHub] guide first.
+
+=== Dangerous Changes
+
+The lines below are dangerous if they are changed and can easily introduce security vulnerabilities.
+
+#Do not accept pull requests that modify any of these lines unless you are *very sure* that the change is safe, and you know what the security impacts of the change are.#
+
+[source,yml]
+----
+on:
+  pull_request:
+  pull_request_target:
+----
+
+Any line that contains `${{ secrets.GITHUB_TOKEN }}`
+
+**ANY** new actions/steps/jobs that are added to the pipeline will be considered dangerous.
+
+> We advise also not to change things mentioned above as a security vulnerability can be introduced by accident.
+
+== Gradle
+
+Any files related to the build system can introduce security vulnerabilities.
+While the above mentioned pipelines try to prevent such vulnerabilities, it is not always possible.
+
+Be careful when a pr touches any `.gradle` file.
+
+Things to keep an eye on:
+
+* Changes to any binary files have to be revoked! especially `gradlew` and `gradle-wrapper.jar`.
+(Unless it's an internal upgrade of the build system, in this case ask for help)
+* New dependencies could be dangerous.
+* New tasks could be dangerous.
+* New plugins could be very dangerous.
+* New build scripts could be dangerous and should be reviewed with great care.
+
+== Docker
+
+TODO
+
+This is not an exhaustive list of all the security vulnerabilities that can be introduced!
+Just the most important ones.
+If you are not sure about a change, ask for help!
+All changes above are very alertive especially if they originate from a untrusted source (a forked repository)
+
+== Trusted Sources
+
+While the active collaborators of this repository are seen as trusted, it is still important to keep an an eye on the changes mentioned above, since one could introduce security vulnerabilities without noticing/knowing it.
+
+If you are not sure if a change is security related, ask the creator of the PR what the change does and if he is sure about the security implications.
