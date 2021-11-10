@@ -106,16 +106,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Check api changes
+        uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'api/**'
+              - 'openapi.json'
       - name: Build PR OAS
+        if: steps.filter.outputs.api == 'true'
         run: |
           chmod +x gradlew
           ./gradlew generateOpenApiDocs
       - name: Checkout base branch
+        if: steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2
         with:
           ref: ${{ github.base_ref }}
           path: 'base'
       - name: Build OAS diff
+        if: steps.filter.outputs.api == 'true'
         uses: LimeFlight/openapi-diff-action@v3.0.9
         with:
           head_spec: openapi.json
@@ -126,7 +137,8 @@ jobs:
         uses: swinton/commit@v2.0.0
         if: |
           !(github.event.pull_request.head.repo.full_name != github.repository &&
-          github.actor != 'dependabot[bot]')
+          github.actor != 'dependabot[bot]') &&
+          steps.filter.outputs.api == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
