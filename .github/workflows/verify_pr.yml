@@ -2,13 +2,13 @@ name: Check PR
 
 on:
   pull_request:
-    types: [ opened, reopened ]
+    types: [ opened, reopened, edited ]
     branches:
       - master
       - main
       - staging
   pull_request_target:
-    types: [ opened, reopened ]
+    types: [ opened, reopened, edited ]
     branches:
       - dev
       - hotfix
