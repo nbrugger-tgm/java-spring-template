@@ -17,7 +17,7 @@ on:
 #  If you want to be save and dont trust the security review,                  #
 #  we advise to disable this step for forks by adding :                        #
 #                                                                              #
-#   && (github.event.pull_request.head.repo.full_name != github.repository &&  #
+#   && !(github.event.pull_request.head.repo.full_name != github.repository &&  #
 #       github.actor != 'dependabot[bot]')                                     #
 #                                                                              #
 #  to the if condition of the lockdown job                                     #
