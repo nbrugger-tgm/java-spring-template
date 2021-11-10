@@ -35,9 +35,9 @@ runs:
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
         type: "delete"
-        comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
+        comment_id: ${{ steps.find_comment.outputs.comment_id }}
     - name: add message
-      if: inputs.needed && steps.find_comment.outputs.comment_id == ''
+      if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id == ''
       uses: sandeshjangam/comment-actions@v1
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
@@ -46,7 +46,7 @@ runs:
           <span key="${{ inputs.key }}">
           ${{ inputs.body }}
     - name: update security message
-      if: inputs.needed && steps.find_comment.outputs.comment_id != ''
+      if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id != ''
       uses: sandeshjangam/comment-actions@v1
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
@@ -54,5 +54,5 @@ runs:
         body: |
           <span key="${{ inputs.key }}">
           ${{ inputs.body }}
-        comment_id: ${{ steps.find_sec_comment.outputs.comment_id }}
+        comment_id: ${{ steps.find_comment.outputs.comment_id }}
 
