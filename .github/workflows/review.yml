@@ -136,4 +136,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           label: "in review"
-          needed: ${{ github.actor != 'dependabot[bot]' && job.status = 'success' }}
+          needed: ${{ github.actor != 'dependabot[bot]' && job.status == 'success' }}
