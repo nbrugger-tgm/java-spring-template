@@ -59,13 +59,13 @@ jobs:
       - name: Check dev branch
         id: dev_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='dev' }}
+        if: ${{ github.base_ref=='dev' && env.is_fork == 'false' }}
         with:
           allowedBranches: feat\/.+|hotfix|bugfix\/.+ #this is a regex
       - name: check hotfix branch
         id: hotfix_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='hotfix' }}
+        if: ${{ github.base_ref=='hotfix'  && env.is_fork == 'false' }}
         with:
           allowedBranches: bugfix\/.+
       - name: Add master branch message
