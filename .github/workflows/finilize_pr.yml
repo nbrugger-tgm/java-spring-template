@@ -64,6 +64,7 @@ jobs:
           path: |
             build
             */build
+            .gradle
           retention-days: 1
   openapi:
     runs-on: ubuntu-latest
@@ -225,7 +226,7 @@ jobs:
             echo "::set-output name=merge_type::merge"
           elif [ ${{ github.base_ref }} == 'staging' ]; then
             echo "::set-output name=merge_type::merge"
-          elif [ ${{ github.base_ref }} == 'dev'] || [ ${{ github.base_ref }} == 'hotfix' ]; then
+          elif [ ${{ github.base_ref }} == 'dev' || ${{ github.base_ref }} == 'hotfix' ]; then
             echo "::set-output name=merge_type::squash"
           fi
       - name: Merge
