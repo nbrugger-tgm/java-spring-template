@@ -114,6 +114,10 @@ jobs:
             api:
               - 'api/**'
               - 'openapi.json'
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
       - name: Build PR OAS
         if: steps.filter.outputs.api == 'true'
         run: |
