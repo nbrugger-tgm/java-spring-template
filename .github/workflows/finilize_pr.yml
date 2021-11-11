@@ -13,14 +13,23 @@ on:
       - dev
       - hotfix
 
+env:
+  is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
+
+permissions:
+  actions: read
+  issues: write
+  discussions: write
+  pull-requests: write
+  repository-projects: write
+
 name: Finilize PR
 ################################################################################
 #  this steps assumes that a careful and security-aware review is done         #
 #  If you want to be save and dont trust the security review,                  #
 #  we advise to disable this step for forks by adding :                        #
 #                                                                              #
-#   && !(github.event.pull_request.head.repo.full_name != github.repository &&  #
-#       github.actor != 'dependabot[bot]')                                     #
+#   && env.is_fork == 'false'                                                  #
 #                                                                              #
 #  to the if condition of the lockdown job                                     #
 ################################################################################
@@ -108,7 +117,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
-            client/**
+            client
           commit-message: 'chore: autogenerate clients'
           ref: ${{ github.head_ref }}
   semver:
