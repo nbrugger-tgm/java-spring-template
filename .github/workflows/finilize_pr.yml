@@ -53,6 +53,8 @@ jobs:
     if: github.event.label.name == 'ready for merge'
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: prepare gradle
         run: chmod +x gradlew
       - name: build
@@ -73,6 +75,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: Check api changes
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
@@ -116,7 +120,7 @@ jobs:
           ref: ${{ github.head_ref }}
   client:
     name: Autogen clients
-    needs: prebuild
+    needs: openapi
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -149,7 +153,7 @@ jobs:
           branch: ${{ github.head_ref }}
           # Arguments for the git pull command. Use NO-PULL to avoid the action pulling at all.
           # Default: '--no-rebase'
-          pull: 'NO-PULL'
+          pull: '--rebase'
           push: true
   semver:
     name: Create release
@@ -158,14 +162,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: Scan release stage
         id: branch
         run: |
-          if [ ${{ github.base_ref }} == 'main']; then
+          if [ "${{ github.base_ref }}" == 'main']; then
             echo "::set-output name=release_stage::release"
-          elif [ ${{ github.base_ref }} == 'staging' ]; then
+          elif [ "${{ github.base_ref }}" == 'staging' ]; then
             echo "::set-output name=release_stage::rc"
-          elif [ ${{ github.base_ref }} == 'dev'] || [ ${{ github.base_ref }} == 'hotfix' ]; then
+          elif [ "${{ github.base_ref }}" == 'dev' || "${{ github.base_ref }}" == 'hotfix' ]; then
             echo "::set-output name=release_stage::beta"
           fi
       - id: cz_pr
@@ -182,26 +188,10 @@ jobs:
         if: steps.branch.outputs.release_stage == 'release'
         uses: commitizen-tools/commitizen-action@0.9.0
         with:
+          dry_run: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
           changelog_increment_filename: changelog_diff.md
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
-      - name: Build Artifact
-        run: |
-          chmod +x gradlew
-          ./gradlew bootJar
-      - uses: ncipollo/release-action@v1.8.10
-        id: release
-        with:
-          artifacts: "app/build/lib/app-$REVISION.jar"
-          bodyFile: "changelog_diff.md"
-          draft: true
-          prerelease: ${{ steps.branch.outputs.release_stage != 'release' }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.REVISION }}
       - name: Add release message
         uses: thollander/actions-comment-pull-request@v1
         with:
@@ -219,6 +209,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: Eval merge type
         id: eval
         run: |
@@ -232,11 +224,11 @@ jobs:
       - name: Merge
         uses: squalrus/merge-bot@v0.4.5
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           test: false
-          reviewers: true
+          reviewers: false
           labels: ''
           blocking_labels: 'blocked, revoked'
-          checks_enabled: true
+          checks_enabled: false
           method: ${{ steps.eval.outputs.merge_type }}
           delete_source_branch: ${{ github.base_ref == 'dev' || github.base_ref == 'hotfix' }}
