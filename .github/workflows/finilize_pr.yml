@@ -50,6 +50,7 @@ jobs:
   prebuild:
     name: Prebuild
     runs-on: ubuntu-latest
+    if: github.event.label.name == 'ready for merge'
     steps:
       - uses: actions/checkout@v2
       - name: prepare gradle
@@ -188,7 +189,9 @@ jobs:
         with:
           name: base-build
       - name: Build Artifact
-        run: ./gradlew bootJar
+        run: |
+          chmod +x gradlew
+          ./gradlew bootJar
       - uses: ncipollo/release-action@v1.8.10
         id: release
         with:
