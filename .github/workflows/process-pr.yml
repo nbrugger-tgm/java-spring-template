@@ -23,6 +23,7 @@ env:
 jobs:
   branching-check:
     name: Check Branching
+    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'edited'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -102,8 +103,6 @@ jobs:
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
-    needs:
-      - branching-check
     steps:
       - uses: actions/checkout@v2
       - name: check PR name
