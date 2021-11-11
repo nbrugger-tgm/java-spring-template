@@ -137,16 +137,3 @@ jobs:
           baseFile: base/openapi.json
           output_path: ~/openapi_diff.json
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit OAS
-        uses: swinton/commit@v2.0.0
-        if: |
-          !(github.event.pull_request.head.repo.full_name != github.repository &&
-          github.actor != 'dependabot[bot]') &&
-          steps.filter.outputs.api == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: |
-            openapi.json
-          commit-message: 'docs(oas): auto update OpenAPI spec'
-          ref: ${{ github.head_ref }}
