@@ -16,4 +16,9 @@ public class GreetingControllerImpl implements GreetingController {
 	public String greetHuman(String name) {
 		return format("Hello, %s!", name);
 	}
+
+	@Override
+	public String greetHumanPut(String name) {
+		return name;
+	}
 }
