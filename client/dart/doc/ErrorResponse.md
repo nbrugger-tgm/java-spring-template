@@ -1,8 +1,8 @@
-# ProjectName Client.model.ErrorResponse
+# openapi.model.ErrorResponse
 
 ## Load the model package
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 ```
 
 ## Properties

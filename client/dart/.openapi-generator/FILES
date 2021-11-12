@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 analysis_options.yaml
@@ -22,7 +21,3 @@ lib/auth/oauth.dart
 lib/model/error_response.dart
 lib/model/version_response.dart
 pubspec.yaml
-test/api_controller_api_test.dart
-test/error_response_test.dart
-test/greeting_controller_impl_api_test.dart
-test/version_response_test.dart

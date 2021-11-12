@@ -1,8 +1,8 @@
-# ProjectName Client.api.GreetingControllerImplApi
+# openapi.api.GreetingControllerImplApi
 
 ## Load the API package
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 ```
 
 All URIs are relative to *http://localhost:8080*
@@ -20,7 +20,7 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 
 final api_instance = GreetingControllerImplApi();
 final name = name_example; // String | 
@@ -61,7 +61,7 @@ No authorization required
 
 ### Example
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 
 final api_instance = GreetingControllerImplApi();
 

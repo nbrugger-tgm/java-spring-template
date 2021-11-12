@@ -8,7 +8,7 @@
 // ignore_for_file: constant_identifier_names
 // ignore_for_file: lines_longer_than_80_chars
 
-library projectname-client;
+library openapi.api;
 
 import 'dart:async';
 import 'dart:convert';

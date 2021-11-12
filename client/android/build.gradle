@@ -1,5 +1,5 @@
-group = 'com.domain'
-project.version = '0.1.0'
+group = 'org.openapitools'
+project.version = '1.0.0'
 
 buildscript {
     repositories {

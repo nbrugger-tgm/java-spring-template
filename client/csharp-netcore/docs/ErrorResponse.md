@@ -1,4 +1,4 @@
-# ProjectName.Client.Model.ErrorResponse
+# Org.OpenAPITools.Model.ErrorResponse
 
 ## Properties
 

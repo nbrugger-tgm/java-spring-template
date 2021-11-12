@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -12,7 +11,4 @@ index.ts
 model/errorResponse.ts
 model/models.ts
 model/versionResponse.ts
-ng-package.json
-package.json
-tsconfig.json
 variables.ts

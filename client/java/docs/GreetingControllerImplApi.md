@@ -17,11 +17,11 @@ Method | HTTP request | Description
 ### Example
 ```java
 // Import classes:
-import com.domain.projectname.client.ApiClient;
-import com.domain.projectname.client.ApiException;
-import com.domain.projectname.client.Configuration;
-import com.domain.projectname.client.models.*;
-import com.domain.projectname.api.GreetingControllerImplApi;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.models.*;
+import org.openapitools.client.api.GreetingControllerImplApi;
 
 public class Example {
   public static void main(String[] args) {
@@ -78,11 +78,11 @@ No authorization required
 ### Example
 ```java
 // Import classes:
-import com.domain.projectname.client.ApiClient;
-import com.domain.projectname.client.ApiException;
-import com.domain.projectname.client.Configuration;
-import com.domain.projectname.client.models.*;
-import com.domain.projectname.api.GreetingControllerImplApi;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.models.*;
+import org.openapitools.client.api.GreetingControllerImplApi;
 
 public class Example {
   public static void main(String[] args) {

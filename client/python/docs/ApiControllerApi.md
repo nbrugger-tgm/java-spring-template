@@ -1,4 +1,4 @@
-# ProjectName.Client.ApiControllerApi
+# openapi_client.ApiControllerApi
 
 All URIs are relative to *http://localhost:8080*
 
@@ -17,20 +17,20 @@ Method | HTTP request | Description
 
 ```python
 import time
-import ProjectName.Client
-from ProjectName.Client.api import api_controller_api
-from ProjectName.Client.model.version_response import VersionResponse
-from ProjectName.Client.model.error_response import ErrorResponse
+import openapi_client
+from openapi_client.api import api_controller_api
+from openapi_client.model.error_response import ErrorResponse
+from openapi_client.model.version_response import VersionResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost:8080
 # See configuration.py for a list of all supported configuration parameters.
-configuration = ProjectName.Client.Configuration(
+configuration = openapi_client.Configuration(
     host = "http://localhost:8080"
 )
 
 
 # Enter a context with an instance of the API client
-with ProjectName.Client.ApiClient() as api_client:
+with openapi_client.ApiClient() as api_client:
     # Create an instance of the API class
     api_instance = api_controller_api.ApiControllerApi(api_client)
 
@@ -38,7 +38,7 @@ with ProjectName.Client.ApiClient() as api_client:
     try:
         api_response = api_instance.version()
         pprint(api_response)
-    except ProjectName.Client.ApiException as e:
+    except openapi_client.ApiException as e:
         print("Exception when calling ApiControllerApi->version: %s\n" % e)
 ```
 

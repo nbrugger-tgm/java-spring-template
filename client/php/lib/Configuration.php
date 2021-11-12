@@ -4,7 +4,7 @@
  * PHP version 7.3
  *
  * @category Class
- * @package  com.domain.projectname.client
+ * @package  OpenAPI\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -25,14 +25,14 @@
  * Do not edit the class manually.
  */
 
-namespace com.domain.projectname.client;
+namespace OpenAPI\Client;
 
 /**
  * Configuration Class Doc Comment
  * PHP version 7.3
  *
  * @category Class
- * @package  com.domain.projectname.client
+ * @package  OpenAPI\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -395,7 +395,7 @@ class Configuration
      */
     public static function toDebugReport()
     {
-        $report  = 'PHP SDK (com.domain.projectname.client) Debug Report:' . PHP_EOL;
+        $report  = 'PHP SDK (OpenAPI\Client) Debug Report:' . PHP_EOL;
         $report .= '    OS: ' . php_uname() . PHP_EOL;
         $report .= '    PHP Version: ' . PHP_VERSION . PHP_EOL;
         $report .= '    The version of the OpenAPI document: v0' . PHP_EOL;

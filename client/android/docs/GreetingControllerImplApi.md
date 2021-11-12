@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 ```java
 // Import classes:
-//import com.domain.projectname.api.GreetingControllerImplApi;
+//import org.openapitools.client.api.GreetingControllerImplApi;
 
 GreetingControllerImplApi apiInstance = new GreetingControllerImplApi();
 String name = null; // String | 
@@ -63,7 +63,7 @@ No authorization required
 
 ```java
 // Import classes:
-//import com.domain.projectname.api.GreetingControllerImplApi;
+//import org.openapitools.client.api.GreetingControllerImplApi;
 
 GreetingControllerImplApi apiInstance = new GreetingControllerImplApi();
 try {

@@ -1,6 +1,6 @@
 [package]
-name = "ProjectName.Client"
-version = "0.1.0"
+name = "openapi"
+version = "v0"
 authors = ["OpenAPI Generator team and contributors"]
 edition = "2018"
 

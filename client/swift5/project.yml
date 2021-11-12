@@ -1,13 +1,13 @@
-name: projectname-client
+name: OpenAPIClient
 targets:
-  projectname-client:
+  OpenAPIClient:
     type: framework
     platform: iOS
     deploymentTarget: "9.0"
-    sources: [projectname-client]
+    sources: [OpenAPIClient]
     info:
       path: ./Info.plist
-      version: 0.1.0
+      version: v0
     settings:
       APPLICATION_EXTENSION_API_ONLY: true
     scheme: {}

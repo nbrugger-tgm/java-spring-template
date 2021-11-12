@@ -1,4 +1,4 @@
-# ProjectName.Client.Model.VersionResponse
+# Org.OpenAPITools.Model.VersionResponse
 
 ## Properties
 

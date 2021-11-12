@@ -1,4 +1,4 @@
-# ProjectName.Client.Api.GreetingControllerImplApi
+# Org.OpenAPITools.Api.GreetingControllerImplApi
 
 All URIs are relative to *http://localhost:8080*
 
@@ -18,9 +18,9 @@ Method | HTTP request | Description
 ```csharp
 using System.Collections.Generic;
 using System.Diagnostics;
-using ProjectName.Client.Api;
-using ProjectName.Client.Client;
-using ProjectName.Client.Model;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
 
 namespace Example
 {
@@ -87,9 +87,9 @@ No authorization required
 ```csharp
 using System.Collections.Generic;
 using System.Diagnostics;
-using ProjectName.Client.Api;
-using ProjectName.Client.Client;
-using ProjectName.Client.Model;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
 
 namespace Example
 {

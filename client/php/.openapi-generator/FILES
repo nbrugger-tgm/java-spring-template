@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .php_cs
 .travis.yml
 README.md
@@ -10,16 +9,12 @@ docs/Model/ErrorResponse.md
 docs/Model/VersionResponse.md
 git_push.sh
 lib/ApiException.php
+lib/Api/ApiControllerApi.php
+lib/Api/GreetingControllerImplApi.php
 lib/Configuration.php
 lib/HeaderSelector.php
+lib/Model/ErrorResponse.php
+lib/Model/ModelInterface.php
+lib/Model/VersionResponse.php
 lib/ObjectSerializer.php
-lib/com/domain/projectname/api/ApiControllerApi.php
-lib/com/domain/projectname/api/GreetingControllerImplApi.php
-lib/com/domain/projectname/models/ErrorResponse.php
-lib/com/domain/projectname/models/ModelInterface.php
-lib/com/domain/projectname/models/VersionResponse.php
 phpunit.xml.dist
-test/Api/ApiControllerApiTest.php
-test/Api/GreetingControllerImplApiTest.php
-test/Model/ErrorResponseTest.php
-test/Model/VersionResponseTest.php

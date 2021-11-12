@@ -1,4 +1,4 @@
-# projectname-client
+# openapi-android-client
 
 ## Requirements
 
@@ -26,9 +26,9 @@ Add this dependency to your project's POM:
 
 ```xml
 <dependency>
-    <groupId>com.domain</groupId>
-    <artifactId>projectname-client</artifactId>
-    <version>0.1.0</version>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-android-client</artifactId>
+    <version>1.0.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -38,7 +38,7 @@ Add this dependency to your project's POM:
 Add this dependency to your project's build file:
 
 ```groovy
-compile "com.domain:projectname-client:0.1.0"
+compile "org.openapitools:openapi-android-client:1.0.0"
 ```
 
 ### Others
@@ -49,7 +49,7 @@ At first generate the JAR by executing:
 
 Then manually install the following JARs:
 
-- target/projectname-client-0.1.0.jar
+- target/openapi-android-client-1.0.0.jar
 - target/lib/*.jar
 
 ## Getting Started
@@ -58,7 +58,7 @@ Please follow the [installation](#installation) instruction and execute the foll
 
 ```java
 
-import com.domain.projectname.api.ApiControllerApi;
+import org.openapitools.client.api.ApiControllerApi;
 
 public class ApiControllerApiExample {
 
