@@ -131,7 +131,6 @@ jobs:
         with:
           filters: |
             api:
-              - 'api/**'
               - 'openapi.json'
       - name: download build
         uses: actions/download-artifact@v2
@@ -139,9 +138,7 @@ jobs:
           name: base-build
       - name: Build clients
         if: steps.filter.outputs.api == 'true'
-        run: |
-          chmod +x gradlew
-          ./gradlew autogenClients
+        run: ./gradlew autogenClients
       - name: Commit clients
         if: steps.filter.outputs.api == 'true'
         uses: EndBug/add-and-commit@v7
@@ -177,8 +174,9 @@ jobs:
       - id: cz_pr
         name: Bump prerelase-version
         if: steps.branch.outputs.release_stage != 'release'
-        uses: commitizen-tools/commitizen-action@0.9.0
+        uses: nbrugger-tgm/commitizen-action@master
         with:
+          push: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
           changelog_increment_filename: changelog_diff.md
@@ -186,18 +184,16 @@ jobs:
       - id: cz
         name: Bump release-version
         if: steps.branch.outputs.release_stage == 'release'
-        uses: commitizen-tools/commitizen-action@0.9.0
+        uses: nbrugger-tgm/commitizen-action@master
         with:
+          push: false
           dry_run: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
           changelog_increment_filename: changelog_diff.md
-      - name: Add release message
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: |
-            ### Release
-            This PR will be included in `${{ env.REVISION }}`. [**GH Release**](${{steps.release.outputs.html_url}})
+      - id: Push bump
+        run: |
+          git push
 
   merge:
     name: Merge PR
@@ -232,3 +228,10 @@ jobs:
           checks_enabled: false
           method: ${{ steps.eval.outputs.merge_type }}
           delete_source_branch: ${{ github.base_ref == 'dev' || github.base_ref == 'hotfix' }}
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - merge
+    steps:
+      - run: echo "ToDo"
+      
