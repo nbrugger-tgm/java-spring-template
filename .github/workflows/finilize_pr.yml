@@ -35,18 +35,53 @@ name: Finilize PR
 #  to the if condition of the lockdown job                                     #
 ################################################################################
 jobs:
-  lockdown:
-    name: Lock PR
+  semver:
+    name: Bump version
     runs-on: ubuntu-latest
     if: github.event.label.name == 'ready for merge'
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+      prerelease: ${{ steps.branch.outputs.release_stage }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: lock pull request
         uses: sudo-bot/action-pull-request-lock@v1.0.5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ github.event.pull_request.number }}
           lock-reason: resolved
+      - name: Scan release stage
+        id: branch
+        run: |
+          if [ "${{ github.base_ref }}" == 'main' || "${{ github.base_ref" }} == 'master' ]; then
+            echo "::set-output name=release_stage::"
+          elif [ "${{ github.base_ref }}" == 'staging' ]; then
+            echo "::set-output name=release_stage::rc"
+          elif [ "${{ github.base_ref }}" == 'dev' || "${{ github.base_ref }}" == 'hotfix' ]; then
+            echo "::set-output name=release_stage::beta"
+          fi
+      - id: cz
+        name: Bump prerelase-version
+        uses: nbrugger-tgm/commitizen-action@master
+        with:
+          push: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          changelog_increment_filename: changelog_diff.md
+          prerelease: ${{ steps.branch.outputs.release_stage }}
+      - name: Upload changelog
+        uses: actions/upload-artifact@v2
+        with:
+          path: changelog_diff.md
+          name: changelog_diff.md
+          mime-type: text/markdown
+      - id: Push bump
+        run: |
+          git push
+
   prebuild:
     name: Prebuild
     runs-on: ubuntu-latest
@@ -58,11 +93,11 @@ jobs:
       - name: prepare gradle
         run: chmod +x gradlew
       - name: build
-        run: ./gradlew clean jar
+        run: ./gradlew clean jar bootJar
       - name: store build
         uses: actions/upload-artifact@v2
         with:
-          name: base-build
+          name: binaries
           path: |
             build
             */build
@@ -71,7 +106,9 @@ jobs:
   openapi:
     runs-on: ubuntu-latest
     name: Autogen OpenAPI
-    needs: prebuild
+    needs:
+      - prebuild
+      - semver
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -88,7 +125,7 @@ jobs:
       - name: download build
         uses: actions/download-artifact@v2
         with:
-          name: base-build
+          name: binaries
       - name: Generate PR OAS
         if: steps.filter.outputs.api == 'true'
         run: |
@@ -125,6 +162,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: Check api changes
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
@@ -135,7 +174,7 @@ jobs:
       - name: download build
         uses: actions/download-artifact@v2
         with:
-          name: base-build
+          name: binaries
       - name: Build clients
         if: steps.filter.outputs.api == 'true'
         run: ./gradlew autogenClients
@@ -152,56 +191,16 @@ jobs:
           # Default: '--no-rebase'
           pull: '--rebase'
           push: true
-  semver:
-    name: Create release
-    runs-on: ubuntu-latest
-    needs: prebuild
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Scan release stage
-        id: branch
-        run: |
-          if [ "${{ github.base_ref }}" == 'main']; then
-            echo "::set-output name=release_stage::release"
-          elif [ "${{ github.base_ref }}" == 'staging' ]; then
-            echo "::set-output name=release_stage::rc"
-          elif [ "${{ github.base_ref }}" == 'dev' || "${{ github.base_ref }}" == 'hotfix' ]; then
-            echo "::set-output name=release_stage::beta"
-          fi
-      - id: cz_pr
-        name: Bump prerelase-version
-        if: steps.branch.outputs.release_stage != 'release'
-        uses: nbrugger-tgm/commitizen-action@master
-        with:
-          push: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-          changelog_increment_filename: changelog_diff.md
-          prerelease: ${{ steps.branch.outputs.release_stage }}
-      - id: cz
-        name: Bump release-version
-        if: steps.branch.outputs.release_stage == 'release'
-        uses: nbrugger-tgm/commitizen-action@master
-        with:
-          push: false
-          dry_run: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-          changelog_increment_filename: changelog_diff.md
-      - id: Push bump
-        run: |
-          git push
-
   merge:
     name: Merge PR
     runs-on: ubuntu-latest
     needs:
-      - openapi
       - client
+      - openapi
       - semver
+    outputs:
+      commit: ${{ steps.merge.outputs.commit }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -218,20 +217,39 @@ jobs:
             echo "::set-output name=merge_type::squash"
           fi
       - name: Merge
-        uses: squalrus/merge-bot@v0.4.5
+        id: merge
+        uses: nbrugger-tgm/merge-pr-action@master
         with:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          test: false
-          reviewers: false
-          labels: ''
-          blocking_labels: 'blocked, revoked'
-          checks_enabled: false
+          token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
-          delete_source_branch: ${{ github.base_ref == 'dev' || github.base_ref == 'hotfix' }}
   release:
     runs-on: ubuntu-latest
     needs:
       - merge
+      - semver
     steps:
-      - run: echo "ToDo"
-      
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+      - name: Create tag
+        run: git tag v${{ needs.semver.outputs.version }}
+      - name: Push tag
+        run: git push origin v${{ needs.semver.outputs.version }}
+      - name: Download diff
+        uses: actions/download-artifact@v2
+        with:
+          name: changelog_diff.md
+      - name: Download binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+      - name: Create release
+        uses: ncipollo/release-action@v1.8.10
+        with:
+          artifacts: "app/build/lib/app-${{ needs.semver.outputs.version }}.jar"
+          bodyFile: changelog_diff.md
+          artifactContentType: application/java-archive
+          draft: false
+          prerelease: ${{ needs.semver.outputs.prerelease != ''}}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ needs.semver.outputs.version }}
