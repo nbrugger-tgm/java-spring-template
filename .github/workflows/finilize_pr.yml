@@ -56,7 +56,7 @@ jobs:
       - name: Scan release stage
         id: branch
         run: |
-          if [ "${{ github.base_ref }}" == 'main' || "${{ github.base_ref" }} == 'master' ]; then
+          if [ "${{ github.base_ref }}" == 'main' || "${{ github.base_ref }}" == 'master' ]; then
             echo "::set-output name=release_stage::"
           elif [ "${{ github.base_ref }}" == 'staging' ]; then
             echo "::set-output name=release_stage::rc"
