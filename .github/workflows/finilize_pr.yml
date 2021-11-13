@@ -78,7 +78,7 @@ jobs:
           path: changelog_diff.md
           name: changelog_diff.md
           mime-type: text/markdown
-      - id: Push bump
+      - name: Push bump
         run: |
           git push
 
