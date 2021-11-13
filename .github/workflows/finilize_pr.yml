@@ -46,6 +46,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           ref: ${{ github.head_ref }}
       - name: lock pull request
         uses: sudo-bot/action-pull-request-lock@v1.0.5
