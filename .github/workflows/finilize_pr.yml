@@ -242,9 +242,9 @@ jobs:
         with:
           ref: ${{ needs.merge.outputs.commit }}
       - name: Create tag
-        run: git tag v${{ needs.semver.outputs.version }}
+        run: git tag ${{ needs.semver.outputs.version }}
       - name: Push tag
-        run: git push origin v${{ needs.semver.outputs.version }}
+        run: git push origin ${{ needs.semver.outputs.version }}
       - name: Download diff
         uses: actions/download-artifact@v2
         with:
