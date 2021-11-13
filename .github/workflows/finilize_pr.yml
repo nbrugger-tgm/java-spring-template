@@ -169,8 +169,8 @@ jobs:
         id: sha
         run: |
           git fetch
-          echo "::setOutput name=base::$(git rev-parse ${{ github.base_ref }})
-          echo "::setOutput name=head::$(git rev-parse ${{ github.head_ref }})
+          echo "::setOutput name=base::$(git rev-parse ${{ github.base_ref }})"
+          echo "::setOutput name=head::$(git rev-parse ${{ github.head_ref }})"
 
       - name: Check api changes
         uses: tony84727/changed-file-filter@v0.2.0
@@ -228,7 +228,7 @@ jobs:
           fi
       - name: Merge
         id: merge
-        uses: nbrugger-tgm/merge-pr-action@v0.1.0
+        uses: nbrugger-tgm/merge-pr-action@v0.2.0
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
