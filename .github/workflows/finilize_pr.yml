@@ -169,8 +169,8 @@ jobs:
         id: sha
         run: |
           git fetch origin
-          echo "::setOutput name=base::$(git rev-parse origin/${{ github.base_ref }})"
-          echo "::setOutput name=head::$(git rev-parse ${{ github.head_ref }})"
+          echo "::set-output name=base::$(git rev-parse origin/${{ github.base_ref }})"
+          echo "::set-output name=head::$(git rev-parse ${{ github.head_ref }})"
 
       - name: Check api changes
         uses: tony84727/changed-file-filter@v0.2.0
