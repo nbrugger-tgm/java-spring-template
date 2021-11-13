@@ -199,8 +199,7 @@ jobs:
           pathspec_error_handling: ignore
           branch: ${{ github.head_ref }}
           # Arguments for the git pull command. Use NO-PULL to avoid the action pulling at all.
-          # Default: '--no-rebase'
-          pull: '--rebase'
+          # Default   pull: '--no-rebase'
           push: true
   merge:
     name: Merge PR
