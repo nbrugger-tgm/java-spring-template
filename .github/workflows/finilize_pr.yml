@@ -56,11 +56,11 @@ jobs:
       - name: Scan release stage
         id: branch
         run: |
-          if [ "${{ github.base_ref }}" == 'main' || "${{ github.base_ref }}" == 'master' ]; then
+          if [ "${{ github.base_ref }}" == 'main' ] || [ "${{ github.base_ref }}" == 'master' ]; then
             echo "::set-output name=release_stage::"
           elif [ "${{ github.base_ref }}" == 'staging' ]; then
             echo "::set-output name=release_stage::rc"
-          elif [ "${{ github.base_ref }}" == 'dev' || "${{ github.base_ref }}" == 'hotfix' ]; then
+          elif [ "${{ github.base_ref }}" == "dev" ] || [ "${{ github.base_ref }}" == 'hotfix' ]; then
             echo "::set-output name=release_stage::beta"
           fi
       - id: cz
@@ -122,7 +122,7 @@ jobs:
         with:
           filters: |
             api:
-              - api/**
+              - api/**/*
       - name: download build
         uses: actions/download-artifact@v2
         with:
@@ -223,7 +223,7 @@ jobs:
             echo "::set-output name=merge_type::merge"
           elif [ ${{ github.base_ref }} == 'staging' ]; then
             echo "::set-output name=merge_type::merge"
-          elif [ ${{ github.base_ref }} == 'dev' || ${{ github.base_ref }} == 'hotfix' ]; then
+          elif [ ${{ github.base_ref }} == 'dev' ] || [ ${{ github.base_ref }} == 'hotfix' ]; then
             echo "::set-output name=merge_type::squash"
           fi
       - name: Merge
@@ -256,7 +256,7 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1.8.10
         with:
-          artifacts: "app/build/lib/app-${{ needs.semver.outputs.version }}.jar"
+          artifacts: "app/build/libs/app-${{ needs.semver.outputs.version }}.jar"
           bodyFile: changelog_diff.md
           artifactContentType: application/java-archive
           draft: false
