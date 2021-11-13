@@ -19,17 +19,6 @@ env:
 
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          echo ${{(github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
-                        !github.event.pull_request.draft &&
-                        github.event.label.name == 'ready for build' &&
-                        !(github.event.pull_request.head.repo.full_name != github.repository &&
-                          github.actor != 'dependabot[bot]' &&
-                          github.base_ref != 'dev' && github.base_ref != 'hotfix') }}
   review:
     runs-on: ubuntu-latest
     name: Review
@@ -129,7 +118,7 @@ jobs:
         with:
           number: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needed : ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
+          needed: ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
           key: sensitive_fork_review
           body: |
             ## **Forked**

@@ -113,7 +113,6 @@ jobs:
           filters: |
             api:
               - 'api/**'
-              - 'openapi.json'
       - name: download build
         uses: actions/download-artifact@v2
         with:

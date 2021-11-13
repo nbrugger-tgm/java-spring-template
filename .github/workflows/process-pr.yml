@@ -107,12 +107,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: check PR name
         id: name_check
+        if: github.event.action == 'edited' || github.event.action == 'opened'
         with:
           text: ${{ github.event.pull_request.title }}
           regex: '^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
         uses: actions-ecosystem/action-regex-match@v2.0.2
       - name: Update invalid name message
-        if: always()
+        if: github.event.action == 'edited' || github.event.action == 'opened'
         uses: ./.github/actions/pr-message
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -132,11 +133,12 @@ jobs:
             > Change the title to match the conventional-commits standard.
             > Your PR will be re-validated when you change the title.
       - name: Fail on invalid title
-        if: steps.name_check.outputs.match == ''
+        if: steps.name_check.outputs.match == '' && (github.event.action == 'edited' || github.event.action == 'opened')
         run: exit 1
       - name: check changed files
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         with:
           filters: |
             sensitive:
@@ -150,12 +152,14 @@ jobs:
               - 'gradlew.bat'
 
       - name: set security label
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: ./.github/actions/set-label
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.filter.outputs.sensitive == 'true' }}
           label: sensitive
       - name: update security message
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: ./.github/actions/pr-message
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -169,9 +173,10 @@ jobs:
             ${{ steps.filter.outputs.sensitive_files }}
             ```
       - name: revoke senitive fork
-        if: env.is_fork == 'true' && env.revoke_sensitive_fork
+        if: env.is_fork == 'true' && env.revoke_sensitive_fork && (github.event.action == 'syncronized' || github.event.action == 'opened')
         run: exit 1
       - name: label by changed files
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
