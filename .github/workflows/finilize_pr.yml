@@ -122,7 +122,7 @@ jobs:
         with:
           filters: |
             api:
-              - 'api/**'
+              - api/**
       - name: download build
         uses: actions/download-artifact@v2
         with:
