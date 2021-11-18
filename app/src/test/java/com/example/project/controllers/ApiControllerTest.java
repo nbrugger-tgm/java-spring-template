@@ -13,17 +13,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @WebMvcTest(ApiController.class)
 class ApiControllerTest {
 	//This is the official SemVer regex
-	private final static String       VER_REGEX = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
+	private final static String VER_REGEX    = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
+	private final static String PEP440_REGEX = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(\\w+(\\d)*)?$";
+
 	@Autowired
-	private              MockMvc      mvc;
+	private MockMvc      mvc;
 	@Autowired
-	private              ObjectMapper mapper;
+	private ObjectMapper mapper;
 
 	@Test
 	void version() throws Exception {
 		String response = mvc.perform(get("/api/version"))
 		                     .andReturn().getResponse().getContentAsString();
 		VersionResponse version = mapper.readValue(response, VersionResponse.class);
-		assertTrue(version.getVersion().matches(VER_REGEX));
+		assertTrue(version.getVersion().matches(PEP440_REGEX));
 	}
 }
