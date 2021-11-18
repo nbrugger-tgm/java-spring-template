@@ -113,7 +113,10 @@ jobs:
           filters: |
             api:
               - 'api/**'
-              - 'openapi.json'
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
       - name: Build PR OAS
         if: steps.filter.outputs.api == 'true'
         run: |
@@ -127,22 +130,9 @@ jobs:
           path: 'base'
       - name: Build OAS diff
         if: steps.filter.outputs.api == 'true'
-        uses: LimeFlight/openapi-diff-action@v3.0.9
+        uses: nbrugger-tgm/open-api-diff-notes-action@master
         with:
-          head_spec: openapi.json
-          base_spec: base/openapi.json
+          headFile: openapi.json
+          baseFile: base/openapi.json
           output_path: ~/openapi_diff.json
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit OAS
-        uses: swinton/commit@v2.0.0
-        if: |
-          !(github.event.pull_request.head.repo.full_name != github.repository &&
-          github.actor != 'dependabot[bot]') &&
-          steps.filter.outputs.api == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: |
-            openapi.json
-          commit-message: 'docs(oas): auto update OpenAPI spec'
-          ref: ${{ github.head_ref }}

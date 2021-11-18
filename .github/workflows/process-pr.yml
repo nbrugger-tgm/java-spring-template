@@ -16,18 +16,21 @@ on:
 env:
   revoke_sensitive_fork: true
 
-
-
+  is_staging_branch: ${{ github.base_ref == 'staging' }}
+  is_release_branch: ${{ github.base_ref == 'main' || github.base_ref == 'master' }}
+  is_feature_branch: ${{ github.base_ref == 'dev'  || github.base_ref == 'hotfix' }}
+  is_hotfix_branch: ${{ github.base_ref == 'hotfix' }}
   is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
 
 jobs:
   branching-check:
     name: Check Branching
+    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'edited'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: revoke bad fork
-        if: env.is_fork && github.base_ref != 'dev' && github.base_ref != 'hotfix'
+        if: env.is_fork == 'true' && env.is_feature_branch == 'false'
         run: |
           exit 1
       - name: update forking message
@@ -39,33 +42,33 @@ jobs:
           number: ${{ github.event.pull_request.number }}
           key: fork_forbidden
           body: |
-            **❌**
+            # ❌
 
-            Forks are only allowed to merge into \`dev\` or \`hotfix\`
+            Forks are only allowed to merge into `dev` or `hotfix`
 
             > Please change your target branch!
       - name: Check master branch
         id: master_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='master' || github.base_ref=='main' }}
+        if: env.is_release_branch == 'true'
         with:
           allowedBranches: hotfix|documentation|staging
       - name: Check staging branch
         id: staging_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='staging' }}
+        if: env.is_staging_branch == 'true'
         with:
           allowedBranches: hotfix|dev
       - name: Check dev branch
         id: dev_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='dev' }}
+        if: env.is_feature_branch == 'true' && env.is_fork == 'false'
         with:
           allowedBranches: feat\/.+|hotfix|bugfix\/.+ #this is a regex
       - name: check hotfix branch
         id: hotfix_check
         uses: ./.github/actions/branch-check
-        if: ${{ github.base_ref=='hotfix' }}
+        if: env.is_hotfix_branch == 'true' && env.is_fork == 'false'
         with:
           allowedBranches: bugfix\/.+
       - name: Add master branch message
@@ -96,26 +99,27 @@ jobs:
         uses: ./.github/actions/set-label
         if: always()
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'failure' }}
           label: invalid
   formal_check:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
-    needs:
-      - branching-check
     steps:
       - uses: actions/checkout@v2
       - name: check PR name
         id: name_check
+        if: (github.event.action == 'edited' || github.event.action == 'opened') && env.is_feature_branch == 'true'
         with:
           text: ${{ github.event.pull_request.title }}
           regex: '^((build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|bump)(\(\w+\))?!?:\s.+)$'
         uses: actions-ecosystem/action-regex-match@v2.0.2
       - name: Update invalid name message
-        if: always()
+        if: github.event.action == 'edited' || github.event.action == 'opened'
         uses: ./.github/actions/pr-message
         with:
-          needed: ${{ steps.regex-match.outputs.match == '' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          needed: ${{ steps.name_check.outputs.match == '' && env.is_feature_branch == 'true' }}
           number: ${{ github.event.pull_request.number }}
           key: invalid_name
           body: |
@@ -131,11 +135,12 @@ jobs:
             > Change the title to match the conventional-commits standard.
             > Your PR will be re-validated when you change the title.
       - name: Fail on invalid title
-        if: steps.regex-match.outputs.match == ''
+        if: steps.name_check.outputs.match == '' && (github.event.action == 'edited' || github.event.action == 'opened') && env.is_feature_branch == 'true'
         run: exit 1
       - name: check changed files
         uses: tony84727/changed-file-filter@v0.2.0
         id: filter
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         with:
           filters: |
             sensitive:
@@ -149,13 +154,17 @@ jobs:
               - 'gradlew.bat'
 
       - name: set security label
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: ./.github/actions/set-label
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.filter.outputs.sensitive == 'true' }}
           label: sensitive
       - name: update security message
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: ./.github/actions/pr-message
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ steps.filter.outputs.sensitive }}
           key: "security_alert"
           number: ${{ github.event.pull_request.number }}
@@ -166,9 +175,10 @@ jobs:
             ${{ steps.filter.outputs.sensitive_files }}
             ```
       - name: revoke senitive fork
-        if: env.is_fork == 'true' && env.revoke_sensitive_fork
+        if: env.is_fork == 'true' && env.revoke_sensitive_fork == 'true' && (github.event.action == 'syncronized' || github.event.action == 'opened')
         run: exit 1
       - name: label by changed files
+        if: github.event.action == 'syncronized' || github.event.action == 'opened'
         uses: actions/labeler@v3
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
@@ -180,5 +190,6 @@ jobs:
         if: always()
         uses: ./.github/actions/set-label
         with:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           needed: ${{ job.status == 'success' }}
           label: 'ready for build'

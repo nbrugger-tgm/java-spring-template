@@ -26,7 +26,6 @@ runs:
       with:
         token: ${{ inputs.GITHUB_TOKEN }}
         type: "find"
-        author: "github-actions"
         search_term: ${{ inputs.key }}
         number: ${{ inputs.number }}
     - name: remove old message
@@ -46,6 +45,7 @@ runs:
         number: ${{ inputs.number }}
         body: |
           <span key="${{ inputs.key }}">
+
           ${{ inputs.body }}
     - name: update security message
       if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id != ''
@@ -56,6 +56,7 @@ runs:
         type: "update"
         body: |
           <span key="${{ inputs.key }}">
+
           ${{ inputs.body }}
         comment_id: ${{ steps.find_comment.outputs.comment_id }}
 

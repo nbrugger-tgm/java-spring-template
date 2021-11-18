@@ -1,8 +1,8 @@
-# ProjectName Client.api.ApiControllerApi
+# openapi.api.ApiControllerApi
 
 ## Load the API package
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 ```
 
 All URIs are relative to *http://localhost:8080*
@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 
 final api_instance = ApiControllerApi();
 

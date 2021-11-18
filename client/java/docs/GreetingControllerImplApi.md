@@ -5,6 +5,7 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**greetHuman**](GreetingControllerImplApi.md#greetHuman) | **GET** /greet/{name} | 
+[**greetHumanPut**](GreetingControllerImplApi.md#greetHumanPut) | **PUT** /greet/{name} | 
 [**greetWorld**](GreetingControllerImplApi.md#greetWorld) | **GET** /greet | 
 
 
@@ -17,11 +18,11 @@ Method | HTTP request | Description
 ### Example
 ```java
 // Import classes:
-import com.domain.projectname.client.ApiClient;
-import com.domain.projectname.client.ApiException;
-import com.domain.projectname.client.Configuration;
-import com.domain.projectname.client.models.*;
-import com.domain.projectname.api.GreetingControllerImplApi;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.models.*;
+import org.openapitools.client.api.GreetingControllerImplApi;
 
 public class Example {
   public static void main(String[] args) {
@@ -69,6 +70,67 @@ No authorization required
 **500** | Internal Server Error |  -  |
 **200** | OK |  -  |
 
+<a name="greetHumanPut"></a>
+# **greetHumanPut**
+> String greetHumanPut(name)
+
+
+
+### Example
+```java
+// Import classes:
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.models.*;
+import org.openapitools.client.api.GreetingControllerImplApi;
+
+public class Example {
+  public static void main(String[] args) {
+    ApiClient defaultClient = Configuration.getDefaultApiClient();
+    defaultClient.setBasePath("http://localhost:8080");
+
+    GreetingControllerImplApi apiInstance = new GreetingControllerImplApi(defaultClient);
+    String name = "name_example"; // String | 
+    try {
+      String result = apiInstance.greetHumanPut(name);
+      System.out.println(result);
+    } catch (ApiException e) {
+      System.err.println("Exception when calling GreetingControllerImplApi#greetHumanPut");
+      System.err.println("Status code: " + e.getCode());
+      System.err.println("Reason: " + e.getResponseBody());
+      System.err.println("Response headers: " + e.getResponseHeaders());
+      e.printStackTrace();
+    }
+  }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **name** | **String**|  |
+
+### Return type
+
+**String**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**500** | Internal Server Error |  -  |
+**200** | OK |  -  |
+
 <a name="greetWorld"></a>
 # **greetWorld**
 > String greetWorld()
@@ -78,11 +140,11 @@ No authorization required
 ### Example
 ```java
 // Import classes:
-import com.domain.projectname.client.ApiClient;
-import com.domain.projectname.client.ApiException;
-import com.domain.projectname.client.Configuration;
-import com.domain.projectname.client.models.*;
-import com.domain.projectname.api.GreetingControllerImplApi;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.models.*;
+import org.openapitools.client.api.GreetingControllerImplApi;
 
 public class Example {
   public static void main(String[] args) {

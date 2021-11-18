@@ -13,6 +13,10 @@ GreetingControllerImplAPI_greetHuman(apiClient_t *apiClient, char * name );
 
 
 char*
+GreetingControllerImplAPI_greetHumanPut(apiClient_t *apiClient, char * name );
+
+
+char*
 GreetingControllerImplAPI_greetWorld(apiClient_t *apiClient);
 
 

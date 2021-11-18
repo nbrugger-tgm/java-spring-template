@@ -18,7 +18,7 @@ Method | HTTP request | Description
 
 ```java
 // Import classes:
-//import com.domain.projectname.api.ApiControllerApi;
+//import org.openapitools.client.api.ApiControllerApi;
 
 ApiControllerApi apiInstance = new ApiControllerApi();
 try {

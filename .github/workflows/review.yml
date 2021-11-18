@@ -19,17 +19,6 @@ env:
 
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          echo ${{(github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
-                        !github.event.pull_request.draft &&
-                        github.event.label.name == 'ready for build' &&
-                        !(github.event.pull_request.head.repo.full_name != github.repository &&
-                          github.actor != 'dependabot[bot]' &&
-                          github.base_ref != 'dev' && github.base_ref != 'hotfix') }}
   review:
     runs-on: ubuntu-latest
     name: Review
@@ -46,6 +35,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Wait for 'Compile'
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          check-name: 'compile'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
       - name: Wait for 'Quality check'
         uses: lewagon/wait-on-check-action@v1.0.0
         with:
@@ -69,6 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           needed: ${{ job.status == 'success' }}
           key: qa_passed
+          number: ${{ github.event.pull_request.number }}
           body: |
             ## Build, Testing passed!
 
@@ -118,8 +116,9 @@ jobs:
         if: always()
         uses: ./.github/actions/pr-message
         with:
+          number: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needed : ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
+          needed: ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
           key: sensitive_fork_review
           body: |
             ## **Forked**
@@ -136,4 +135,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           label: "in review"
-          needed: ${{ github.actor != 'dependabot[bot]' && job.status = 'success' }}
+          needed: ${{ github.actor != 'dependabot[bot]' && job.status == 'success' }}

@@ -5,7 +5,7 @@ bugfix:
   head: "bugfix/*"
 
 release:
-  base: "master"
+  base: [ "master","main" ]
 
 release-candidate:
   base: "staging"
