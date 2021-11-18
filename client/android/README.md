@@ -84,6 +84,7 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ApiControllerApi* | [**version**](docs/ApiControllerApi.md#version) | **GET** /api/version | 
 *GreetingControllerImplApi* | [**greetHuman**](docs/GreetingControllerImplApi.md#greetHuman) | **GET** /greet/{name} | 
+*GreetingControllerImplApi* | [**greetHumanPut**](docs/GreetingControllerImplApi.md#greetHumanPut) | **PUT** /greet/{name} | 
 *GreetingControllerImplApi* | [**greetWorld**](docs/GreetingControllerImplApi.md#greetWorld) | **GET** /greet | 
 
 

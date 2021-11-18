@@ -38,7 +38,3 @@ src/main/java/org/openapitools/client/auth/HttpBasicAuth.java
 src/main/java/org/openapitools/client/auth/HttpBearerAuth.java
 src/main/java/org/openapitools/client/model/ErrorResponse.java
 src/main/java/org/openapitools/client/model/VersionResponse.java
-src/test/java/org/openapitools/client/api/ApiControllerApiTest.java
-src/test/java/org/openapitools/client/api/GreetingControllerImplApiTest.java
-src/test/java/org/openapitools/client/model/ErrorResponseTest.java
-src/test/java/org/openapitools/client/model/VersionResponseTest.java

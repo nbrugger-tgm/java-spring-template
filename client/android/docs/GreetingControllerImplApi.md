@@ -5,6 +5,7 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**greetHuman**](GreetingControllerImplApi.md#greetHuman) | **GET** /greet/{name} | 
+[**greetHumanPut**](GreetingControllerImplApi.md#greetHumanPut) | **PUT** /greet/{name} | 
 [**greetWorld**](GreetingControllerImplApi.md#greetWorld) | **GET** /greet | 
 
 
@@ -51,6 +52,50 @@ No authorization required
 
 - **Content-Type**: Not defined
 - **Accept**: */*, text/plain
+
+
+## greetHumanPut
+
+> String greetHumanPut(name)
+
+
+
+### Example
+
+```java
+// Import classes:
+//import org.openapitools.client.api.GreetingControllerImplApi;
+
+GreetingControllerImplApi apiInstance = new GreetingControllerImplApi();
+String name = null; // String | 
+try {
+    String result = apiInstance.greetHumanPut(name);
+    System.out.println(result);
+} catch (ApiException e) {
+    System.err.println("Exception when calling GreetingControllerImplApi#greetHumanPut");
+    e.printStackTrace();
+}
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **name** | **String**|  | [default to null]
+
+### Return type
+
+**String**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: */*
 
 
 ## greetWorld

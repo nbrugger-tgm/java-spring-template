@@ -57,15 +57,16 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ApiControllerApi* | [**version**](doc\/ApiControllerApi.md#version) | **GET** /api/version | 
-*GreetingControllerImplApi* | [**greetHuman**](doc\/GreetingControllerImplApi.md#greethuman) | **GET** /greet/{name} | 
-*GreetingControllerImplApi* | [**greetWorld**](doc\/GreetingControllerImplApi.md#greetworld) | **GET** /greet | 
+*ApiControllerApi* | [**version**](doc//ApiControllerApi.md#version) | **GET** /api/version | 
+*GreetingControllerImplApi* | [**greetHuman**](doc//GreetingControllerImplApi.md#greethuman) | **GET** /greet/{name} | 
+*GreetingControllerImplApi* | [**greetHumanPut**](doc//GreetingControllerImplApi.md#greethumanput) | **PUT** /greet/{name} | 
+*GreetingControllerImplApi* | [**greetWorld**](doc//GreetingControllerImplApi.md#greetworld) | **GET** /greet | 
 
 
 ## Documentation For Models
 
- - [ErrorResponse](doc\/ErrorResponse.md)
- - [VersionResponse](doc\/VersionResponse.md)
+ - [ErrorResponse](doc//ErrorResponse.md)
+ - [VersionResponse](doc//VersionResponse.md)
 
 
 ## Documentation For Authorization

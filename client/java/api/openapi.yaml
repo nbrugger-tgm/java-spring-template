@@ -6,9 +6,17 @@ servers:
 - description: Generated server url
   url: http://localhost:8080
 paths:
-  /greet:
+  /greet/{name}:
     get:
-      operationId: greetWorld
+      operationId: greetHuman
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "500":
           content:
@@ -25,9 +33,8 @@ paths:
       tags:
       - greeting-controller-impl
       x-accepts: "*/*,text/plain"
-  /greet/{name}:
-    get:
-      operationId: greetHuman
+    put:
+      operationId: greetHumanPut
       parameters:
       - explode: false
         in: path
@@ -36,6 +43,25 @@ paths:
         schema:
           type: string
         style: simple
+      responses:
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Internal Server Error
+        "200":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: OK
+      tags:
+      - greeting-controller-impl
+      x-accepts: '*/*'
+  /greet:
+    get:
+      operationId: greetWorld
       responses:
         "500":
           content:
