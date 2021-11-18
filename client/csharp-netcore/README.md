@@ -101,6 +101,7 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ApiControllerApi* | [**Version**](docs/ApiControllerApi.md#version) | **GET** /api/version | 
 *GreetingControllerImplApi* | [**GreetHuman**](docs/GreetingControllerImplApi.md#greethuman) | **GET** /greet/{name} | 
+*GreetingControllerImplApi* | [**GreetHumanPut**](docs/GreetingControllerImplApi.md#greethumanput) | **PUT** /greet/{name} | 
 *GreetingControllerImplApi* | [**GreetWorld**](docs/GreetingControllerImplApi.md#greetworld) | **GET** /greet | 
 
 

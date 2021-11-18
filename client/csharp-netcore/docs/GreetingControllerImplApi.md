@@ -5,6 +5,7 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**GreetHuman**](GreetingControllerImplApi.md#greethuman) | **GET** /greet/{name} | 
+[**GreetHumanPut**](GreetingControllerImplApi.md#greethumanput) | **PUT** /greet/{name} | 
 [**GreetWorld**](GreetingControllerImplApi.md#greetworld) | **GET** /greet | 
 
 
@@ -67,6 +68,75 @@ No authorization required
 
  - **Content-Type**: Not defined
  - **Accept**: */*, text/plain
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **500** | Internal Server Error |  -  |
+| **200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+<a name="greethumanput"></a>
+# **GreetHumanPut**
+> string GreetHumanPut (string name)
+
+
+
+### Example
+```csharp
+using System.Collections.Generic;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class GreetHumanPutExample
+    {
+        public static void Main()
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "http://localhost:8080";
+            var apiInstance = new GreetingControllerImplApi(config);
+            var name = name_example;  // string | 
+
+            try
+            {
+                string result = apiInstance.GreetHumanPut(name);
+                Debug.WriteLine(result);
+            }
+            catch (ApiException  e)
+            {
+                Debug.Print("Exception when calling GreetingControllerImplApi.GreetHumanPut: " + e.Message );
+                Debug.Print("Status Code: "+ e.ErrorCode);
+                Debug.Print(e.StackTrace);
+            }
+        }
+    }
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **name** | **string**|  | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
 
 
 ### HTTP response details

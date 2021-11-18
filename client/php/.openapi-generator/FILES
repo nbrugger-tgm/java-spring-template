@@ -8,9 +8,9 @@ docs/Api/GreetingControllerImplApi.md
 docs/Model/ErrorResponse.md
 docs/Model/VersionResponse.md
 git_push.sh
-lib/ApiException.php
 lib/Api/ApiControllerApi.php
 lib/Api/GreetingControllerImplApi.php
+lib/ApiException.php
 lib/Configuration.php
 lib/HeaderSelector.php
 lib/Model/ErrorResponse.php

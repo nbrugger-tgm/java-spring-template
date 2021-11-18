@@ -27,6 +27,7 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ApiControllerAPI* | [**version**](docs/ApiControllerAPI.md#version) | **GET** /api/version | 
 *GreetingControllerImplAPI* | [**greetHuman**](docs/GreetingControllerImplAPI.md#greethuman) | **GET** /greet/{name} | 
+*GreetingControllerImplAPI* | [**greetHumanPut**](docs/GreetingControllerImplAPI.md#greethumanput) | **PUT** /greet/{name} | 
 *GreetingControllerImplAPI* | [**greetWorld**](docs/GreetingControllerImplAPI.md#greetworld) | **GET** /greet | 
 
 
