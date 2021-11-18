@@ -11,12 +11,22 @@
     }
   ],
   "paths": {
-    "/greet": {
+    "/greet/{name}": {
       "get": {
         "tags": [
           "greeting-controller-impl"
         ],
-        "operationId": "greetWorld",
+        "operationId": "greetHuman",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "500": {
             "description": "Internal Server Error",
@@ -39,14 +49,12 @@
             }
           }
         }
-      }
-    },
-    "/greet/{name}": {
-      "get": {
+      },
+      "put": {
         "tags": [
           "greeting-controller-impl"
         ],
-        "operationId": "greetHuman",
+        "operationId": "greetHumanPut",
         "parameters": [
           {
             "name": "name",
@@ -57,6 +65,36 @@
             }
           }
         ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/greet": {
+      "get": {
+        "tags": [
+          "greeting-controller-impl"
+        ],
+        "operationId": "greetWorld",
         "responses": {
           "500": {
             "description": "Internal Server Error",
