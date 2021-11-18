@@ -64,9 +64,9 @@ jobs:
           elif [ "${{ github.base_ref }}" == "dev" ] || [ "${{ github.base_ref }}" == 'hotfix' ]; then
             echo "::set-output name=release_stage::beta"
           fi
-      - id: cz
-        name: Bump prerelase-version
-        uses: nbrugger-tgm/commitizen-action@master
+      - name: Bump version
+        id: cz
+        uses: commitizen-tools/commitizen-action@0.10.0
         with:
           push: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
