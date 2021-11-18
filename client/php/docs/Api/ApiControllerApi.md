@@ -1,4 +1,4 @@
-# com.domain.projectname.client\ApiControllerApi
+# OpenAPI\Client\ApiControllerApi
 
 All URIs are relative to http://localhost:8080.
 
@@ -10,7 +10,7 @@ Method | HTTP request | Description
 ## `version()`
 
 ```php
-version(): \com.domain.projectname.client\com.domain.projectname.models\VersionResponse
+version(): \OpenAPI\Client\Model\VersionResponse
 ```
 
 
@@ -23,7 +23,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 
-$apiInstance = new com.domain.projectname.client\Api\ApiControllerApi(
+$apiInstance = new OpenAPI\Client\Api\ApiControllerApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -43,7 +43,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**\com.domain.projectname.client\com.domain.projectname.models\VersionResponse**](../Model/VersionResponse.md)
+[**\OpenAPI\Client\Model\VersionResponse**](../Model/VersionResponse.md)
 
 ### Authorization
 

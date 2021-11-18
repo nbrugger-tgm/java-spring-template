@@ -11,8 +11,4 @@ Name | Type | Description | Notes
 **stable** | **Boolean** |  |  [optional]
 
 
-## Implemented Interfaces
-
-* Serializable
-
 

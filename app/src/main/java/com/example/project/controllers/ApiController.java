@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiController implements ApiInfoController {
 	@Override
 	public VersionResponse version() {
-		return new VersionResponse(ProjectName.VERSION);
+		return new VersionResponse(ProjectName.VERSION, !ProjectName.VERSION.contains("-"));
 	}
 }

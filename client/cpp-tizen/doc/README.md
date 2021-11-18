@@ -51,6 +51,8 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 *greetHumanSync* | *GET* /greet/{name} | .
 *greetHumanASync* | *GET* /greet/{name} | .
+*greetHumanPutSync* | *PUT* /greet/{name} | .
+*greetHumanPutASync* | *PUT* /greet/{name} | .
 *greetWorldSync* | *GET* /greet | .
 *greetWorldASync* | *GET* /greet | .
 

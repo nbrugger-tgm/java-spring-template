@@ -1,0 +1,40 @@
+on:
+  pull_request_review:
+    types: [ submitted, edited ]
+jobs:
+  check_reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Get the reviews count by state kind.
+      - name: Read reviews
+        uses: github-actions-tools/gh-reviews-count@v0.0.1
+        id: reviewsCount
+      - name: Check review status
+        run: |
+          echo "Approved: $APPROVED"
+          echo "Changes requested: $CHANGES_REQUESTED"
+          echo "Dismissed: $DISMISSED"
+          if [ "$DISMISSED" -gt 0 ]; then
+            echo "Dismissed reviews found."
+            exit 1
+          fi
+          if [ "$CHANGES_REQUESTED" -gt 0 ]; then
+            echo "There are open change requests"
+            exit 1
+          fi
+        if: steps.reviewsCount.outputs.approved > 0
+        env:
+          APPROVED: ${{ steps.reviewsCount.outputs.approved }}
+          DISMISSED: ${{ steps.reviewsCount.outputs.dismissed }}
+          PENDING: ${{ steps.reviewsCount.outputs.pending }}
+          CHANGES_REQUESTED: ${{ steps.reviewsCount.outputs.changes_requested }}
+      - name: approve merge
+        if: |
+          steps.reviewsCount.outputs.approved > 0 &&
+          steps.reviewsCount.outputs.pending == 0 &&
+          steps.reviewsCount.outputs.changes_requested == 0 &&
+          steps.reviewsCount.outputs.dismissed == 0
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: 'ready for merge'

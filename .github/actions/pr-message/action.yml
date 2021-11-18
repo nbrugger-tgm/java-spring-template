@@ -1,0 +1,62 @@
+description: "Generates a message at a Pull Request or issue and also insures that the message is up to date and not duplicated."
+name: update message
+inputs:
+  needed:  # id of input
+    description: 'Is the message still needed'
+    required: true
+    default: "true"
+  key:
+    description: 'The key to use to find the message'
+    required: true
+  body:
+    description: 'The body of the message'
+    required: true
+  number:
+    description: 'The number of the pull request or issue'
+    required: true
+  GITHUB_TOKEN:
+    description: "The GitHub token to use"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Find old message
+      uses: sandeshjangam/comment-actions@v1
+      id: find_comment
+      with:
+        token: ${{ inputs.GITHUB_TOKEN }}
+        type: "find"
+        search_term: ${{ inputs.key }}
+        number: ${{ inputs.number }}
+    - name: remove old message
+      uses: sandeshjangam/comment-actions@v1
+      if: ${{ steps.find_comment.outputs.comment_id != '' && inputs.needed == 'false' }}
+      with:
+        token: ${{ inputs.GITHUB_TOKEN }}
+        type: "delete"
+        comment_id: ${{ steps.find_comment.outputs.comment_id }}
+        number: ${{ inputs.number }}
+    - name: add message
+      if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id == ''
+      uses: sandeshjangam/comment-actions@v1
+      with:
+        token: ${{ inputs.GITHUB_TOKEN }}
+        type: "create"
+        number: ${{ inputs.number }}
+        body: |
+          <span key="${{ inputs.key }}">
+
+          ${{ inputs.body }}
+    - name: update security message
+      if: inputs.needed == 'true' && steps.find_comment.outputs.comment_id != ''
+      uses: sandeshjangam/comment-actions@v1
+      with:
+        token: ${{ inputs.GITHUB_TOKEN }}
+        number: ${{ inputs.number }}
+        type: "update"
+        body: |
+          <span key="${{ inputs.key }}">
+
+          ${{ inputs.body }}
+        comment_id: ${{ steps.find_comment.outputs.comment_id }}
+

@@ -1,8 +1,8 @@
-# ProjectName Client.api.GreetingControllerImplApi
+# openapi.api.GreetingControllerImplApi
 
 ## Load the API package
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 ```
 
 All URIs are relative to *http://localhost:8080*
@@ -10,6 +10,7 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**greetHuman**](GreetingControllerImplApi.md#greethuman) | **GET** /greet/{name} | 
+[**greetHumanPut**](GreetingControllerImplApi.md#greethumanput) | **PUT** /greet/{name} | 
 [**greetWorld**](GreetingControllerImplApi.md#greetworld) | **GET** /greet | 
 
 
@@ -20,7 +21,7 @@ Method | HTTP request | Description
 
 ### Example
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 
 final api_instance = GreetingControllerImplApi();
 final name = name_example; // String | 
@@ -54,6 +55,47 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **greetHumanPut**
+> String greetHumanPut(name)
+
+
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api_instance = GreetingControllerImplApi();
+final name = name_example; // String | 
+
+try {
+    final result = api_instance.greetHumanPut(name);
+    print(result);
+} catch (e) {
+    print('Exception when calling GreetingControllerImplApi->greetHumanPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **name** | **String**|  | 
+
+### Return type
+
+**String**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **greetWorld**
 > String greetWorld()
 
@@ -61,7 +103,7 @@ No authorization required
 
 ### Example
 ```dart
-import 'package:ProjectName Client/api.dart';
+import 'package:openapi/api.dart';
 
 final api_instance = GreetingControllerImplApi();
 

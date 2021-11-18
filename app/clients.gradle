@@ -1,7 +1,10 @@
-task autogenClients() {}
+task autogenClients() {
+    group "clients"
+}
 
 void createGenerator(String lang, Map<String, Object> config) {
     tasks.create("generate_${lang}_client", project.ext.generatorTask) {
+        group = "clients"
         generatorName = lang
         outputDir = "$rootDir/client/$lang"
         inputSpec = "$rootDir/openapi.json"

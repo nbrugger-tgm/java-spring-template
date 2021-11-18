@@ -66,6 +66,7 @@ Category | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ApiControllerAPI* | [**ApiControllerAPI_version**](docs/ApiControllerAPI.md#ApiControllerAPI_version) | **GET** /api/version | 
 *GreetingControllerImplAPI* | [**GreetingControllerImplAPI_greetHuman**](docs/GreetingControllerImplAPI.md#GreetingControllerImplAPI_greetHuman) | **GET** /greet/{name} | 
+*GreetingControllerImplAPI* | [**GreetingControllerImplAPI_greetHumanPut**](docs/GreetingControllerImplAPI.md#GreetingControllerImplAPI_greetHumanPut) | **PUT** /greet/{name} | 
 *GreetingControllerImplAPI* | [**GreetingControllerImplAPI_greetWorld**](docs/GreetingControllerImplAPI.md#GreetingControllerImplAPI_greetWorld) | **GET** /greet | 
 
 

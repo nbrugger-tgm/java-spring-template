@@ -21,6 +21,10 @@ export interface GreetHumanRequest {
     name: string;
 }
 
+export interface GreetHumanPutRequest {
+    name: string;
+}
+
 /**
  * no description
  */
@@ -36,6 +40,19 @@ export class GreetingControllerImplApi extends BaseAPI {
         return this.request<string>({
             url: '/greet/{name}'.replace('{name}', encodeURI(name)),
             method: 'GET',
+        }, opts?.responseOpts);
+    };
+
+    /**
+     */
+    greetHumanPut({ name }: GreetHumanPutRequest): Observable<string>
+    greetHumanPut({ name }: GreetHumanPutRequest, opts?: OperationOpts): Observable<RawAjaxResponse<string>>
+    greetHumanPut({ name }: GreetHumanPutRequest, opts?: OperationOpts): Observable<string | RawAjaxResponse<string>> {
+        throwIfNullOrUndefined(name, 'name', 'greetHumanPut');
+
+        return this.request<string>({
+            url: '/greet/{name}'.replace('{name}', encodeURI(name)),
+            method: 'PUT',
         }, opts?.responseOpts);
     };
 

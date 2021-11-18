@@ -1,0 +1,138 @@
+name: Review
+
+on:
+  pull_request:
+    types: [ labeled ]
+    branches:
+      - master
+      - main
+      - staging
+  pull_request_target:
+    types: [ labeled ]
+    branches:
+      - dev
+      - hotfix
+
+env:
+  post_review_stats: true
+  auto_assign_reviewers: true
+
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    name: Review
+    # Revoke when PR is from fork and not to dev or hotfix branch
+    # Revoke when dependabot
+    # Revoke to review draft branches
+    if: |
+      (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
+      !github.event.pull_request.draft &&
+      github.event.label.name == 'ready for build' &&
+      !(github.event.pull_request.head.repo.full_name != github.repository &&
+        github.actor != 'dependabot[bot]' &&
+        github.base_ref != 'dev' && github.base_ref != 'hotfix')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Wait for 'Compile'
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          check-name: 'compile'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+      - name: Wait for 'Quality check'
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          check-name: 'Quality Check'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+      - name: Wait for tests
+        uses: lewagon/wait-on-check-action@v1.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          check-name: 'Testing'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+      - name: Update success message
+        uses: ./.github/actions/pr-message
+        if: always()
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          needed: ${{ job.status == 'success' }}
+          key: qa_passed
+          number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Build, Testing passed!
+
+            Your pull request is ready for review.
+      - name: Approve dependabot
+        if: github.actor == 'dependabot[bot]'
+        uses: andrewmusgrave/automatic-pull-request-review@0.0.5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          event: APPROVE
+          body: 'Thank you dependabot 🎊'
+      - name: Post review stats
+        if: ${{ env.post_review_stats && github.actor != 'dependabot[bot]'}}
+        uses: flowwer-dev/pull-request-stats@v2.1.1
+        with:
+          charts: true
+      - name: Assign reviewers
+        if: ${{ env.auto_assign_reviewers && github.actor != 'dependabot[bot]'}}
+        uses: necojackarc/auto-request-review@v0.7.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config: .github/reviewers.yml
+      - name: check changed files
+        uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+          filters: |
+            sensitive:
+              - '.github/**'
+              - 'gradle/wrapper/**'
+              - '**/*.gradle'
+              - 'gradle'
+              - 'gradlew'
+              - 'gradlew.bat'
+              - '**/*.sh'
+      - name: check fork
+        id: forkCheck
+        if: |
+          (github.event.pull_request.head.repo.full_name != github.repository &&
+           github.actor != 'dependabot[bot]')
+        run: echo "::set-output name=fork::true"
+      - name: Get reviewers
+        uses: Techshift/mention-reviewers@0.2.0
+        if: github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'
+        id: getReviewers
+      - name: update "sensitive fork" message
+        if: always()
+        uses: ./.github/actions/pr-message
+        with:
+          number: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          needed: ${{github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'}}
+          key: sensitive_fork_review
+          body: |
+            ## **Forked**
+            > ${{ steps.getReviewers.outputs.message }}
+            This sensitive pull request originates from a fork!<br>
+            Review with great care!
+
+            We kindly ask to read the [security guide](SECURITY.adoc) before reviewing the pull request.
+            ### Sensitive files
+            > ${{ steps.filter.outputs.sensitive_files }}
+      - name: set label
+        if: always()
+        uses: ./.github/actions/set-label
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          label: "in review"
+          needed: ${{ github.actor != 'dependabot[bot]' && job.status == 'success' }}

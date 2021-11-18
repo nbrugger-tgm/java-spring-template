@@ -1,0 +1,12 @@
+{
+  "commitizen": {
+    "name": "cz_conventional_commits",
+    "version": "0.1.0",
+    "tag_format": "$major.$minor.$patch-$prerelease",
+    "version_files": [
+      "build.gradle",
+      "README.md",
+      "app/src/main/java/com/example/project/ProjectName.java"
+    ]
+  }
+}

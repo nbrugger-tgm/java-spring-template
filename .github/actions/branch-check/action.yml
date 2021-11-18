@@ -25,6 +25,5 @@ runs:
         if [[ "${{ github.head_ref }}" =~ ${{ inputs.allowedBranches }} ]];
         then exit 0
         else
-          echo "::error::$MSG"
           exit 1
         fi

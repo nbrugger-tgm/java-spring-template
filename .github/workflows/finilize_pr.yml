@@ -1,0 +1,265 @@
+on:
+  pull_request:
+    types:
+      - labeled
+    branches:
+      - master
+      - main
+      - staging
+  pull_request_target:
+    types:
+      - labeled
+    branches:
+      - dev
+      - hotfix
+
+env:
+  is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
+
+permissions:
+  actions: read
+  issues: write
+  contents: write
+  discussions: write
+  pull-requests: write
+  repository-projects: write
+
+name: Finilize PR
+################################################################################
+#  this steps assumes that a careful and security-aware review is done         #
+#  If you want to be save and dont trust the security review,                  #
+#  we advise to disable this step for forks by adding :                        #
+#                                                                              #
+#   && env.is_fork == 'false'                                                  #
+#                                                                              #
+#  to the if condition of the lockdown job                                     #
+################################################################################
+jobs:
+  semver:
+    name: Bump version
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'ready for merge'
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+      prerelease: ${{ steps.branch.outputs.release_stage }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+      - name: lock pull request
+        uses: sudo-bot/action-pull-request-lock@v1.0.5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          lock-reason: resolved
+      - name: Scan release stage
+        id: branch
+        run: |
+          if [ "${{ github.base_ref }}" == 'main' ] || [ "${{ github.base_ref }}" == 'master' ]; then
+            echo "::set-output name=release_stage::"
+          elif [ "${{ github.base_ref }}" == 'staging' ]; then
+            echo "::set-output name=release_stage::rc"
+          elif [ "${{ github.base_ref }}" == "dev" ] || [ "${{ github.base_ref }}" == 'hotfix' ]; then
+            echo "::set-output name=release_stage::beta"
+          fi
+      - name: Bump version
+        id: cz
+        uses: commitizen-tools/commitizen-action@0.10.0
+        with:
+          push: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          changelog_increment_filename: changelog_diff.md
+          prerelease: ${{ steps.branch.outputs.release_stage }}
+      - name: Upload changelog
+        uses: actions/upload-artifact@v2
+        with:
+          path: changelog_diff.md
+          name: changelog_diff.md
+          mime-type: text/markdown
+      - name: Push bump
+        run: |
+          git push
+
+  prebuild:
+    name: Prebuild
+    runs-on: ubuntu-latest
+    needs:
+      - semver
+    if: github.event.label.name == 'ready for merge'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: prepare gradle
+        run: chmod +x gradlew
+      - name: build
+        run: ./gradlew clean jar bootJar
+      - name: store build
+        uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: |
+            build
+            */build
+            .gradle
+          retention-days: 1
+  openapi:
+    runs-on: ubuntu-latest
+    name: Autogen OpenAPI
+    needs:
+      - prebuild
+      - semver
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Check api changes
+        uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+          filters: |
+            api:
+              - api/**/*
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+      - name: Generate PR OAS
+        if: steps.filter.outputs.api == 'true'
+        run: |
+          chmod +x gradlew
+          ./gradlew generateOpenApiDocs
+      - name: Checkout base branch
+        if: steps.filter.outputs.api == 'true'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.base_ref }}
+          path: 'base'
+      - name: Build OAS diff
+        if: steps.filter.outputs.api == 'true'
+        uses: nbrugger-tgm/open-api-diff-notes-action@master
+        with:
+          headFile: openapi.json
+          baseFile: base/openapi.json
+          output_path: ~/openapi_diff.json
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit OAS
+        if: steps.filter.outputs.api == 'true'
+        uses: swinton/commit@v2.0.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            openapi.json
+          commit-message: 'docs(oas): add PR changes to OAS'
+          ref: ${{ github.head_ref }}
+  client:
+    name: Autogen clients
+    needs: openapi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: find git sha
+        id: sha
+        run: |
+          git fetch origin
+          echo "::set-output name=base::$(git rev-parse origin/${{ github.base_ref }})"
+          echo "::set-output name=head::$(git rev-parse ${{ github.head_ref }})"
+
+      - name: Check api changes
+        uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+          base: ${{ steps.sha.outputs.base }}
+          head: ${{ steps.sha.outputs.head }}
+          filters: |
+            api:
+              - 'openapi.json'
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+      - name: Build clients
+        if: steps.filter.outputs.api == 'true'
+        run: ./gradlew autogenClients
+      - name: Commit clients
+        if: steps.filter.outputs.api == 'true'
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: 'client'
+          default_author: github_actions
+          message: 'chore: autogenerate clients'
+          pathspec_error_handling: ignore
+          branch: ${{ github.head_ref }}
+          # Arguments for the git pull command. Use NO-PULL to avoid the action pulling at all.
+          # Default   pull: '--no-rebase'
+          push: true
+  merge:
+    name: Merge PR
+    runs-on: ubuntu-latest
+    needs:
+      - client
+      - openapi
+      - semver
+    outputs:
+      commit: ${{ steps.merge.outputs.commit }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Eval merge type
+        id: eval
+        run: |
+          if [ ${{ github.base_ref }} == 'main' ]; then
+            echo "::set-output name=merge_type::merge"
+          elif [ ${{ github.base_ref }} == 'staging' ]; then
+            echo "::set-output name=merge_type::merge"
+          elif [ ${{ github.base_ref }} == 'dev' ] || [ ${{ github.base_ref }} == 'hotfix' ]; then
+            echo "::set-output name=merge_type::squash"
+          fi
+      - name: Merge
+        id: merge
+        uses: nbrugger-tgm/merge-pr-action@v0.2.0
+        with:
+          token: ${{ secrets.PAT }}
+          method: ${{ steps.eval.outputs.merge_type }}
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - merge
+      - semver
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+      - name: Create tag
+        run: git tag ${{ needs.semver.outputs.version }}
+      - name: Push tag
+        run: git push origin ${{ needs.semver.outputs.version }}
+      - name: Download diff
+        uses: actions/download-artifact@v2
+        with:
+          name: changelog_diff.md
+      - name: Download binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+      - name: Create release
+        uses: ncipollo/release-action@v1.8.10
+        with:
+          artifacts: "app/build/libs/app-${{ needs.semver.outputs.version }}.jar"
+          bodyFile: changelog_diff.md
+          artifactContentType: application/java-archive
+          draft: false
+          prerelease: ${{ needs.semver.outputs.prerelease != ''}}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ needs.semver.outputs.version }}

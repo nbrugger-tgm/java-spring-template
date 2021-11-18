@@ -1,0 +1,76 @@
+# ###############################################################
+# Use this file to define reviewers for specific files.
+# Reference : https://github.com/marketplace/actions/auto-request-review
+# ###############################################################
+# Short Info:
+# To assign teams instead of a person, use the following format: team:<team name>
+# ###############################################################
+# Review count requirements:
+# To set a certain amount of required reviews you can use protected branches.
+# If you want to make the count of required reviews dynamic, you can use the
+# action; https://github.com/marketplace/actions/label-requires-reviews
+# ###############################################################
+
+reviewers:
+  # Fallback reviewers
+  # If no other reviewers are found, this list will be used.
+  defaults:
+    - nbrugger-tgm # Change this
+
+  # Reviewer groups each of which has a list of GitHub usernames
+  groups:
+    repository-owners:
+      - nbrugger-tgm # Change this
+      # You could add a github team like this : - team:owners
+    core-contributors:
+      - nbrugger-tgm # Change this
+
+    # they would act as reviwers for all documentations
+    documentation-contributors:
+      - nbrugger-tgm # Change this
+
+    # this group is responsible for changes to the public API
+    api-maintainer:
+      - nbrugger-tgm # Change this
+    dev-team:
+      - nbrugger-tgm # Change this
+    dev-ops:
+      - nbrugger-tgm # Change this
+    # You can add custom teams here like "team-australia" or "team-database"
+
+  # Assign reviewers depending on the author of the pull request
+  per_author:
+    # engineers: #if an engineer is the author of the pull request
+    #   - engineers # an engeneer should review the pull request
+    #   - team:engineering-managers # or a person from the "engineering-managers" team
+
+    repository-owners: [ ] # repository owners dont need to reviews on their own pull requests
+    documentation-contributors:
+      - documentation-contributors # you can use a predefined group, a user or a github team
+      - dev-team
+      - core-contributors
+    core-contributors:
+      - core-contributors # username
+    dev-team:
+      - dev-team # username
+      - core-contributors # username
+
+files:
+  # Keys are glob expressions. (to match files)
+  # You can assign groups defined above as well as GitHub usernames.
+  '**/*.java':
+    - core-contributors
+    - dev-team
+  '(api/**|openapi.json)':
+    - api-maintainer # you can also use a GitHub username
+  '.github/**':
+    - dev-ops # username
+  '(**.md|**.asciidoc|**.adoc)':
+    - documentation-contributors
+
+options:
+  ignore_draft: true
+  enable_group_assignment: false
+  # Randomly pick reviewers up to this number.
+  # Do not set this option if you'd like to assign all matching reviewers.
+  number_of_reviewers: 3
