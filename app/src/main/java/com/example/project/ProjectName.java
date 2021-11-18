@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ProjectName {
 
-	public static final String VERSION = "0.0.0";
+	public static final String VERSION = "0.1.0b0";
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjectName.class, args);
