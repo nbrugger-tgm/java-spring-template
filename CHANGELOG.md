@@ -1,3 +1,10 @@
+## 0.1.0-rc0 (2021-11-18)
+
+### Fix
+
+- main branch not labeled
+- disable pr-title-check for non feat branches
+
 ## 0.1.0-b0 (2021-11-18)
 
 ### Refactor
