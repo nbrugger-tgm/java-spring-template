@@ -20,7 +20,8 @@ env:
   is_release_branch: ${{ github.base_ref == 'main' || github.base_ref == 'master' }}
   is_feature_branch: ${{ github.base_ref == 'dev'  || github.base_ref == 'hotfix' }}
   is_hotfix_branch: ${{ github.base_ref == 'hotfix' }}
-  is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
+  is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+  is_dependabot: ${{ github.actor != 'dependabot[bot]' }}
 
 jobs:
   branching-check:
@@ -175,7 +176,11 @@ jobs:
             ${{ steps.filter.outputs.sensitive_files }}
             ```
       - name: revoke senitive fork
-        if: env.is_fork == 'true' && env.revoke_sensitive_fork == 'true' && (github.event.action == 'syncronized' || github.event.action == 'opened')
+        if: |
+          env.is_fork == 'true' &&
+          env.is_dependabot == 'false' &&
+          env.revoke_sensitive_fork == 'true' &&
+          (github.event.action == 'syncronized' || github.event.action == 'opened')
         run: exit 1
       - name: label by changed files
         if: github.event.action == 'syncronized' || github.event.action == 'opened'
