@@ -1,3 +1,5 @@
+name: Check Reviews
+
 on:
   pull_request_review:
     types: [ submitted, edited ]
