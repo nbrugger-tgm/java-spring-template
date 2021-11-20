@@ -6,10 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # Get the reviews count by state kind.
       - name: Read reviews
         uses: github-actions-tools/gh-reviews-count@v0.0.1
         id: reviewsCount
+        with:
+          pull_number: ${{ github.event.pull_request.number }}
       - name: Check review status
         run: |
           echo "Approved: $APPROVED"
