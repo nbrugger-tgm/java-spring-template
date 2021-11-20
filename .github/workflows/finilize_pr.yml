@@ -262,4 +262,4 @@ jobs:
           draft: false
           prerelease: ${{ needs.semver.outputs.prerelease != ''}}
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ needs.semver.outputs.version }}
+          tag: ${{ needs.semver.outputs.version }}

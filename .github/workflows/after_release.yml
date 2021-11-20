@@ -1,0 +1,33 @@
+name: After Release
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  update_branches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Merge master into staging
+        uses: everlytic/branch-merge@1.1.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_ref: ${{ github.ref }}
+          target_branch: 'staging'
+          commit_message_template: 'Update {target_branch} from {source_ref}'
+      - name: Merge master into dev
+        uses: everlytic/branch-merge@1.1.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_ref: ${{ github.ref }}
+          target_branch: 'dev'
+          commit_message_template: 'Update {target_branch} from {source_ref}'
+      - name: Merge master into hotfix
+        uses: everlytic/branch-merge@1.1.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_ref: ${{ github.ref }}
+          target_branch: 'hotfix'
+          commit_message_template: 'Update {target_branch} from {source_ref}'

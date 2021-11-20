@@ -80,7 +80,7 @@ jobs:
           body: 'Thank you dependabot 🎊'
       - name: Post review stats
         if: ${{ env.post_review_stats && github.actor != 'dependabot[bot]'}}
-        uses: flowwer-dev/pull-request-stats@v2.1.1
+        uses: nbrugger-tgm/pull-request-stats@patch-1
         with:
           charts: true
       - name: Assign reviewers
