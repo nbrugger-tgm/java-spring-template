@@ -1,3 +1,9 @@
+## 0.3.0-b2 (2021-11-20)
+
+### Perf
+
+- prevent useless client build
+
 ## 0.3.0-b1 (2021-11-20)
 
 ### Fix
