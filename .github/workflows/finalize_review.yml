@@ -40,4 +40,17 @@ jobs:
           steps.reviewsCount.outputs.dismissed == 0
         uses: andymckay/labeler@1.0.4
         with:
+          repo-token: ${{ secrets.PAT }}
           add-labels: 'ready for merge'
+      - name: update review label
+        uses: ./.github/actions/set-label
+        with:
+          needed: |
+            ${{ !(
+            steps.reviewsCount.outputs.approved > 0 &&
+            steps.reviewsCount.outputs.pending == 0 &&
+            steps.reviewsCount.outputs.changes_requested == 0 &&
+            steps.reviewsCount.outputs.dismissed == 0
+            ) }}
+          label: 'in review'
+          token: ${{ secrets.GITHUB_TOKEN }}
