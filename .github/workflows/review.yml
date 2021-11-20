@@ -109,7 +109,7 @@ jobs:
            github.actor != 'dependabot[bot]')
         run: echo "::set-output name=fork::true"
       - name: Get reviewers
-        uses: Techshift/mention-reviewers@0.2.0
+        uses: Techshift/mention-reviewers@1.0.0
         if: github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'
         id: getReviewers
       - name: update "sensitive fork" message
