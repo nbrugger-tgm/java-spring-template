@@ -161,6 +161,7 @@ jobs:
     name: Autogen clients
     needs: openapi
     runs-on: ubuntu-latest
+    if: needs.openapi.steps.filter.outputs.api == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
