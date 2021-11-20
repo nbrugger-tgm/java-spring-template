@@ -1,3 +1,15 @@
+## 0.3.0-b0 (2021-11-20)
+
+### Fix
+
+- dependabot being rejected
+- allow 'main' and 'master'
+- dependabot unable to merge
+
+### Feat
+
+- atutomerge master on release
+
 ## 0.2.0- (2021-11-18)
 
 ### Fix

@@ -228,7 +228,7 @@ jobs:
           fi
       - name: Merge
         id: merge
-        uses: nbrugger-tgm/merge-pr-action@v0.2.0
+        uses: nbrugger-tgm/merge-pr-action@v0.2.2
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
