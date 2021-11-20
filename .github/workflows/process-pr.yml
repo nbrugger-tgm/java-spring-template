@@ -26,7 +26,7 @@ env:
 jobs:
   branching-check:
     name: Check Branching
-    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'edited'
+    if: (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'edited')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -63,13 +63,13 @@ jobs:
       - name: Check dev branch
         id: dev_check
         uses: ./.github/actions/branch-check
-        if: env.is_feature_branch == 'true' && env.is_fork == 'false'
+        if: env.is_feature_branch == 'true' && env.is_fork == 'false' && env.is_dependabot == 'false'
         with:
           allowedBranches: feat\/.+|hotfix|bugfix\/.+ #this is a regex
       - name: check hotfix branch
         id: hotfix_check
         uses: ./.github/actions/branch-check
-        if: env.is_hotfix_branch == 'true' && env.is_fork == 'false'
+        if: env.is_hotfix_branch == 'true' && env.is_fork == 'false' && env.is_dependabot == 'false'
         with:
           allowedBranches: bugfix\/.+
       - name: Add master branch message
