@@ -10,9 +10,10 @@ jobs:
         with:
           ref: dev
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: repo-sync/pull-request@v2
         with:
-          base: staging
-          branch: dev
-          title: "Create Release Candidate"
-          body: "This is a release candidate for the next version of the project."
+          source_branch: dev
+          destination_branch: staging              # If blank, default: master
+          pr_title: "Create Release Candidate"
+          pr_body: "This is a release candidate for the next version of the project."              # Full markdown support, requires pr_title to be set
+          github_token: ${{ secrets.GITHUB_TOKEN }}
