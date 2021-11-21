@@ -3,7 +3,7 @@ plugins {
 }
 allprojects {
     apply from: "${rootDir}/config.gradle"
-    version = '0.3.0rc0'
+    version = '0.3.0'
     group = project.ext.rootPackage
 }
 subprojects {

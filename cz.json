@@ -1,8 +1,7 @@
 {
   "commitizen": {
     "name": "cz_conventional_commits",
-    "version": "0.3.0rc0",
-    "tag_format": "$major.$minor.$patch-$prerelease",
+    "version": "0.3.0",
     "version_files": [
       "build.gradle",
       "README.md",
