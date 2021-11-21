@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    compileOnly project(":backend")
+
+    api platform('org.springframework.boot:spring-boot-dependencies:2.6.0')
+    compileOnly 'org.springframework:spring-web'
+    compileOnly 'org.springframework:spring-webmvc'
+
+    compileOnly 'io.swagger.core.v3:swagger-annotations:2.1.11'
+}
+jacocoTestCoverageVerification {
+    enabled(false)
+}

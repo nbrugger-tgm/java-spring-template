@@ -1,0 +1,20 @@
+plugins {
+    id 'org.sonarqube' version '3.3'
+}
+allprojects {
+    apply from: "${rootDir}/modules/config.gradle"
+    version = '0.3.0'
+    group = project.ext.rootPackage
+}
+subprojects {
+    apply from: "${rootDir}/modules/submodule.gradle"
+}
+sonarqube {
+    properties {
+        property 'sonar.projectName', project.ext.displayName
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.projectKey", project.ext.sonarProjectKey
+        property "sonar.organization", project.ext.sonarOrganization
+        property "sonar.host.url", project.ext.sonarHost
+    }
+}
