@@ -36,7 +36,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Wait for 'Compile'
-        uses: lewagon/wait-on-check-action@v1.0.0
+        uses: lewagon/wait-on-check-action@v1.1.1
         with:
           ref: ${{ github.head_ref }}
           check-name: 'compile'
@@ -44,7 +44,7 @@ jobs:
           wait-interval: 10
           allowed-conclusions: success
       - name: Wait for 'Quality check'
-        uses: lewagon/wait-on-check-action@v1.0.0
+        uses: lewagon/wait-on-check-action@v1.1.1
         with:
           ref: ${{ github.head_ref }}
           check-name: 'Quality Check'
@@ -52,7 +52,7 @@ jobs:
           wait-interval: 10
           allowed-conclusions: success
       - name: Wait for tests
-        uses: lewagon/wait-on-check-action@v1.0.0
+        uses: lewagon/wait-on-check-action@v1.1.1
         with:
           ref: ${{ github.head_ref }}
           check-name: 'Testing'
@@ -109,7 +109,7 @@ jobs:
            github.actor != 'dependabot[bot]')
         run: echo "::set-output name=fork::true"
       - name: Get reviewers
-        uses: Techshift/mention-reviewers@0.2.0
+        uses: Techshift/mention-reviewers@1.0.0
         if: github.steps.forkCheck.outputs.fork == 'true' && github.steps.filter.outputs.sensitive == 'true'
         id: getReviewers
       - name: update "sensitive fork" message

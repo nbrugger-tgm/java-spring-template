@@ -163,34 +163,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        if: needs.openapi.steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
       - name: find git sha
+        if: needs.openapi.steps.filter.outputs.api == 'true'
         id: sha
         run: |
           git fetch origin
           echo "::set-output name=base::$(git rev-parse origin/${{ github.base_ref }})"
           echo "::set-output name=head::$(git rev-parse ${{ github.head_ref }})"
-
-      - name: Check api changes
-        uses: tony84727/changed-file-filter@v0.2.0
-        id: filter
-        with:
-          base: ${{ steps.sha.outputs.base }}
-          head: ${{ steps.sha.outputs.head }}
-          filters: |
-            api:
-              - 'openapi.json'
       - name: download build
         uses: actions/download-artifact@v2
+        if: needs.openapi.steps.filter.outputs.api == 'true'
         with:
           name: binaries
       - name: Build clients
-        if: steps.filter.outputs.api == 'true'
+        if: needs.openapi.steps.filter.outputs.api == 'true'
         run: ./gradlew autogenClients
       - name: Commit clients
-        if: steps.filter.outputs.api == 'true'
+        if: needs.openapi.steps.filter.outputs.api == 'true'
         uses: EndBug/add-and-commit@v7
         with:
           add: 'client'
@@ -228,7 +221,7 @@ jobs:
           fi
       - name: Merge
         id: merge
-        uses: nbrugger-tgm/merge-pr-action@v0.2.0
+        uses: nbrugger-tgm/merge-pr-action@v0.2.2
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
