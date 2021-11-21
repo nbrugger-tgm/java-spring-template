@@ -1,3 +1,45 @@
+## 0.3.0 (2021-11-21)
+
+### Fix
+
+- bad tag format
+
+## 0.3.0-rc0 (2021-11-20)
+
+### Fix
+
+- junit test version
+- prerelease creation
+- open api skipping
+
+### Feat
+
+- pre-release automation
+
+## 0.3.0-b2 (2021-11-20)
+
+### Perf
+
+- prevent useless client build
+
+## 0.3.0-b1 (2021-11-20)
+
+### Fix
+
+- labeling
+
+## 0.3.0-b0 (2021-11-20)
+
+### Fix
+
+- dependabot being rejected
+- allow 'main' and 'master'
+- dependabot unable to merge
+
+### Feat
+
+- atutomerge master on release
+
 ## 0.2.0- (2021-11-18)
 
 ### Fix
