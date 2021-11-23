@@ -1,6 +1,6 @@
 package com.domain.projectname.api.filters;
 
-import com.domain.projectname.models.ErrorResponse;
+import com.domain.projectname.models.ErrorDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public interface ApiErrorHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler({Exception.class, RuntimeException.class})
-	default ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+	default ResponseEntity<ErrorDto> handleGenericException(Exception ex) {
 		return new ResponseEntity<>(
-				new ErrorResponse(
+				new ErrorDto(
 						ex.getMessage(),
 						String.valueOf(System.currentTimeMillis()),
 						ex.getClass().getSimpleName()

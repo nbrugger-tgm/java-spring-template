@@ -16,5 +16,6 @@ sonarqube {
         property "sonar.projectKey", project.ext.sonarProjectKey
         property "sonar.organization", project.ext.sonarOrganization
         property "sonar.host.url", project.ext.sonarHost
+        property "sonar.tests", "src/intTest,src/archTest,src/test"
     }
 }

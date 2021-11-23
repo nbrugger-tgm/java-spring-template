@@ -5,7 +5,7 @@ plugins {
 dependencies {
     compileOnly project(":backend")
 
-    api platform('org.springframework.boot:spring-boot-dependencies:2.6.0')
+    compileOnly platform('org.springframework.boot:spring-boot-dependencies:2.6.0')
     compileOnly 'org.springframework:spring-web'
     compileOnly 'org.springframework:spring-webmvc'
 

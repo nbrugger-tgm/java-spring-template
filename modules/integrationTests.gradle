@@ -17,3 +17,8 @@ task integrationTest(type: Test) {
     useJUnitPlatform()
 }
 testAll.dependsOn integrationTest
+dependencies {
+    //integration Tests
+    intTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    intTestImplementation 'org.springframework.security:spring-security-test'
+}
