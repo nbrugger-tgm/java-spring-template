@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -13,6 +12,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Set;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Getter
@@ -27,15 +28,15 @@ public class TodoList extends BaseEntity {
 	@NotNull
 	private String color = "#32a852";
 
-
-	@OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@OneToMany(cascade = ALL, mappedBy = "list")
 	private Set<TodoEntry> entries = new HashSet<>();
 
-	public void addItem(TodoEntry item) {
-		entries.add(item);
+	public boolean addItem(TodoEntry item) {
+		item.setList(this);
+		return entries.add(item);
 	}
 
-	public void removeItem(TodoEntry item) {
-		entries.remove(item);
+	public boolean removeItem(TodoEntry item) {
+		return entries.remove(item);
 	}
 }

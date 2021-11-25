@@ -2,103 +2,144 @@ package com.domain.projectname.services;
 
 import com.domain.projectname.entities.todo.TodoEntry;
 import com.domain.projectname.entities.todo.TodoList;
+import com.domain.projectname.models.TodoEntryDto;
+import com.domain.projectname.models.TodoListDto;
 import com.domain.projectname.repositories.TodoListRepository;
 import com.domain.projectname.repositories.TodoRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 @Service
+@Slf4j
 class TodoServiceImpl implements TodoService {
 	private final TodoListRepository listRepo;
 	private final TodoRepository     todoRepo;
+	private final ModelMapper        mapper;
 
 	public TodoServiceImpl(
 			TodoListRepository listRepo,
-			TodoRepository todoRepo
+			TodoRepository todoRepo,
+			ModelMapper mapper
 	) {
 		this.listRepo = listRepo;
 		this.todoRepo = todoRepo;
+		this.mapper   = mapper;
 	}
 
 	@Override
-	public TodoList createList(String listName) {
-		TodoList list = new TodoList();
-		list.setTitle(listName);
+	public TodoListDto createList(TodoListDto dto) {
+		if (listRepo.existsByTitle(dto.getTitle()))
+			throw new IllegalArgumentException(format(
+					"List with name %s already exists",
+					dto.getTitle()
+			));
+
+		var list = new TodoList();
+		mapper.map(dto, list);
 		listRepo.save(list);
-		return list;
+
+		TodoListDto created = new TodoListDto();
+		mapper.map(list, created);
+		return created;
 	}
 
 	@Override
-	public TodoList getList(String listName) {
-		if (!listRepo.existsByTitle(listName))
-			throwListNotFound();
-		return listRepo.findByTitle(listName);
+	public TodoListDto getList(String listName) {
+		verifyListExistence(listName);
+		return mapper.map(listRepo.findByTitle(listName), TodoListDto.class);
+	}
+
+	private void verifyListExistence(String listName) {
+		if (!listRepo.existsByTitle(listName)) throwListNotFound();
+	}
+
+	private void throwListNotFound() {
+		throw new IllegalArgumentException("List does not exist");
 	}
 
 	@Override
 	public void deleteList(String listName) {
+		verifyListExistence(listName);
 		listRepo.deleteByTitle(listName);
 	}
 
 	@Override
-	public void updateList(TodoList newList) {
-		var oldList = listRepo.findById(newList.getId());
-		if (oldList.isEmpty())
-			throwListNotFound();
+	public void updateList(String name, TodoListDto list) {
+		TodoList listToUpdate = fetchList(name);
+		mapper.map(list, listToUpdate);
+		listRepo.save(listToUpdate);
+	}
 
-		listRepo.save(newList);
+	private TodoList fetchList(String name) {
+		verifyListExistence(name);
+		return listRepo.findByTitle(name);
 	}
 
 	@Override
 	@Transactional
-	public void addItem(String listName, TodoEntry item) {
-		var list = listRepo.findByTitle(listName);
-		if (list == null)
-			throwListNotFound();
-		list.addItem(item);
-		todoRepo.save(item);
-		listRepo.save(list);
+	public boolean addItem(String listName, TodoEntryDto item) {
+		TodoList list = fetchList(listName);
+		var      entry = new TodoEntry();
+		mapper.map(item, entry);
+		return list.addItem(entry);
 	}
 
 	@Override
 	@Transactional
 	public void deleteItem(String listName, String itemName) {
-		var list = listRepo.findByTitle(listName);
-		if (list == null)
-			throwListNotFound();
-		var item = todoRepo.findByName(itemName);
-		if (item == null)
-			throw new IllegalArgumentException("Item does not exist");
-		list.removeItem(item);
-		listRepo.save(list);
+		verifyListExistence(listName);
+		long listId = listRepo.getIdByTitle(listName);
+		verifyItemExistence(itemName, listId);
+		todoRepo.deleteByNameAndListId(itemName, listId);
+	}
+
+	private void verifyItemExistence(String itemName, long listId) {
+		if (!todoRepo.existsByNameAndListId(itemName, listId))
+			throwEntryNotFound(itemName, listId);
+	}
+
+	private void throwEntryNotFound(String itemName, long listId) {
+		throw new IllegalArgumentException(format(
+				"Entry '%s' does not exist in list %d",
+				itemName, listId
+		));
 	}
 
 	@Override
-	public void updateItem(TodoEntry item) {
-		if (!todoRepo.existsById(item.getId()))
-			throw new IllegalArgumentException("Item does not exist");
-		todoRepo.save(item);
+	public void updateItem(
+			String list, String itemName, TodoEntry item
+	) {
+		verifyListExistence(list);
+		long listId = listRepo.getIdByTitle(list);
+		verifyItemExistence(itemName, listId);
+		var entry = todoRepo.findByNameAndListId(itemName, listId);
+		mapper.map(item, entry);
+		todoRepo.save(entry);
 	}
 
 	@Override
-	public Set<TodoList> getAllLists() {
-		return listRepo.findAll();
+	public Set<TodoListDto> getAllLists() {
+
+		return todoRepo.findAll()
+		               .stream()
+		               .map(todo -> mapper.map(todo, TodoListDto.class))
+		               .collect(Collectors.toSet());
 	}
 
 	@Override
-	@Transactional
-	public Set<TodoEntry> getEntries(String listName) {
-		var list = listRepo.findByTitle(listName);
-		if (list == null)
-			throwListNotFound();
-		var set = new HashSet<>(list.getEntries());
-		return set;
-	}
-
-	private void throwListNotFound() {
-		throw new IllegalArgumentException("List does not exist");
+	@Transactional(readOnly = true)
+	public Set<TodoEntryDto> getEntries(String listName) {
+		var list = fetchList(listName);
+		return list.getEntries()
+		           .stream()
+		           .map(entry -> mapper.map(entry, TodoEntryDto.class))
+		           .collect(Collectors.toSet());
 	}
 }

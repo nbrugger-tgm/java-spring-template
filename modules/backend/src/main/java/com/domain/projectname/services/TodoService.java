@@ -1,26 +1,27 @@
 package com.domain.projectname.services;
 
 import com.domain.projectname.entities.todo.TodoEntry;
-import com.domain.projectname.entities.todo.TodoList;
+import com.domain.projectname.models.TodoEntryDto;
+import com.domain.projectname.models.TodoListDto;
 
 import java.util.Set;
 
 public interface TodoService {
-	TodoList createList(String listName);
+	TodoListDto createList(TodoListDto listName);
 
-	TodoList getList(String listName);
+	TodoListDto getList(String listName);
 
 	void deleteList(String listName);
 
-	void updateList(TodoList list);
+	void updateList(String name, TodoListDto list);
 
-	void addItem(String listName, TodoEntry item);
+	boolean addItem(String listName, TodoEntryDto item);
 
 	void deleteItem(String listName, String itemName);
 
-	void updateItem(TodoEntry item);
+	void updateItem(String list, String itemName, TodoEntry item);
 
-	Set<TodoList> getAllLists();
+	Set<TodoListDto> getAllLists();
 
-	Set<TodoEntry> getEntries(String listName);
+	Set<TodoEntryDto> getEntries(String listName);
 }

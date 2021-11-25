@@ -1,9 +1,8 @@
 package com.domain.projectname.models;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -11,9 +10,8 @@ import javax.validation.constraints.Pattern;
 /**
  * Carries information about an error that happened in the API
  */
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ErrorDto {
 	/**
