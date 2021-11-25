@@ -1,4 +1,4 @@
-package com.domain.projectname.arch;
+package com.domain.projectname.backend.arch;
 
 import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ImportOption;

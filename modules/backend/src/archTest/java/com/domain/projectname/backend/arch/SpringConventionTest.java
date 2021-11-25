@@ -8,9 +8,7 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 
 @AnalyzeClasses(packages = "com.domain.projectname",
                 importOptions = {ImportOption.DoNotIncludeTests.class})
-public class CodingRuleTest {
+public class SpringConventionTest {
 	@ArchTest
-	private final ArchRule logging  = GeneralCodingRules.NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS;
-	@ArchTest
-	private final ArchRule logging2 = GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
+	private final ArchRule fieldInjection = GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 }

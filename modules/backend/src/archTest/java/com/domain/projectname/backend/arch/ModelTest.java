@@ -1,11 +1,11 @@
-package com.domain.projectname.arch;
+package com.domain.projectname.backend.arch;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import static com.domain.projectname.arch.MethodConditions.*;
+import static com.domain.projectname.backend.arch.MethodConditions.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(packages = "com.domain.projectname",

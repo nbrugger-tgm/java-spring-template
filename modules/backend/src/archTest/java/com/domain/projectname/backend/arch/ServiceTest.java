@@ -1,4 +1,4 @@
-package com.domain.projectname.arch;
+package com.domain.projectname.backend.arch;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.AccessTarget;
@@ -15,7 +15,6 @@ import com.tngtech.archunit.lang.syntax.elements.GivenFieldsConjunction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
-import static com.domain.projectname.arch.MethodConditions.beOverridden;
 import static com.tngtech.archunit.core.domain.AccessTarget.Predicates.declaredIn;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
@@ -87,7 +86,7 @@ public class ServiceTest {
 	public ArchRule no_additional_methods = methods()
 			.that().areDeclaredInClassesThat(areServiceImpl)
 			.and().arePublic()
-			.should(beOverridden())
+			.should(MethodConditions.beOverridden())
 			.because("No service should add public methods");
 
 	private ArchCondition<JavaClass> declareNumberOfConstructors(int i) {

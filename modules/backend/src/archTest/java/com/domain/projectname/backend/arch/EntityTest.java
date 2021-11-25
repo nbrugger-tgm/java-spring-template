@@ -1,4 +1,4 @@
-package com.domain.projectname.arch;
+package com.domain.projectname.backend.arch;
 
 import com.domain.projectname.entities.BaseEntity;
 import com.tngtech.archunit.base.DescribedPredicate;

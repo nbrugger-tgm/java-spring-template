@@ -1,6 +1,6 @@
 package com.example.project.controllers;
 
-import com.domain.projectname.models.VersionResponse;
+import com.domain.projectname.models.VersionDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ class ApiControllerTest {
 	void version() throws Exception {
 		String response = mvc.perform(get("/api/version"))
 		                     .andReturn().getResponse().getContentAsString();
-		VersionResponse version = mapper.readValue(response, VersionResponse.class);
+		VersionDto version = mapper.readValue(response, VersionDto.class);
 		assertTrue(version.getVersion().matches(PEP440_REGEX));
 	}
 }
