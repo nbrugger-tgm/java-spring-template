@@ -1,4 +1,4 @@
-package com.example.project.controllers;
+package com.domain.projectname.controllers;
 
 import com.domain.projectname.models.VersionDto;
 import com.fasterxml.jackson.databind.ObjectMapper;

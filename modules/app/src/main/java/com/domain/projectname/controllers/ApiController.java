@@ -1,14 +1,15 @@
-package com.example.project.controllers;
+package com.domain.projectname.controllers;
 
+import com.domain.projectname.ProjectName;
 import com.domain.projectname.api.controllers.ApiInfoController;
 import com.domain.projectname.models.VersionDto;
-import com.example.project.ProjectName;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ApiController implements ApiInfoController {
+
 	@Override
-	public VersionDto version() {
+	public VersionDto getVersion() {
 		return new VersionDto(ProjectName.VERSION, !ProjectName.VERSION.contains("-"));
 	}
 }

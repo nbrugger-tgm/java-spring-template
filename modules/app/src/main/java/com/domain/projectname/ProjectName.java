@@ -1,4 +1,4 @@
-package com.example.project;
+package com.domain.projectname;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

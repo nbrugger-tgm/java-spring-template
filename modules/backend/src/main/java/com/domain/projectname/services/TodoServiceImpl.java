@@ -113,15 +113,15 @@ class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
+	@Transactional
 	public void updateItem(
-			String list, String itemName, TodoEntry item
+			String list, String itemName, TodoEntryDto item
 	) {
 		verifyListExistence(list);
 		long listId = listRepo.getIdByTitle(list);
 		verifyItemExistence(itemName, listId);
 		var entry = todoRepo.findByNameAndListId(itemName, listId);
 		mapper.map(item, entry);
-		todoRepo.save(entry);
 	}
 
 	@Override
@@ -141,5 +141,13 @@ class TodoServiceImpl implements TodoService {
 		           .stream()
 		           .map(entry -> mapper.map(entry, TodoEntryDto.class))
 		           .collect(Collectors.toSet());
+	}
+
+	@Override
+	public TodoEntryDto getEntry(String listName, String itemName) {
+		verifyListExistence(listName);
+		long listId = listRepo.getIdByTitle(listName);
+		verifyItemExistence(itemName, listId);
+		return mapper.map(todoRepo.findByNameAndListId(itemName, listId), TodoEntryDto.class);
 	}
 }

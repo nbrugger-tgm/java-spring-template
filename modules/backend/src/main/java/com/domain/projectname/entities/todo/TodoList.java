@@ -1,6 +1,7 @@
 package com.domain.projectname.entities.todo;
 
 import com.domain.projectname.entities.BaseEntity;
+import com.domain.projectname.general.verify.IsColor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +24,7 @@ public class TodoList extends BaseEntity {
 	private String title;
 	private String description;
 
-	@Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "Invalid color")
+	@IsColor
 	@NotNull
 	private String color = "#32a852";
 

@@ -1,6 +1,5 @@
 package com.domain.projectname.services;
 
-import com.domain.projectname.entities.todo.TodoEntry;
 import com.domain.projectname.models.TodoEntryDto;
 import com.domain.projectname.models.TodoListDto;
 
@@ -19,9 +18,11 @@ public interface TodoService {
 
 	void deleteItem(String listName, String itemName);
 
-	void updateItem(String list, String itemName, TodoEntry item);
+	void updateItem(String list, String itemName, TodoEntryDto item);
 
 	Set<TodoListDto> getAllLists();
 
 	Set<TodoEntryDto> getEntries(String listName);
+
+	TodoEntryDto getEntry(String listName, String itemName);
 }

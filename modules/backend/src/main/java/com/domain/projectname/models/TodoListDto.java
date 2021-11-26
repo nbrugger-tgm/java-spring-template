@@ -22,6 +22,7 @@ public class TodoListDto {
 	@Size(max = 2048)
 	private String description;
 
+
 	@Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "Invalid color")
 	@NotNull
 	private String color = "#32a852";
