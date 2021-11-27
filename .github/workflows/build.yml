@@ -112,7 +112,7 @@ jobs:
         with:
           filters: |
             api:
-              - 'api/**'
+              - 'modules/api/**'
       - name: download build
         uses: actions/download-artifact@v2
         with:

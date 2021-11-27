@@ -102,8 +102,7 @@ jobs:
         with:
           name: binaries
           path: |
-            build
-            */build
+            modules/*/build
             .gradle
           retention-days: 1
   openapi:
