@@ -40,9 +40,10 @@ project.ext {
 }
 apply from: "clients.gradle"
 
+jacocoTestCoverageVerification {
+    enabled false
+}
 
 openApi {
     outputDir.set(rootDir)
 }
-javadocJar.enabled = false
-sourcesJar.enabled = false

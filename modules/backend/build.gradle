@@ -18,4 +18,19 @@ dependencies {
     implementation 'org.modelmapper.extensions:modelmapper-spring:2.4.2'
 
 }
+
+
+project.ext.templateProperties = [version: project.version]
 apply from: "$rootDir/modules/integrationTests.gradle"
+apply from: "$rootDir/modules/sourcegen.gradle"
+
+sourceSets {
+    template {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.output
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+}

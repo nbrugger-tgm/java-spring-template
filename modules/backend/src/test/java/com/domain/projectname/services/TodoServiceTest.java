@@ -50,7 +50,7 @@ class TodoServiceTest {
 
 	@Test
 	void updating() {
-		var list = spy(new TodoListDto("name", "desc", null));
+		var list = new TodoListDto("name", "desc", null);
 		when(todoListRepository.existsByTitle("name")).thenReturn(true);
 		var inDb = new TodoList();
 		inDb.setTitle("name");
@@ -59,10 +59,10 @@ class TodoServiceTest {
 		when(todoListRepository.findByTitle("name")).thenReturn(inDb);
 		todoService.updateList("name", list);
 
-		var expextedOverwritten = new TodoList();
-		expextedOverwritten.setTitle("name");
-		expextedOverwritten.setDescription("desc");
-		expextedOverwritten.setColor("#123123");
-		verify(todoListRepository, times(1)).save(expextedOverwritten);
+		var expectedOverwritten = new TodoList();
+		expectedOverwritten.setTitle("name");
+		expectedOverwritten.setDescription("desc");
+		expectedOverwritten.setColor("#123123");
+		verify(todoListRepository, times(1)).save(expectedOverwritten);
 	}
 }

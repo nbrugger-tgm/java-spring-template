@@ -22,6 +22,6 @@ public class LayerArchitectureTest {
 			.whereLayer("Entities").mayOnlyBeAccessedByLayers("Services", "Models", "Repositories")
 			.whereLayer("Repositories").mayOnlyBeAccessedByLayers("Services")
 			.whereLayer("Models").mayOnlyBeAccessedByLayers("Services")
-			.whereLayer("Services").mayNotBeAccessedByAnyLayer()
-			.whereLayer("General").mayOnlyBeAccessedByLayers("Services");
+			.whereLayer("Services").mayNotBeAccessedByAnyLayer();
+	// not possible due to https://github.com/TNG/ArchUnit/issues/154 .whereLayer("General").mayOnlyAccessLayers(/*nothing*/);
 }

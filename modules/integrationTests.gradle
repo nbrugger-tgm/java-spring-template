@@ -2,6 +2,7 @@ sourceSets {
     intTest {
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath
     }
 }
 configurations {
@@ -15,8 +16,10 @@ task integrationTest(type: Test) {
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
-testAll.dependsOn integrationTest
+jacocoTestReport.dependsOn integrationTest
+
 dependencies {
     //integration Tests
     intTestImplementation 'org.springframework.boot:spring-boot-starter-test'

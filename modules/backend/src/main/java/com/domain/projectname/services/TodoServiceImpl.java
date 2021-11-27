@@ -127,7 +127,7 @@ class TodoServiceImpl implements TodoService {
 	@Override
 	public Set<TodoListDto> getAllLists() {
 
-		return todoRepo.findAll()
+		return listRepo.findAll()
 		               .stream()
 		               .map(todo -> mapper.map(todo, TodoListDto.class))
 		               .collect(Collectors.toSet());

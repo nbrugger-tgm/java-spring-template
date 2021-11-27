@@ -4,24 +4,40 @@ import com.domain.projectname.models.TodoEntryDto;
 import com.domain.projectname.models.TodoListDto;
 import com.domain.projectname.services.TodoService;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
-@SpringBootTest(properties = {
-})
-
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 //This test is a example integration test,
-public class TodoServiceIntTest {
+class TodoServiceIntTest {
+	private final Logger      LOG = getLogger(TodoServiceIntTest.class);
 	@Autowired
-	private TodoService todoService;
+	private       TodoService todoService;
 
 	@Test
 	void testWorkflow() {
 		String listName = "test1";
 		var    list     = todoService.createList(new TodoListDto(listName));
 		assertNotNull(list, "The generated list should be returned");
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> todoService.createList(new TodoListDto(listName))
+		);
+
+		var lists = todoService.getAllLists();
+		LOG.info(lists.toString());
+		assertEquals(1, lists.size(), "There should be one list");
+		assertEquals(
+				list,
+				lists.iterator().next(),
+				"The returned list from the container should match the created one!"
+		);
 
 		list.setDescription("test description");
 		list.setColor("#FF0000");
@@ -50,6 +66,34 @@ public class TodoServiceIntTest {
 				item.getName(),
 				entries.iterator().next().getName(),
 				"The task title should match"
+		);
+
+
+		var newName     = "fancy name";
+		var entry       = todoService.getEntry(listName, item.getName());
+		var updateEntry = new TodoEntryDto(newName);
+		updateEntry.setDone(false);
+		todoService.updateItem(listName, entry.getName(), updateEntry);
+		assertDoesNotThrow(
+				() -> todoService.getEntry(listName, newName),
+				"The entry should exist with the new name"
+		);
+		assertThrows(
+				IllegalArgumentException.class,
+				() -> todoService.getEntry(listName, item.getName()),
+				"THe old name should not exist anymore"
+		);
+		assertEquals(
+				newName,
+				todoService.getEntry(listName, newName).getName(),
+				"The task title should be updated"
+		);
+		item.setName(updateEntry.getName());
+		item.setDone(updateEntry.isDone());
+		assertEquals(
+				item,
+				todoService.getEntry(listName, newName),
+				"The task should be updated (but just the name)"
 		);
 
 		todoService.deleteItem(listName, item.getName());

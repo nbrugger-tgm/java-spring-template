@@ -4,8 +4,7 @@
     "version": "0.3.0",
     "version_files": [
       "build.gradle",
-      "README.md",
-      "app/src/main/java/com/example/project/ProjectName.java"
+      "README.md"
     ]
   }
 }

@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 apply plugin: 'java'
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
@@ -44,6 +46,14 @@ task archTest(type: Test) {
     classpath = sourceSets.archTest.runtimeClasspath
     useJUnitPlatform()
 }
+task unitTest(type: Test) {
+    description = 'Runs unit tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+}
 sonarqube {
     properties {
         property 'sonar.coverage.jacoco.xmlReportPaths', "$projectDir/build/reports/jacoco/coverage.xml"
@@ -62,8 +72,18 @@ tasks.withType(Javadoc) {
 tasks.create("testJar", Jar.class) {
     from sourceSets.test.output
 }
+def jacocoFiles = ()->project.tasks.withType(Test)
+        .stream()
+        .filter(tt -> tt.candidateClassFiles.files.stream().anyMatch(f -> f.exists() && f.isFile()))
+        .map(t -> t.name)
+        .map(n -> file("$buildDir/jacoco/${n}.exec"))
+        .toArray(File[]::new);
+
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
+    afterEvaluate {
+        executionData.setFrom(jacocoFiles())
+    }
     violationRules {
         rule {
             limit {
@@ -74,12 +94,25 @@ jacocoTestCoverageVerification {
 }
 
 tasks.jacocoTestReport {
-    dependsOn test // tests are required to run before generating the report
+    // tests are required to run before generating the report
+    dependsOn archTest
+    dependsOn unitTest
+
+    afterEvaluate {
+        executionData.setFrom(jacocoFiles())
+    }
     reports {
         xml.enabled true
-        xml.destination layout.buildDirectory.file("reports/jacoco/coverage.xml").get().asFile
+        xml.destination file("$buildDir/reports/jacoco/coverage.xml")
+        html.enabled true
+        html.destination file("$buildDir/reports/jacoco/html")
         csv.enabled false
-        html.destination layout.buildDirectory.dir("reports/jacoco/html").get().asFile
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/entities/**', '**/models/**'])
+        }))
     }
 }
 tasks.check {
@@ -93,8 +126,5 @@ tasks.test {
     useJUnitPlatform()
     finalizedBy tasks.jacocoTestReport // report is always generated after tests run
 }
-task testAll{
-    group 'verification'
-    dependsOn tasks.test
-    dependsOn tasks.archTest
-}
+javadocJar.enabled = false
+sourcesJar.enabled = false
