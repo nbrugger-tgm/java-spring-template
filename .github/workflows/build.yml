@@ -44,11 +44,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Fetch Refs
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.base_ref }}
       - name: download build
         uses: actions/download-artifact@v2
         with:
@@ -56,15 +51,14 @@ jobs:
       - name: run tests
         uses: ./.github/actions/gradle
         with:
-          task: test
-      - name: check code coverage
-        run: ./gradlew check
-      - name: upload sonarqube report
-        env:
-          #This will cause issues as it will not be available on a fork branch
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube --info
+          task: unitTest
+      - name: store unit results
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
   integration_testing:
     runs-on: ubuntu-latest
     name: Integration testing
@@ -80,6 +74,13 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: integrationTest
+      - name: store integration results
+        uses: actions/upload-artifact@v2
+        with:
+          name: integration-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
   architecture_testing:
     runs-on: ubuntu-latest
     name: Architecture testing
@@ -95,13 +96,47 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: archTest
-  openapi_diff:
+      - name: store architecture results
+        uses: actions/upload-artifact@v2
+        with:
+          name: architecture-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
+  codecov:
     runs-on: ubuntu-latest
-    name: OpenAPI
+    name: code-coverage
     needs:
       - unit_testing
       - architecture_testing
       - integration_testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: unit-result
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: integration-result
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: architecture-result
+      - name: check code coverage
+        run: ./gradlew check
+      - name: upload sonarqube report
+        env:
+          #This will cause issues as it will not be available on a fork branch
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube --info
+  openapi_diff:
+    runs-on: ubuntu-latest
+    name: OpenAPI
+    needs: codecov
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
@@ -112,7 +147,7 @@ jobs:
         with:
           filters: |
             api:
-              - 'modules/api/**'
+              - 'modules/api/src/**'
       - name: download build
         uses: actions/download-artifact@v2
         with:
