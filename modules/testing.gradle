@@ -45,3 +45,7 @@ afterEvaluate {
         maxParallelForks = 2
     }
 }
+test {
+    dependsOn archTest
+    dependsOn unitTest
+}
