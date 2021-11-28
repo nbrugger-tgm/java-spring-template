@@ -1,5 +1,6 @@
 package com.domain.projectname.services;
 
+import com.domain.projectname.entities.todo.TodoEntry;
 import com.domain.projectname.entities.todo.TodoList;
 import com.domain.projectname.models.TodoListDto;
 import com.domain.projectname.repositories.TodoListRepository;
@@ -11,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -64,5 +67,20 @@ class TodoServiceTest {
 		expectedOverwritten.setDescription("desc");
 		expectedOverwritten.setColor("#123123");
 		verify(todoListRepository, times(1)).save(expectedOverwritten);
+	}
+
+	@Test
+	void setDone() {
+		var entry = spy(new TodoEntry());
+		entry.setDone(false);
+		entry.setName("item");
+		entry.setDueTo(LocalDate.now().plusDays(2));
+
+		when(todoListRepository.existsByTitle("list")).thenReturn(true);
+		when(todoListRepository.getIdByTitle("list")).thenReturn(123L);
+		when(todoRepository.existsByNameAndListId("item", 123L)).thenReturn(true);
+		when(todoRepository.findByNameAndListId("item", 123L)).thenReturn(entry);
+		todoService.setDone("list", "item", true);
+		verify(entry, times(1)).setDone(true);
 	}
 }

@@ -150,4 +150,14 @@ class TodoServiceImpl implements TodoService {
 		verifyItemExistence(itemName, listId);
 		return mapper.map(todoRepo.findByNameAndListId(itemName, listId), TodoEntryDto.class);
 	}
+
+	@Override
+	@Transactional
+	public void setDone(String list, String itemName, boolean done) {
+		verifyListExistence(list);
+		long listId = listRepo.getIdByTitle(list);
+		verifyItemExistence(itemName, listId);
+		var entry = todoRepo.findByNameAndListId(itemName, listId);
+		entry.setDone(done);
+	}
 }
