@@ -40,3 +40,8 @@ task unitTest(type: Test) {
 tasks.create("testJar", Jar.class) {
     from sourceSets.test.output
 }
+afterEvaluate {
+    tasks.withType(Test).configureEach {
+        maxParallelForks = 2
+    }
+}
