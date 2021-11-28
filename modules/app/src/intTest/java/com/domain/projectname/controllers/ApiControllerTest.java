@@ -1,7 +1,7 @@
 package com.domain.projectname.controllers;
 
 import com.domain.projectname.models.VersionDto;
-import com.domain.projectname.services.ServiceTest;
+import com.domain.projectname.services.ServiceTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(value = ApiController.class)
-@Import(ServiceTest.class)
+@Import(ServiceTestConfig.class)
 class ApiControllerTest {
 	//This is the official SemVer regex
 	private final static String VER_REGEX    = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";

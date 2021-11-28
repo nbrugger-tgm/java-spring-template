@@ -32,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          task: check sonarqube --info
+          task: check sonarqube
   openapi_diff:
     runs-on: ubuntu-latest
     name: OpenAPI
@@ -47,7 +47,7 @@ jobs:
         with:
           filters: |
             api:
-              - 'modules/api/src/**'
+              - 'modules/api/src/**/*.*'
       - name: Build PR OAS
         if: steps.filter.outputs.api == 'true'
         uses: ./.github/actions/gradle
