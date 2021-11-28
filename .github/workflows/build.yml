@@ -26,72 +26,112 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
       - name: compile
-        run: ./gradlew clean jar
+        uses: ./.github/actions/gradle
+        with:
+          task: jar
       - name: store build
         uses: actions/upload-artifact@v2
         with:
           name: base-build
           path: |
-            build
-            */build
+            .gradle
+            modules/*/build
           retention-days: 1
-  quality-check:
+  unit_testing:
     runs-on: ubuntu-latest
-    name: Quality Check
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
-      - name: install java
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
-      - uses: gradle/wrapper-validation-action@v1
-  testing:
-    runs-on: ubuntu-latest
-    name: Testing
+    name: Unit testing
     needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Fetch Refs
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.base_ref }}
       - name: download build
         uses: actions/download-artifact@v2
         with:
           name: base-build
-      - name: install java
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
       - name: run tests
-        run: ./gradlew test
+        uses: ./.github/actions/gradle
+        with:
+          task: unitTest
+      - name: store unit results
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
+  integration_testing:
+    runs-on: ubuntu-latest
+    name: Integration testing
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
+      - name: run tests
+        uses: ./.github/actions/gradle
+        with:
+          task: integrationTest
+      - name: store integration results
+        uses: actions/upload-artifact@v2
+        with:
+          name: integration-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
+  architecture_testing:
+    runs-on: ubuntu-latest
+    name: Architecture testing
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: download build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
+      - name: run tests
+        uses: ./.github/actions/gradle
+        with:
+          task: archTest
+      - name: store architecture results
+        uses: actions/upload-artifact@v2
+        with:
+          name: architecture-result
+          path: |
+            modules/*/build/**
+          retention-days: 1
+  codecov:
+    runs-on: ubuntu-latest
+    name: code-coverage
+    needs:
+      - unit_testing
+      - architecture_testing
+      - integration_testing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: download base build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: unit-result
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: integration-result
+      - name: download unit results
+        uses: actions/download-artifact@v2
+        with:
+          name: architecture-result
       - name: check code coverage
         run: ./gradlew check
-      - name: print produced files
-        run: ls */build/reports/ */build/libs */build/reports/jacoco
-        continue-on-error: true
       - name: upload sonarqube report
         env:
           #This will cause issues as it will not be available on a fork branch
@@ -101,7 +141,7 @@ jobs:
   openapi_diff:
     runs-on: ubuntu-latest
     name: OpenAPI
-    needs: testing
+    needs: codecov
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
@@ -112,7 +152,7 @@ jobs:
         with:
           filters: |
             api:
-              - 'api/**'
+              - 'modules/api/src/**'
       - name: download build
         uses: actions/download-artifact@v2
         with:

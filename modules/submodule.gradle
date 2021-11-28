@@ -1,0 +1,41 @@
+import java.util.stream.Collectors
+
+apply plugin: 'java'
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
+
+println "Configure ${project.name}"
+
+dependencies {
+    //This is needed to be able to create abstract tests in production code
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+}
+
+project.ext.loadScript = (name) -> apply from: "$rootDir/modules/${name}.gradle"
+
+loadScript('testing')
+loadScript('jacoco')
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withJavadocJar()
+    withSourcesJar()
+}
+repositories {
+    mavenCentral()
+}
+
+sonarqube {
+    properties {
+        property 'sonar.coverage.jacoco.xmlReportPaths', "$projectDir/build/reports/jacoco/coverage.xml"
+    }
+}
+
+tasks.withType(Javadoc) {
+    failOnError = false
+}
+//allow submodule nesting
+subprojects {
+    apply from: "${rootDir}/modules/submodule.gradle"
+}

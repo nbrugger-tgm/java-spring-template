@@ -1,11 +1,10 @@
 {
   "commitizen": {
     "name": "cz_conventional_commits",
-    "version": "0.3.0",
+    "version": "0.4.0b0",
     "version_files": [
-      "build.gradle",
-      "README.md",
-      "app/src/main/java/com/example/project/ProjectName.java"
+      "modules/build.gradle",
+      "README.md"
     ]
   }
 }

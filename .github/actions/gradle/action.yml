@@ -1,0 +1,22 @@
+description: "Executes a gradle task with the gradle wrapper"
+name: update message
+inputs:
+  task:
+    description: "The gradle task"
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: verify gradle-wrapper
+      uses: gradle/wrapper-validation-action@v1
+    - name: prepare gradle
+      run: chmod +x gradlew
+      shell: bash
+    - name: execute task
+      run: ./gradlew ${{ inputs.task }}
+      shell: bash
+
