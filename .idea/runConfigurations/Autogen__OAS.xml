@@ -4,7 +4,7 @@
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/app" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="generateOpenApiDocs" />
+      <option name="scriptParameters" value="generateOpenApiDocs --build-cache" />
       <option name="taskDescriptions">
         <list />
       </option>
