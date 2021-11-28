@@ -20,6 +20,11 @@ public class BaseEntity {
 	private long id;
 
 	@Override
+	public int hashCode() {
+		return Long.hashCode(id);
+	}
+
+	@Override
 	public final boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
