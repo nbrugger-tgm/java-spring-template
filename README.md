@@ -26,7 +26,7 @@ manage reviews, automatic code maintance.
     - [x] Codecoverage check with JaCoCo
     - [ ] Deployment (only with docker)
     - [ ] Upload to docker repo (optional)
-- [ ] (automatic) Semantic versioning by
+- [x] (automatic) Semantic versioning by
   using [`conventional commits`](https://www.conventionalcommits.org/en/v1.0.0/)
 - [ ] `Readme.md` template ([here](readme-template.md)) that contains a few badges and a quite ok
   layout
