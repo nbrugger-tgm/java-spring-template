@@ -3,6 +3,10 @@ name: Check Reviews
 on:
   pull_request_review:
     types: [ submitted, edited ]
+
+env:
+  minReviews: 1
+
 jobs:
   check_reviews:
     runs-on: ubuntu-latest
@@ -32,22 +36,25 @@ jobs:
           DISMISSED: ${{ steps.reviewsCount.outputs.dismissed }}
           PENDING: ${{ steps.reviewsCount.outputs.pending }}
           CHANGES_REQUESTED: ${{ steps.reviewsCount.outputs.changes_requested }}
+
       - name: approve merge
-        if: |
-          steps.reviewsCount.outputs.approved > 0 &&
-          steps.reviewsCount.outputs.pending == 0 &&
-          steps.reviewsCount.outputs.changes_requested == 0 &&
-          steps.reviewsCount.outputs.dismissed == 0
-        uses: andymckay/labeler@1.0.4
+        if: always()
+        uses: ./.github/actions/set-label
         with:
-          repo-token: ${{ secrets.PAT }}
-          add-labels: 'ready for merge'
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          label: 'ready for merge'
+          needed: |
+            steps.reviewsCount.outputs.approved >= env.minReviews &&
+            steps.reviewsCount.outputs.pending == 0 &&
+            steps.reviewsCount.outputs.changes_requested == 0 &&
+            steps.reviewsCount.outputs.dismissed == 0
       - name: update review label
+        if: always()
         uses: ./.github/actions/set-label
         with:
           needed: |
             ${{ !(
-            steps.reviewsCount.outputs.approved > 0 &&
+            steps.reviewsCount.outputs.approved >= env.minReviews &&
             steps.reviewsCount.outputs.pending == 0 &&
             steps.reviewsCount.outputs.changes_requested == 0 &&
             steps.reviewsCount.outputs.dismissed == 0

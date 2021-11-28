@@ -2,13 +2,13 @@ name: Review
 
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ synchronize ]
     branches:
       - master
       - main
       - staging
   pull_request_target:
-    types: [ labeled ]
+    types: [ synchronize ]
     branches:
       - dev
       - hotfix
@@ -28,7 +28,6 @@ jobs:
     if: |
       (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') &&
       !github.event.pull_request.draft &&
-      github.event.label.name == 'ready for build' &&
       !(github.event.pull_request.head.repo.full_name != github.repository &&
         github.actor != 'dependabot[bot]' &&
         github.base_ref != 'dev' && github.base_ref != 'hotfix')

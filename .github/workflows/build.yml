@@ -8,7 +8,7 @@ on:
       - main
       - staging
       - hotfix
-    types: [ labeled ]
+    types: [ synchronize ]
   push:
     branches:
       - master
@@ -21,10 +21,17 @@ jobs:
   testing:
     name: testing
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.label.name == 'ready for build' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Wait for formal check
+        uses: lewagon/wait-on-check-action@v1.1.1
+        with:
+          ref: ${{ github.head_ref }}
+          check-name: 'Formal Check'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
       - name: gradle check
         uses: ./.github/actions/gradle
         env:

@@ -171,6 +171,14 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
+      - name: approve merge
+        if: always()
+        uses: ./.github/actions/set-label
+        with:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          label: 'ready for merge'
+          needed: |
+            job.status == 'success'
   release:
     runs-on: ubuntu-latest
     needs:
