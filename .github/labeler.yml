@@ -1,5 +1,5 @@
 api:
-  - 'api/**'
+  - 'modules/api/**'
 database:
   - '**/*.sql'
 documentation:

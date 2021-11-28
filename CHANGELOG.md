@@ -1,3 +1,58 @@
+## 0.4.0rc0 (2021-11-28)
+
+### Fix
+
+- sonar issues
+
+## 0.4.0b2 (2021-11-28)
+
+### Refactor
+
+- make `test` execute all test types
+
+### Feat
+
+- update done status endpoint
+
+## 0.4.0b1 (2021-11-28)
+
+### Perf
+
+- use unified gradle compile task
+- enable build cache and parallelism
+
+### Fix
+
+- bad reference
+- bad reference
+
+## 0.4.0b0 (2021-11-28)
+
+### Fix
+
+- cz bump path
+- adapt gradle for tests
+- sonar issue
+- old module paths in ci files
+
+### Feat
+
+- add API arch test
+- add todo unit test
+- add todo api
+- add integration test
+- add todo (example) backend
+- add backend arch tests
+
+### Refactor
+
+- move arch tests
+- restructure modules
+
+### Perf
+
+- only re-generate OAS when source changes
+
 ## 0.3.0 (2021-11-21)
 
 ### Fix
