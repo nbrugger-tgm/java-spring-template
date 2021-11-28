@@ -162,12 +162,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        if: needs.openapi.steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
+      - name: Check api changes
+        uses: tony84727/changed-file-filter@v0.2.0
+        id: filter
+        with:
+          filters: |
+            api:
+              - api/src/**
       - name: find git sha
-        if: needs.openapi.steps.filter.outputs.api == 'true'
+        if: steps.filter.outputs.api == 'true'
         id: sha
         run: |
           git fetch origin
@@ -175,14 +181,14 @@ jobs:
           echo "::set-output name=head::$(git rev-parse ${{ github.head_ref }})"
       - name: download build
         uses: actions/download-artifact@v2
-        if: needs.openapi.steps.filter.outputs.api == 'true'
+        if: steps.filter.outputs.api == 'true'
         with:
           name: binaries
       - name: Build clients
-        if: needs.openapi.steps.filter.outputs.api == 'true'
+        if: steps.filter.outputs.api == 'true'
         run: ./gradlew autogenClients
       - name: Commit clients
-        if: needs.openapi.steps.filter.outputs.api == 'true'
+        if: steps.filter.outputs.api == 'true'
         uses: EndBug/add-and-commit@v7
         with:
           add: 'client'
