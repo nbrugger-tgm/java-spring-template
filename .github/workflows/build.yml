@@ -35,6 +35,7 @@ jobs:
         with:
           name: base-build
           path: |
+            .gradle
             modules/*/build
           retention-days: 1
   unit_testing:
@@ -113,6 +114,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: download base build
+        uses: actions/download-artifact@v2
+        with:
+          name: base-build
       - name: download unit results
         uses: actions/download-artifact@v2
         with:

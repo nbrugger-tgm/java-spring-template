@@ -16,7 +16,6 @@ task integrationTest(type: Test) {
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
 }
 jacocoTestReport.dependsOn integrationTest
 

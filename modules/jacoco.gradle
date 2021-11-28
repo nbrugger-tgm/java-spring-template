@@ -1,0 +1,41 @@
+def exclude = ['**/entities/**', '**/models/**'];
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = project.ext.minCoverage
+            }
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("$buildDir/reports/jacoco/coverage.xml")
+        html.enabled true
+        html.destination file("$buildDir/reports/jacoco/html")
+        csv.enabled false
+    }
+}
+check {
+    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
+}
+test {
+    finalizedBy jacocoTestReport
+}
+
+tasks.withType(JacocoReportBase){
+    executionData.setFrom(fileTree("$buildDir/jacoco/"))
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: exclude)
+        }))
+    }
+}
