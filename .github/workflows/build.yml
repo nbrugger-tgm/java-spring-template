@@ -35,7 +35,7 @@ jobs:
   openapi_diff:
     runs-on: ubuntu-latest
     name: OpenAPI
-    needs: codecov
+    needs: testing
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
