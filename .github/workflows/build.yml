@@ -25,14 +25,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: check code coverage
-        run: ./gradlew check
-      - name: upload sonarqube report
+      - name: gradle check
+        uses: ./.github/actions/gradle
         env:
           #This will cause issues as it will not be available on a fork branch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube --info
+        with:
+          task: check sonarqube --info
   openapi_diff:
     runs-on: ubuntu-latest
     name: OpenAPI
@@ -48,15 +48,11 @@ jobs:
           filters: |
             api:
               - 'modules/api/src/**'
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
       - name: Build PR OAS
         if: steps.filter.outputs.api == 'true'
-        run: |
-          chmod +x gradlew
-          ./gradlew generateOpenApiDocs
+        uses: ./.github/actions/gradle
+        with:
+          task: generateOpenApiDocs
       - name: Checkout base branch
         if: steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2
