@@ -19,6 +19,7 @@ on:
 
 jobs:
   testing:
+    name: testing
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' || github.event.label.name == 'ready for build' }}
     steps:
