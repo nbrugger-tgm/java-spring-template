@@ -17,8 +17,9 @@ task integrationTest(type: Test) {
     classpath = sourceSets.intTest.runtimeClasspath
     useJUnitPlatform()
 }
-jacocoTestReport.dependsOn integrationTest
-
+test {
+    dependsOn integrationTest
+}
 dependencies {
     //integration Tests
     intTestImplementation 'org.springframework.boot:spring-boot-starter-test'

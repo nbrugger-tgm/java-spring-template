@@ -25,4 +25,6 @@ public interface TodoService {
 	Set<TodoEntryDto> getEntries(String listName);
 
 	TodoEntryDto getEntry(String listName, String itemName);
+
+	void setDone(String list, String itemName, boolean done);
 }

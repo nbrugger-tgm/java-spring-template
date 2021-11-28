@@ -50,4 +50,11 @@ public interface TodoController {
 
 	@GetMapping("lists/{name}/itemNames")
 	Set<String> getItemNames(@PathVariable String name);
+
+	@PatchMapping("lists/{list}/items/{itemName}/done/{done}")
+	void setDone(
+			@PathVariable String list,
+			@PathVariable String itemName,
+			@PathVariable boolean done
+	);
 }

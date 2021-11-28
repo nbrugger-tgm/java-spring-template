@@ -1,3 +1,13 @@
+## 0.4.0b2 (2021-11-28)
+
+### Refactor
+
+- make `test` execute all test types
+
+### Feat
+
+- update done status endpoint
+
 ## 0.4.0b1 (2021-11-28)
 
 ### Perf

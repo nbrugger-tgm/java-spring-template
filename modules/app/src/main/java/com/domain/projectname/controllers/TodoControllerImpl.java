@@ -75,4 +75,9 @@ public class TodoControllerImpl implements TodoController {
 		              .map(TodoEntryDto::getName)
 		              .collect(Collectors.toSet());
 	}
+
+	@Override
+	public void setDone(String list, String itemName, boolean done) {
+		service.setDone(list, itemName, done);
+	}
 }
