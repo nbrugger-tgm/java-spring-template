@@ -1,3 +1,15 @@
+## 0.4.0b1 (2021-11-28)
+
+### Perf
+
+- use unified gradle compile task
+- enable build cache and parallelism
+
+### Fix
+
+- bad reference
+- bad reference
+
 ## 0.4.0b0 (2021-11-28)
 
 ### Fix
