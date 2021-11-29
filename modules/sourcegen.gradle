@@ -1,0 +1,21 @@
+sourceSets {
+    template {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.output
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+}
+task generateJava(type: Copy) {
+    inputs.properties project.ext.templateProperties // for gradle up-to-date check
+    from 'src/template/java'
+    into "$buildDir/generated/java"
+    expand project.ext.templateProperties
+    doFirst {
+        delete destinationDir
+    }
+}
+sourceSets.main.java.srcDir "$buildDir/generated/java"
+compileJava.dependsOn generateJava

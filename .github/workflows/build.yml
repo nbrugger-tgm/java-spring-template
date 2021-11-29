@@ -18,86 +18,21 @@ on:
       - hotfix
 
 jobs:
-  build:
-    name: compile
+  testing:
+    name: testing
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' || github.event.label.name == 'ready for build' }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
-      - name: compile
-        run: ./gradlew clean jar
-      - name: store build
-        uses: actions/upload-artifact@v2
-        with:
-          name: base-build
-          path: |
-            build
-            */build
-          retention-days: 1
-  quality-check:
-    runs-on: ubuntu-latest
-    name: Quality Check
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
-      - name: install java
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
-      - uses: gradle/wrapper-validation-action@v1
-  testing:
-    runs-on: ubuntu-latest
-    name: Testing
-    needs: build
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Fetch Refs
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.base_ref }}
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
-      - name: install java
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: prepare gradle
-        run: chmod +x gradlew
-      - name: run tests
-        run: ./gradlew test
-      - name: check code coverage
-        run: ./gradlew check
-      - name: print produced files
-        run: ls */build/reports/ */build/libs */build/reports/jacoco
-        continue-on-error: true
-      - name: upload sonarqube report
+      - name: gradle check
+        uses: ./.github/actions/gradle
         env:
           #This will cause issues as it will not be available on a fork branch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube --info
+        with:
+          task: check sonarqube
   openapi_diff:
     runs-on: ubuntu-latest
     name: OpenAPI
@@ -112,16 +47,12 @@ jobs:
         with:
           filters: |
             api:
-              - 'api/**'
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: base-build
+              - 'modules/api/src/**/*.*'
       - name: Build PR OAS
         if: steps.filter.outputs.api == 'true'
-        run: |
-          chmod +x gradlew
-          ./gradlew generateOpenApiDocs
+        uses: ./.github/actions/gradle
+        with:
+          task: generateOpenApiDocs
       - name: Checkout base branch
         if: steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2

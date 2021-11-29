@@ -1,0 +1,42 @@
+= Design
+
+Many of theese rules are enfoced using `ArchUnit`. Reading this guidee is still recommended as not everything is testable.
+
+== Modules
+
+There are 3 core modules:
+
+=== **app**
+
+Exposes the functionality of `backend` to the outside world by serving  the API definition from the `api` module.
+
+The task of this module is solely to serve the API implementation. No logic that is strictly related to serving the api should not be here.
+
+* *Allowed* to contain
+    -  Security _configuration_ (the security logic should still be in backend)
+    - HTTP based configurations (port, ssl, etc)
+    - Logic to pass "web information" to the backend (read contents from a web-session)
+    - Configuration of the spring context _except configuration that affect the backend module! Theese configurations should be supplied by the backend_
+* **Not allowed** to add any api definitions (e.g. endpoints, error handlers)
+* **Must** soley depend on api, backend, spring web modules and spring security
+* **Must** contain the main class
+
+=== **api**
+
+Contains the definition for the API endpoints.
+
+* **Allowed** to depend on web-dependencies like spring-web/spring-webmvc.
+* **Not allowed** to contain implementation
+* **Not allowed** to depend on other modules _beside backend_ for entities.
+* **Must** only contain interfaces that matter for the API. (Controllers, ErrorHandlers, Controller Advice)
+* **Must not** be tested as there is no implementation.
+* **Must** define all dependencies as `compile-only`
+
+=== **backend**
+Contains the core logic of the application. All services and Models belog here. Anything that can be seen as logic belongs here. That includes the persistance layer (eg. Repositories). This module should have no dependencies to other modules!
+
+* **Allowed** Dependencies to 3rd party logic modules/libs
+* **Must** Include ALL logic (services)
+* **Must** Include ALL data (models)
+* **Must** Include ALL persistence units (entities, repositories)
+* **Not Allowed** to depend on "Web" reated modules/libs (e.g. spring-boot-web or javax.servlet)

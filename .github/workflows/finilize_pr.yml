@@ -83,34 +83,10 @@ jobs:
         run: |
           git push
 
-  prebuild:
-    name: Prebuild
-    runs-on: ubuntu-latest
-    needs:
-      - semver
-    if: github.event.label.name == 'ready for merge'
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: prepare gradle
-        run: chmod +x gradlew
-      - name: build
-        run: ./gradlew clean jar bootJar
-      - name: store build
-        uses: actions/upload-artifact@v2
-        with:
-          name: binaries
-          path: |
-            build
-            */build
-            .gradle
-          retention-days: 1
   openapi:
     runs-on: ubuntu-latest
     name: Autogen OpenAPI
     needs:
-      - prebuild
       - semver
     steps:
       - name: Checkout
@@ -123,16 +99,12 @@ jobs:
         with:
           filters: |
             api:
-              - api/**/*
-      - name: download build
-        uses: actions/download-artifact@v2
-        with:
-          name: binaries
-      - name: Generate PR OAS
+              - modules/api/src/**
+      - name: Generate OpenAPI
         if: steps.filter.outputs.api == 'true'
-        run: |
-          chmod +x gradlew
-          ./gradlew generateOpenApiDocs
+        uses: ./.github/actions/gradle
+        with:
+          task: generateOpenApiDocs autogenClients
       - name: Checkout base branch
         if: steps.filter.outputs.api == 'true'
         uses: actions/checkout@v2
@@ -157,33 +129,8 @@ jobs:
             openapi.json
           commit-message: 'docs(oas): add PR changes to OAS'
           ref: ${{ github.head_ref }}
-  client:
-    name: Autogen clients
-    needs: openapi
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        if: needs.openapi.steps.filter.outputs.api == 'true'
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      - name: find git sha
-        if: needs.openapi.steps.filter.outputs.api == 'true'
-        id: sha
-        run: |
-          git fetch origin
-          echo "::set-output name=base::$(git rev-parse origin/${{ github.base_ref }})"
-          echo "::set-output name=head::$(git rev-parse ${{ github.head_ref }})"
-      - name: download build
-        uses: actions/download-artifact@v2
-        if: needs.openapi.steps.filter.outputs.api == 'true'
-        with:
-          name: binaries
-      - name: Build clients
-        if: needs.openapi.steps.filter.outputs.api == 'true'
-        run: ./gradlew autogenClients
       - name: Commit clients
-        if: needs.openapi.steps.filter.outputs.api == 'true'
+        if: steps.filter.outputs.api == 'true'
         uses: EndBug/add-and-commit@v7
         with:
           add: 'client'
@@ -198,7 +145,6 @@ jobs:
     name: Merge PR
     runs-on: ubuntu-latest
     needs:
-      - client
       - openapi
       - semver
     outputs:
@@ -242,14 +188,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: changelog_diff.md
-      - name: Download binaries
-        uses: actions/download-artifact@v2
+      - name: compile
+        uses: ./.github/actions/gradle
         with:
-          name: binaries
+          task: bootJar
       - name: Create release
         uses: ncipollo/release-action@v1.8.10
         with:
-          artifacts: "app/build/libs/app-${{ needs.semver.outputs.version }}.jar"
+          artifacts: "modules/app/build/libs/app-${{ needs.semver.outputs.version }}.jar"
           bodyFile: changelog_diff.md
           artifactContentType: application/java-archive
           draft: false
