@@ -11,50 +11,120 @@
     }
   ],
   "paths": {
-    "/greet/{name}": {
+    "/todo/lists": {
       "get": {
         "tags": [
-          "greeting-controller-impl"
+          "todo-controller-impl"
         ],
-        "operationId": "greetHuman",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Get all lists",
+        "description": "Get a list of all todo lists",
+        "operationId": "getLists",
         "responses": {
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
+              "*/*": {
                 "schema": {
-                  "type": "string"
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TodoListDto"
+                  }
                 }
               }
             }
           }
         }
       },
-      "put": {
+      "post": {
         "tags": [
-          "greeting-controller-impl"
+          "todo-controller-impl"
         ],
-        "operationId": "greetHumanPut",
+        "description": "Add a new todo list",
+        "operationId": "createList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoListDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/todo/lists/{name}": {
+      "get": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "description": "Get a list of todo items with the specified name",
+        "operationId": "getList",
+        "parameters": [
+          {
+            "name": "listId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoListDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "updateList",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoListDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "deleteList",
         "parameters": [
           {
             "name": "name",
@@ -66,52 +136,210 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/todo/lists/{name}/items": {
+      "get": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "getItems",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-          },
+          }
+        ],
+        "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string"
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TodoEntryDto"
+                  }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/greet": {
-      "get": {
+      },
+      "post": {
         "tags": [
-          "greeting-controller-impl"
+          "todo-controller-impl"
         ],
-        "operationId": "greetWorld",
-        "responses": {
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoEntryDto"
               }
             }
           },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/todo/lists/{name}/items/{itemName}": {
+      "get": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "getItem",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
+              "*/*": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/TodoEntryDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TodoEntryDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "deleteItem",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/todo/lists/{name}/itemNames": {
+      "get": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "getItemNames",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "uniqueItems": true,
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -122,26 +350,18 @@
     "/api/version": {
       "get": {
         "tags": [
-          "api-controller"
+          "ApiInfo"
         ],
-        "operationId": "version",
+        "summary": "Get API version",
+        "description": "Get API version",
+        "operationId": "getVersion",
         "responses": {
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/VersionResponse"
+                  "$ref": "#/components/schemas/VersionDto"
                 }
               }
             }
@@ -152,26 +372,45 @@
   },
   "components": {
     "schemas": {
-      "ErrorResponse": {
+      "TodoListDto": {
         "required": [
-          "code",
-          "message"
+          "color",
+          "title"
         ],
         "type": "object",
         "properties": {
-          "message": {
+          "title": {
+            "maxLength": 64,
+            "minLength": 2,
             "type": "string"
           },
-          "code": {
+          "description": {
+            "maxLength": 2048,
+            "minLength": 0,
             "type": "string"
           },
-          "error": {
-            "pattern": "[a-bA-B_-]+",
+          "color": {
+            "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
             "type": "string"
           }
         }
       },
-      "VersionResponse": {
+      "TodoEntryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "dueTo": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "VersionDto": {
         "type": "object",
         "properties": {
           "version": {

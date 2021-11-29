@@ -1,0 +1,36 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    implementation platform('org.springframework.boot:spring-boot-dependencies:2.6.0')
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.6.0'
+    implementation 'com.h2database:h2:1.4.200'
+    implementation 'mysql:mysql-connector-java:8.0.27'
+
+    implementation 'org.modelmapper.extensions:modelmapper-spring:2.4.2'
+
+}
+
+
+project.ext.templateProperties = [version: project.version]
+apply from: "$rootDir/modules/integrationTests.gradle"
+apply from: "$rootDir/modules/sourcegen.gradle"
+
+sourceSets {
+    template {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.output
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+}
