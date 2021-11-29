@@ -1,3 +1,13 @@
+## 0.5.0rc0 (2021-11-29)
+
+### Fix
+
+- release script
+
+### Perf
+
+- remove label after merge
+
 ## 0.5.0b3 (2021-11-29)
 
 ## 0.5.0b2 (2021-11-29)
