@@ -48,12 +48,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
-      - name: lock pull request
-        uses: sudo-bot/action-pull-request-lock@v1.0.5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ github.event.pull_request.number }}
-          lock-reason: resolved
       - name: Scan release stage
         id: branch
         run: |
