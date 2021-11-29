@@ -2,13 +2,13 @@ name: Review
 
 on:
   pull_request:
-    types: [ synchronize ]
+    types: [ synchronize, opened ]
     branches:
       - master
       - main
       - staging
   pull_request_target:
-    types: [ synchronize ]
+    types: [ synchronize, opened ]
     branches:
       - dev
       - hotfix
