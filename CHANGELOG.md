@@ -1,3 +1,34 @@
+## 0.5.0rc0 (2021-11-29)
+
+### Fix
+
+- release script
+
+### Perf
+
+- remove label after merge
+
+## 0.5.0b3 (2021-11-29)
+
+## 0.5.0b2 (2021-11-29)
+
+### Fix
+
+- no review on fisr commit
+- ci not running on new PRs
+
+## 0.5.0b1 (2021-11-29)
+
+## 0.5.0b0 (2021-11-29)
+
+### Feat
+
+- docker support
+
+### Perf
+
+- reduce labeling
+
 ## 0.4.0 (2021-11-29)
 
 ## 0.4.0rc0 (2021-11-28)

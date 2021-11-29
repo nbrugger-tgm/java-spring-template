@@ -171,6 +171,13 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
+      - name: approve merge
+        if: always()
+        uses: ./.github/actions/set-label
+        with:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          label: 'ready for merge'
+          needed: false
   release:
     runs-on: ubuntu-latest
     needs:
@@ -192,6 +199,20 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: bootJar
+      - name: build docker image
+        uses: ./.github/actions/gradle
+        env:
+          DOCKER_REPO_KEY: ${{ secrets.DOCKER_REPO_KEY }}
+        with:
+          task: bootBuildImage
+      - name: add info to changelog
+        run: |
+          echo "## Docker" >> changelog_diff.md
+          echo "Pull me : `docker pull niton.jfrog.io/docker-services/project-name:${{ needs.semver.outputs.version }}`" >> changelog_diff.md
+          echo "**Env** " >> changelog_diff.md
+          echo "* **DB_URL**: The url to use as datasource (default h2)" >> changelog_diff.md
+          echo "**Ports**" >> changelog_diff.md
+          echo "* **8080**: The port to use for the service" >> changelog_diff.md
       - name: Create release
         uses: ncipollo/release-action@v1.8.10
         with:
