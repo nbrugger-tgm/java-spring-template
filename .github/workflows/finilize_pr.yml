@@ -177,8 +177,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.PAT }}
           label: 'ready for merge'
-          needed: |
-            job.status == 'success'
+          needed: false
   release:
     runs-on: ubuntu-latest
     needs:
