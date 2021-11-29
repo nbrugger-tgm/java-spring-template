@@ -28,7 +28,7 @@ runs:
         path: |
           .gradle/
           modules/*/build/
-        key: ${{ runner.os }}-gradle-build-${{ github.ref }}
+        key: ${{ runner.os }}-gradle-build
     - name: prepare gradle
       run: chmod +x gradlew
       shell: bash
