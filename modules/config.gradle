@@ -8,4 +8,9 @@ project.ext {
     sonarProjectKey = "nbrugger-tgm_java-spring-template"
     sonarOrganization = "nbrugger-tgm"
     sonarHost = "https://sonarcloud.io"
+
+    dockerRepo = "niton.jfrog.io/docker-services"
+    dockerRepoUserEmail = "nbrugger@student.tgm.ac.at"
+    dockerRepoUser = "nbrugger@student.tgm.ac.at"
+    dockerRepoUrl = "https://$dockerRepo/"
 }

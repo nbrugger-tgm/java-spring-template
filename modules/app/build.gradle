@@ -1,5 +1,6 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     id 'org.springframework.boot' version '2.6.0'
@@ -46,4 +47,25 @@ jacocoTestCoverageVerification {
 
 openApi {
     outputDir.set(rootDir)
+}
+
+task bootBuildLocalImage(type: BootBuildImage) {
+    group "build"
+    imageName "${rootProject.name}:${project.version}"
+    publish = false
+}
+bootBuildImage {
+    imageName "${project.ext.dockerRepo}/${rootProject.name}:${project.version}"
+    publish = true
+    docker {
+        publishRegistry {
+            username = project.ext.dockerRepoUser
+            password = System.getenv('DOCKER_REPO_KEY')
+            url = project.ext.dockerRepoUrl
+            email = project.ext.dockerRepoUserEmail
+        }
+    }
+    environment = [
+            'BPL_DB_URL': 'jdbc:h2:file:/app/database'
+    ]
 }

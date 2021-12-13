@@ -8,7 +8,7 @@ on:
       - main
       - staging
       - hotfix
-    types: [ labeled ]
+    types: [ synchronize, opened ]
   push:
     branches:
       - master
@@ -21,7 +21,6 @@ jobs:
   testing:
     name: testing
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.label.name == 'ready for build' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
