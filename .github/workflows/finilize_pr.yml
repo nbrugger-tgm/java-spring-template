@@ -82,6 +82,13 @@ jobs:
       - name: Push bump
         run: |
           git push
+      - name: unlabel
+        if: failed()
+        uses: ./.github/actions/set-label
+        with:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          label: 'ready for merge'
+          needed: false
 
   openapi:
     runs-on: ubuntu-latest
