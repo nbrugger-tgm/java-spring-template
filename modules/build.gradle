@@ -21,6 +21,7 @@ sonarqube {
         property "sonar.host.url", project.ext.sonarHost
         property "sonar.tests", "src/intTest,src/archTest,src/test"
         property "sonar.coverage.exclusions", "**/controllers/**/*.*, **/entities/**/*.*, **/models/**/*.*"
+        property "sonar.exclusions", "**/client/java/**/*.*"//java client is automatically generated
     }
 }
 project("client") {
