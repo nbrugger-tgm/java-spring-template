@@ -6,113 +6,337 @@ servers:
 - description: Generated server url
   url: http://localhost:8080
 paths:
-  /greet/{name}:
+  /todo/lists:
     get:
-      operationId: greetHuman
-      parameters:
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+      description: Get a list of all todo lists
+      operationId: getLists
       responses:
-        "500":
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Internal Server Error
-        "200":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: OK
-      tags:
-      - greeting-controller-impl
-      x-accepts: "*/*,text/plain"
-    put:
-      operationId: greetHumanPut
-      parameters:
-      - explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "500":
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Internal Server Error
         "200":
           content:
             '*/*':
               schema:
-                type: string
+                items:
+                  $ref: '#/components/schemas/TodoListDto'
+                type: array
+                uniqueItems: true
           description: OK
+      summary: Get all lists
       tags:
-      - greeting-controller-impl
+      - todo-controller-impl
       x-accepts: '*/*'
-  /greet:
-    get:
-      operationId: greetWorld
+    post:
+      description: Add a new todo list
+      operationId: createList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoListDto'
+        required: true
       responses:
-        "500":
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-contentType: application/json
+      x-accepts: application/json
+  /todo/lists/{name}:
+    delete:
+      operationId: deleteList
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: application/json
+    get:
+      description: Get a list of todo items with the specified name
+      operationId: getList
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Internal Server Error
-        "200":
-          content:
-            text/plain:
-              schema:
-                type: string
+                $ref: '#/components/schemas/TodoListDto'
           description: OK
       tags:
-      - greeting-controller-impl
-      x-accepts: "*/*,text/plain"
+      - todo-controller-impl
+      x-accepts: '*/*'
+    post:
+      operationId: updateList
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoListDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-contentType: application/json
+      x-accepts: application/json
+  /todo/lists/{name}/items:
+    get:
+      operationId: getItems
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/TodoEntryDto'
+                type: array
+                uniqueItems: true
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: '*/*'
+    post:
+      operationId: createItem
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntryDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-contentType: application/json
+      x-accepts: application/json
+  /todo/lists/{name}/items/{itemName}:
+    delete:
+      operationId: deleteItem
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: itemName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: application/json
+    get:
+      operationId: getItem
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: itemName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TodoEntryDto'
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: '*/*'
+    post:
+      operationId: updateItem
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: itemName
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntryDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-contentType: application/json
+      x-accepts: application/json
+  /todo/lists/{list}/items/{itemName}/done/{done}:
+    patch:
+      operationId: setDone
+      parameters:
+      - explode: false
+        in: path
+        name: list
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: itemName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: done
+        required: true
+        schema:
+          type: boolean
+        style: simple
+      responses:
+        "200":
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: application/json
+  /todo/lists/{name}/itemNames:
+    get:
+      operationId: getItemNames
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  type: string
+                type: array
+                uniqueItems: true
+          description: OK
+      tags:
+      - todo-controller-impl
+      x-accepts: '*/*'
   /api/version:
     get:
-      operationId: version
+      description: Get API version
+      operationId: getVersion
       responses:
-        "500":
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Internal Server Error
         "200":
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/VersionResponse'
+                $ref: '#/components/schemas/VersionDto'
           description: OK
+      summary: Get API version
       tags:
-      - api-controller
+      - ApiInfo
       x-accepts: '*/*'
 components:
   schemas:
-    ErrorResponse:
+    TodoListDto:
+      example:
+        color: color
+        description: description
+        title: title
       properties:
-        message:
+        title:
+          maxLength: 64
+          minLength: 2
           type: string
-        code:
+        description:
+          maxLength: 2048
+          minLength: 0
           type: string
-        error:
-          pattern: "[a-bA-B_-]+"
+        color:
+          pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
           type: string
       required:
-      - code
-      - message
+      - color
+      - title
       type: object
-    VersionResponse:
+    TodoEntryDto:
+      example:
+        name: name
+        dueTo: 2000-01-23
+        done: true
+      properties:
+        name:
+          type: string
+        done:
+          type: boolean
+        dueTo:
+          format: date
+          type: string
+      type: object
+    VersionDto:
       example:
         stable: true
         version: version

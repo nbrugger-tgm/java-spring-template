@@ -8,7 +8,7 @@ void createGenerator(String lang, Map<String, Object> config) {
         generatorName = lang
         outputDir = "$rootDir/client/$lang"
         inputSpec = "$rootDir/openapi.json"
-        var configOptions = [
+        var baseConfig = [
                 apiPackage                 : "${project.ext.client.rootPackage}.api",
                 invokerPackage             : "${project.ext.client.rootPackage}.client",
                 packageName                : project.ext.client.rootPackage,
@@ -18,7 +18,10 @@ void createGenerator(String lang, Map<String, Object> config) {
                 prependFormOrBodyParameters: true.toString(),
                 projectName                : project.ext.client.id
         ]
-        configOptions.putAll(config)
+        var fullConfig = new HashMap<String, Object>()
+        fullConfig.putAll(baseConfig)
+        fullConfig.putAll(config)
+        configOptions = fullConfig
         dependsOn tasks.withType(project.ext.oasTask)
 
         var isRequired = project.ext.clients.containsKey(lang) && project.ext.clients[lang]

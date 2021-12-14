@@ -16,5 +16,10 @@
       <option name="name" value="MavenRepo" />
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="Artifactory" />
+      <option name="name" value="Artifactory" />
+      <option name="url" value="https://niton.jfrog.io/artifactory/java-libs" />
+    </remote-repository>
   </component>
 </project>

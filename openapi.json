@@ -68,8 +68,8 @@
         "operationId": "getList",
         "parameters": [
           {
-            "name": "listId",
-            "in": "query",
+            "name": "name",
+            "in": "path",
             "required": true,
             "schema": {
               "type": "string"
@@ -303,6 +303,45 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/todo/lists/{list}/items/{itemName}/done/{done}": {
+      "patch": {
+        "tags": [
+          "todo-controller-impl"
+        ],
+        "operationId": "setDone",
+        "parameters": [
+          {
+            "name": "list",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "done",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
