@@ -17,7 +17,7 @@ public interface TodoController {
 
 	@Operation(description = "Get a list of todo items with the specified name")
 	@GetMapping("lists/{name}")
-	TodoListDto getList(String listId);
+	TodoListDto getList(@PathVariable String name);
 
 	@Operation(description = "Add a new todo list")
 	@PostMapping("lists")

@@ -13,4 +13,22 @@ project.ext {
     dockerRepoUserEmail = "nbrugger@student.tgm.ac.at"
     dockerRepoUser = "nbrugger@student.tgm.ac.at"
     dockerRepoUrl = "https://$dockerRepo/"
+
+    clients = [//the languages clients will be generated for
+            java                : true,
+            //you can remove the false entries, as false is the default value
+            c                   : false,
+            android             : false,
+            "cpp-tizen"         : false,
+            "csharp-netcore"    : false,
+            dart                : false,
+            go                  : false,
+            php                 : false,
+            python              : false,
+            rust                : false,
+            swift5              : false,
+            "typescript-angular": false,
+            "typescript-node"   : false,
+            "typescript-rxjs"   : false
+    ]
 }

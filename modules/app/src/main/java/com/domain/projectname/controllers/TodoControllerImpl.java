@@ -22,8 +22,8 @@ public class TodoControllerImpl implements TodoController {
 	}
 
 	@Override
-	public TodoListDto getList(String listId) {
-		return service.getList(listId);
+	public TodoListDto getList(String name) {
+		return service.getList(name);
 	}
 
 	@Override

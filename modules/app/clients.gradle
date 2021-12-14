@@ -20,7 +20,11 @@ void createGenerator(String lang, Map<String, Object> config) {
         ]
         configOptions.putAll(config)
         dependsOn tasks.withType(project.ext.oasTask)
-        tasks.autogenClients.dependsOn it
+
+        var isRequired = project.ext.clients.containsKey(lang) && project.ext.clients[lang]
+        if (isRequired) {
+            tasks.autogenClients.dependsOn it
+        }
     }
 
 }
