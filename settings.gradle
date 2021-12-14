@@ -2,6 +2,9 @@ rootProject.name = "project-name"
 
 rootProject.setBuildFileName("modules/build.gradle")
 
+include "client"
+project(":client").projectDir = file("client/java")
+
 file('modules').eachDir { dir ->
     println "Add module $dir"
     include dir.name

@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 plugins {
     id 'org.sonarqube' version '3.3'
 }
@@ -7,7 +9,8 @@ allprojects {
     group = project.ext.rootPackage
 }
 subprojects {
-    apply from: "${rootDir}/modules/submodule.gradle"
+    if(!name.equals("client"))
+        apply from: "${rootDir}/modules/submodule.gradle"
 }
 sonarqube {
     properties {
@@ -18,5 +21,21 @@ sonarqube {
         property "sonar.host.url", project.ext.sonarHost
         property "sonar.tests", "src/intTest,src/archTest,src/test"
         property "sonar.coverage.exclusions", "**/controllers/**/*.*, **/entities/**/*.*, **/models/**/*.*"
+    }
+}
+project("client") {
+    afterEvaluate {
+        publishing {
+            repositories {
+                maven {
+                    name = "Artifactory"
+                    url = project.ext.mvnRepoUrl
+                    credentials {
+                        username = project.ext.mvnRepoUser
+                        password = System.getenv(project.ext.mvnRepoEnvKey)
+                    }
+                }
+            }
+        }
     }
 }

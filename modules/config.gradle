@@ -14,9 +14,17 @@ project.ext {
     dockerRepoUser = "nbrugger@student.tgm.ac.at"
     dockerRepoUrl = "https://$dockerRepo/"
 
-    clients = [//the languages clients will be generated for
+    mvnRepoUrl = "https://niton.jfrog.io/artifactory/java-libs"
+    mvnRepoUser = "nbrugger@student.tgm.ac.at"
+    mvnRepoEnvKey = "ARTIFACTORY_API_KEY"
+
+    //the languages clients will be generated for
+    clients = [
             java                : true,
             //you can remove the false entries, as false is the default value
+            "typescript-angular": false,
+            "typescript-node"   : false,
+            "typescript-rxjs"   : false,
             c                   : false,
             android             : false,
             "cpp-tizen"         : false,
@@ -26,9 +34,6 @@ project.ext {
             php                 : false,
             python              : false,
             rust                : false,
-            swift5              : false,
-            "typescript-angular": false,
-            "typescript-node"   : false,
-            "typescript-rxjs"   : false
+            swift5              : false
     ]
 }

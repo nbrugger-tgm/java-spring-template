@@ -212,14 +212,23 @@ jobs:
           DOCKER_REPO_KEY: ${{ secrets.DOCKER_REPO_KEY }}
         with:
           task: bootBuildImage
+      - name: build java client
+        uses: ./.github/actions/gradle
+        env:
+          ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+        with:
+          task: client:publishAllPublicationsToArtifactoryRepository
       - name: add info to changelog
         run: |
+          echo "## Java Client" >> changelog_diff.md
+          echo "\`com.domain.projectname:client:${{ needs.semver.outputs.version }}\`"
           echo "## Docker" >> changelog_diff.md
-          echo "Pull me : `docker pull niton.jfrog.io/docker-services/project-name:${{ needs.semver.outputs.version }}`" >> changelog_diff.md
+          echo "Pull me : \`docker pull niton.jfrog.io/docker-services/project-name:${{ needs.semver.outputs.version }}\`" >> changelog_diff.md
           echo "**Env** " >> changelog_diff.md
           echo "* **DB_URL**: The url to use as datasource (default h2)" >> changelog_diff.md
           echo "**Ports**" >> changelog_diff.md
           echo "* **8080**: The port to use for the service" >> changelog_diff.md
+          echo " ## Changelog" >> changelog_diff.md
       - name: Create release
         uses: ncipollo/release-action@v1.8.10
         with:
