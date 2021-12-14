@@ -1,3 +1,9 @@
+## 0.5.0b4 (2021-12-14)
+
+### Feat
+
+- conditional client generation
+
 ## 0.5.0rc0 (2021-11-29)
 
 ### Fix
