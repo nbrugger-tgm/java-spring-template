@@ -1,3 +1,9 @@
+## 0.5.0b5 (2021-12-14)
+
+### Feat
+
+- **ci**: automatic client building and upload
+
 ## 0.5.0b4 (2021-12-14)
 
 ### Feat
