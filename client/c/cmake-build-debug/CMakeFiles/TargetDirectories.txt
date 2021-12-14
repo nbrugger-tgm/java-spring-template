@@ -1,7 +1,0 @@
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/install/strip.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/install/local.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/install.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/list_install_components.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/d/Users/Nils/Desktop/Workspaces/templates/java-spring-template/client/c/cmake-build-debug/CMakeFiles/openapi_definition.dir

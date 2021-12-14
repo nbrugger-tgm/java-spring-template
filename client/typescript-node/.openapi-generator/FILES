@@ -1,9 +1,0 @@
-.gitignore
-api.ts
-api/apiControllerApi.ts
-api/apis.ts
-api/greetingControllerImplApi.ts
-git_push.sh
-model/errorResponse.ts
-model/models.ts
-model/versionResponse.ts
