@@ -1,0 +1,10 @@
+version: "3.0"
+
+
+services:
+  my_service:
+    image: project-name:local
+    environment:
+      spring_profiles_active: local
+    ports:
+      - "8080:8080"
