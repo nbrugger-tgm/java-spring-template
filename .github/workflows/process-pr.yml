@@ -85,7 +85,7 @@ jobs:
           message: ${{ steps.staging_check.outputs.errorMessage }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add dev branch message
-        if: failure() && (steps.dev_check.outcome == 'failure')
+        if: failure() && (steps.dev_check.outcome == 'failure') && env.is_dependabot == 'false'
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: ${{ steps.dev_check.outputs.errorMessage }}
