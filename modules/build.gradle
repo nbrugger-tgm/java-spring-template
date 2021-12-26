@@ -1,17 +1,20 @@
-import java.util.stream.Collectors
-
 plugins {
     id 'org.sonarqube' version '3.3'
+    id 'com.bmuschko.docker-remote-api' version '7.1.0'
 }
+
 allprojects {
     apply from: "${rootDir}/modules/config.gradle"
     version = '0.5.0b5'
     group = project.ext.rootPackage
 }
+
+apply from: "${rootDir}/modules/deployment.gradle"
 subprojects {
-    if(!name.equals("client"))
+    if (!name.equals("client"))
         apply from: "${rootDir}/modules/submodule.gradle"
 }
+
 sonarqube {
     properties {
         property 'sonar.projectName', project.ext.displayName
@@ -24,6 +27,7 @@ sonarqube {
         property "sonar.exclusions", "**/client/java/**/*.*"//java client is automatically generated
     }
 }
+
 project("client") {
     afterEvaluate {
         publishing {

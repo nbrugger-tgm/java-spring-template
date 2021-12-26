@@ -1,0 +1,21 @@
+for (File deployment : file("deployment").listFiles()) {
+    if (deployment.isFile()) {
+        logger.error("deployment folder should not contain files, only folders : $deployment.name")
+        return;
+    }
+    tasks.create(name: "deploy_${deployment.name}", type: Exec) {
+        doFirst {
+            if (System.getenv("DOCKER_HOST") != null) {
+                logger.info("Deploy to : " + System.getenv("DOCKER_HOST"));
+            }
+        }
+
+        group = "deployment"
+        description = "Deploys the ${deployment.name} environment"
+        environment('PROJECT_DOCKER_REPO', project.ext.dockerRepo)
+        environment('PROJECT_NAME', rootProject.name)
+        environment('PROJECT_VERSION', project.version)
+        commandLine "docker-compose","-p","${rootProject.name}_${deployment.name}","-f","${deployment.path}/docker-compose.yml","up","-d","--force-recreate","--remove-orphans"
+        workingDir = deployment.path
+    }
+}

@@ -1,0 +1,38 @@
+version: "3.0"
+
+services:
+  database:
+    hostname: ${PROJECT_NAME}_dev_db
+    image: postgres:14
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "G3ngIb1k8i2mzfztbu3qw9tB"
+      POSTGRES_DB: "project_name"
+    volumes:
+      - "data:/var/lib/postgresql/data"
+    networks:
+       - data
+    restart: always
+  service:
+    hostname: ${PROJECT_NAME}_dev_service
+    #This will be set by gradle using the deploy task, you can also create a .env for doing this manually
+    image: ${PROJECT_DOCKER_REPO}/${PROJECT_NAME}:${PROJECT_VERSION}
+    depends_on:
+      - database
+    networks:
+      - public
+      - data
+    environment:
+      DB_URL: "jdbc:postgresql://dev_db:5432/project_name"
+      DB_USER: "postgres"
+      DB_PASSWORD: "G3ngIb1k8i2mzfztbu3qw9tB"
+
+volumes:
+  data:
+
+networks:
+  data:
+    external:
+      name: ${PROJECT_NAME}_data
+  public:
+    external: true

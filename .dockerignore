@@ -1,0 +1,8 @@
+doc
+.github
+.gradle
+.idea
+.jpb
+deployment
+gradlew.bat
+**/build

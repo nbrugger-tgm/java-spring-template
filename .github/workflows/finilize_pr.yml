@@ -15,6 +15,10 @@ on:
 
 env:
   is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository && github.actor != 'dependabot[bot]' }}
+  is_staging_branch: ${{ github.base_ref == 'staging' }}
+  is_release_branch: ${{ github.base_ref == 'main' || github.base_ref == 'master' }}
+  is_feature_branch: ${{ github.base_ref == 'dev'  || github.base_ref == 'hotfix' }}
+  is_hotfix_branch: ${{ github.base_ref == 'hotfix' }}
 
 permissions:
   actions: read
@@ -30,7 +34,7 @@ name: Finilize PR
 #  If you want to be save and dont trust the security review,                  #
 #  we advise to disable this step for forks by adding :                        #
 #                                                                              #
-#   && env.is_fork == 'false'                                                  #
+#  && env.is_fork == 'false'                                                  #
 #                                                                              #
 #  to the if condition of the lockdown job                                     #
 ################################################################################
@@ -83,7 +87,7 @@ jobs:
         run: |
           git push
       - name: unlabel
-        if: failed()
+        if: failure()
         uses: ./.github/actions/set-label
         with:
           GITHUB_TOKEN: ${{ secrets.PAT }}
@@ -206,12 +210,12 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: bootJar
-      - name: build docker image
+      - name: build & publish docker image
         uses: ./.github/actions/gradle
         env:
           DOCKER_REPO_KEY: ${{ secrets.DOCKER_REPO_KEY }}
         with:
-          task: bootBuildImage
+          task: dockerBuild dockerPush
       - name: build java client
         uses: ./.github/actions/gradle
         env:
@@ -239,3 +243,54 @@ jobs:
           prerelease: ${{ needs.semver.outputs.prerelease != ''}}
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.semver.outputs.version }}
+  deploy_dev:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: "https://todo.dev.nitonfx.eu/"
+    needs:
+      - release
+    if: is_feature_branch
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+      - name: deploy
+        uses: ./.github/actions/deploy
+        with:
+          deployment: dev
+          target_host: nitonfx.eu
+  deploy_staging:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: "https://todo.rc.nitonfx.eu/"
+    needs:
+      - release
+    if: is_staging_branch
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+      - name: deploy
+        uses: ./.github/actions/deploy
+        with:
+          deployment: staging
+          target_host: nitonfx.eu
+  deploy_production:
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      url: "https://todo.nitonfx.eu/"
+    needs:
+      - release
+    if: is_release_branch
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.merge.outputs.commit }}
+      - name: deploy
+        uses: ./.github/actions/deploy
+        with:
+          deployment: prod
+          target_host: nitonfx.eu
