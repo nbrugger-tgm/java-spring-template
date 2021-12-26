@@ -87,7 +87,7 @@ jobs:
         run: |
           git push
       - name: unlabel
-        if: failed()
+        if: failure()
         uses: ./.github/actions/set-label
         with:
           GITHUB_TOKEN: ${{ secrets.PAT }}
