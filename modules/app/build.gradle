@@ -1,13 +1,16 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import org.apache.commons.lang3.StringUtils
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springdoc.openapi.gradle.plugin.OpenApiGeneratorTask
-import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     id 'org.springframework.boot' version '2.6.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "com.github.johnrengelman.processes" version "0.5.0"
-    id "org.springdoc.openapi-gradle-plugin" version "1.3.3"
-    id "org.openapi.generator" version "5.3.0"
+    id 'com.github.johnrengelman.processes' version '0.5.0' // needed for oas autogeneration
+    id 'org.springdoc.openapi-gradle-plugin' version '1.3.3' //autogenerate OAS spec
+    id 'org.openapi.generator' version '5.3.0' //autogenerator for clients
+    id 'com.bmuschko.docker-remote-api'
 }
 loadScript("integrationTests")
 
@@ -49,23 +52,38 @@ openApi {
     outputDir.set(rootDir)
 }
 
-task bootBuildLocalImage(type: BootBuildImage) {
-    group "build"
-    imageName "${rootProject.name}:${project.version}"
-    publish = false
+docker {
+    if (!StringUtils.isBlank(System.getenv("DOCKER_HOST")))
+        url = System.getenv("DOCKER_HOST")
 }
-bootBuildImage {
-    imageName "${project.ext.dockerRepo}/${rootProject.name}:${project.version}"
-    publish = true
-    docker {
-        publishRegistry {
-            username = project.ext.dockerRepoUser
-            password = System.getenv('DOCKER_REPO_KEY')
-            url = project.ext.dockerRepoUrl
-            email = project.ext.dockerRepoUserEmail
-        }
+
+def dockerImage = "${project.ext.dockerRepo}/${rootProject.name}:${project.version}";
+// Use task types
+task dockerBuild(type: DockerBuildImage) { DockerBuildImage it ->
+    group = 'docker'
+    description "Builds the Docker image and adds a registry aware tag"
+    inputDir = rootProject.projectDir
+    images.add(dockerImage)
+    images.add("${rootProject.name}:${project.version}")
+    quiet = false
+    remove = true
+}
+task dockerBuildLocal(type: DockerBuildImage) { DockerBuildImage it ->
+    group = 'docker'
+    description "Builds a docker image and tags it with :local"
+    inputDir = rootProject.projectDir
+    images.add("${rootProject.name}:local")
+    quiet = false
+    remove = true
+}
+task dockerPush(type: DockerPushImage) {
+    group = 'docker'
+    images.add(dockerImage)
+    registryCredentials {
+        username = project.ext.dockerRepoUser
+        password = System.getenv('DOCKER_REPO_KEY')
+        url = project.ext.dockerRepoUrl
+        email = project.ext.dockerRepoUserEmail
     }
-    environment = [
-            'BPL_DB_URL': 'jdbc:h2:file:/app/database'
-    ]
+    dependsOn dockerBuild
 }

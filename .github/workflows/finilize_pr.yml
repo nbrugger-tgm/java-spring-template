@@ -206,12 +206,12 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: bootJar
-      - name: build docker image
+      - name: build & publish docker image
         uses: ./.github/actions/gradle
         env:
           DOCKER_REPO_KEY: ${{ secrets.DOCKER_REPO_KEY }}
         with:
-          task: bootBuildImage
+          task: dockerBuild dockerPush
       - name: build java client
         uses: ./.github/actions/gradle
         env:
