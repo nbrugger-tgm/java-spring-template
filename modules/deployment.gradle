@@ -6,7 +6,7 @@ for (File deployment : file("deployment").listFiles()) {
     tasks.create(name: "deploy_${deployment.name}", type: Exec) {
         doFirst {
             if (System.getenv("DOCKER_HOST") != null) {
-                logger.info("Deploy to : " + System.getenv("DOCKER_HOST"));
+                logger.info("Deploy to : " + System.getenv("DOCKER_HOST"))
             }
         }
 

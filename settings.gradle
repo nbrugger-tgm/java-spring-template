@@ -5,8 +5,10 @@ rootProject.setBuildFileName("modules/build.gradle")
 include "client"
 project(":client").projectDir = file("client/java")
 
+
 file('modules').eachDir { dir ->
     println "Add module $dir"
     include dir.name
-    project(":${dir.name}").projectDir = dir
+    var project = project(":${dir.name}")
+    project.projectDir = dir
 }

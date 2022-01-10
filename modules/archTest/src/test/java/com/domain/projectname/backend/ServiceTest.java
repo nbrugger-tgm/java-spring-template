@@ -1,5 +1,6 @@
-package com.domain.projectname.backend.arch;
+package com.domain.projectname.backend;
 
+import com.domain.projectname.arch.MethodConditions;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.AccessTarget;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -26,7 +27,7 @@ import static java.lang.String.format;
 @AnalyzeClasses(packages = "com.domain.projectname",
                 importOptions = {ImportOption.DoNotIncludeTests.class})
 public class ServiceTest {
-	public DescribedPredicate<JavaClass> serviceInterface =
+	public static DescribedPredicate<JavaClass> serviceInterface =
 			JavaClass.Predicates.INTERFACES
 					.and(JavaClass.Predicates.resideInAPackage("..services.."))
 					.as("are Service Interfaces");

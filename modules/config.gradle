@@ -4,6 +4,8 @@ project.ext {
     artifactName = "$rootProject.name"
     author = "NitonFx"
 
+    javaVersion = JavaVersion.VERSION_17
+
     minCoverage = 0.8
     sonarProjectKey = "nbrugger-tgm_java-spring-template"
     sonarOrganization = "nbrugger-tgm"
