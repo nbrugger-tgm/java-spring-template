@@ -13,12 +13,11 @@ dependencies {
 
 project.ext.loadScript = (name) -> apply from: "$rootDir/modules/${name}.gradle"
 
-loadScript('testing')
 loadScript('jacoco')
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = project.ext.javaVersion
+    targetCompatibility = project.ext.javaVersion
     withJavadocJar()
     withSourcesJar()
 }
