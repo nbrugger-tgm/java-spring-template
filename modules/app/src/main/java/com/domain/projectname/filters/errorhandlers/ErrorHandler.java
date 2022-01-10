@@ -1,4 +1,4 @@
-package com.domain.projectname.errorhandler;
+package com.domain.projectname.filters.errorhandlers;
 
 import com.domain.projectname.api.filters.ApiErrorHandler;
 import com.domain.projectname.models.ErrorDto;

@@ -1,6 +1,6 @@
 package com.domain.projectname;
 
-import com.domain.projectname.errorhandler.ErrorHandler;
+import com.domain.projectname.filters.errorhandlers.ErrorHandler;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

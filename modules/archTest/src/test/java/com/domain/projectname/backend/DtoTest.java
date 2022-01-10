@@ -1,4 +1,4 @@
-package com.domain.projectname.backend.arch;
+package com.domain.projectname.backend;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.base.HasDescription;
@@ -13,7 +13,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 import javax.persistence.Entity;
 
-import static com.domain.projectname.backend.arch.MethodConditions.*;
+import static com.domain.projectname.arch.MethodConditions.*;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameEndingWith;
 import static com.tngtech.archunit.lang.SimpleConditionEvent.*;
@@ -59,6 +59,7 @@ public class DtoTest {
 	@ArchTest
 	private ArchRule no_public    =
 			noFields().that().areDeclaredInClassesThat(are(DTOs))
+			          .and().areNotFinal()
 			          .should().bePublic();
 	@ArchTest
 	private ArchRule needs_fields =

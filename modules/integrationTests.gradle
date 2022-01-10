@@ -9,7 +9,8 @@ configurations {
     intTestImplementation.extendsFrom implementation
     intTestRuntimeOnly.extendsFrom runtimeOnly
 }
-task integrationTest(type: Test) {
+
+tasks.create(type: Test, name: "integrationTest") {
     description = 'Runs integration tests.'
     group = 'verification'
 

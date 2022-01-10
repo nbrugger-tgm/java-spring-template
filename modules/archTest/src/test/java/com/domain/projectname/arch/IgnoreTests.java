@@ -1,4 +1,4 @@
-package com.domain.projectname.backend.arch;
+package com.domain.projectname.arch;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.core.importer.Location;
