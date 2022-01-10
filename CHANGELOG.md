@@ -1,3 +1,17 @@
+## 0.5.0b6 (2022-01-10)
+
+### Refactor
+
+- extract architectural tests
+
+### Fix
+
+- **ci**: wrong if condition
+
+### Feat
+
+- docker deployments (#61)
+
 ## 0.5.0b5 (2021-12-14)
 
 ### Feat

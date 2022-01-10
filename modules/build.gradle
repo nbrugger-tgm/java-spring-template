@@ -10,7 +10,7 @@ allprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply from: "${rootDir}/modules/config.gradle"
-    version = '0.5.0b5'
+    version = '0.5.0b6'
     group = project.ext.rootPackage
 }
 ext.modules = subprojects
