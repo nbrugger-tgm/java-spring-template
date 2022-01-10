@@ -5,6 +5,7 @@ project.ext {
     author = "NitonFx"
 
     javaVersion = JavaVersion.VERSION_17
+    springBootVersion = '2.6.0'
 
     minCoverage = 0.8
     sonarProjectKey = "nbrugger-tgm_java-spring-template"

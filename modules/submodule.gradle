@@ -9,6 +9,11 @@ println "Configure ${project.name}"
 dependencies {
     //This is needed to be able to create abstract tests in production code
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+
+    //https://docs.gradle.org/current/userguide/platforms.html#sub:bom_import
+    annotationProcessor platform("org.springframework.boot:spring-boot-dependencies:${project.ext.springBootVersion}")
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${project.ext.springBootVersion}")
+    compileOnly platform("org.springframework.boot:spring-boot-dependencies:${project.ext.springBootVersion}")
 }
 
 project.ext.loadScript = (name) -> apply from: "$rootDir/modules/${name}.gradle"
