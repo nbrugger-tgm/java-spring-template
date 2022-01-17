@@ -84,6 +84,7 @@ jobs:
           name: changelog_diff.md
           mime-type: text/markdown
       - name: Push bump
+        if: ${{ env.is_feature_branch == 'true' }}
         run: |
           git push
       - name: unlabel
@@ -182,7 +183,7 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           method: ${{ steps.eval.outputs.merge_type }}
-      - name: approve merge
+      - name: remove label
         if: always()
         uses: ./.github/actions/set-label
         with:
@@ -198,6 +199,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ needs.merge.outputs.commit }}
+      - name: Bump version
+        id: cz
+        if: ${{ env.is_feature_branch == 'false' }}
+        uses: commitizen-tools/commitizen-action@0.10.0
+        with:
+          push: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+          changelog_increment_filename: changelog_diff.md
+          prerelease: ${{ needs.semver.outputs.prerelease }}
+      - name: push
+        if: ${{ env.is_feature_branch == 'false' }}
+        run: git push
       - name: Create tag
         run: git tag ${{ needs.semver.outputs.version }}
       - name: Push tag
@@ -243,6 +257,7 @@ jobs:
           prerelease: ${{ needs.semver.outputs.prerelease != ''}}
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ needs.semver.outputs.version }}
+# DEPLOYMENTS
   deploy_dev:
     runs-on: ubuntu-latest
     environment:
