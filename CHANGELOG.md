@@ -1,3 +1,13 @@
+## 0.5.0b7 (2022-01-17)
+
+### Fix
+
+- push semver commit to target branch
+
+### Refactor
+
+- spring version config
+
 ## 0.5.0b6 (2022-01-10)
 
 ### Refactor
