@@ -224,6 +224,15 @@ jobs:
         uses: ./.github/actions/gradle
         with:
           task: bootJar
+      - name: cache docker layers
+        uses: actions/cache@v2
+        with:
+          path: |
+            /var/lib/docker/image
+            /var/lib/docker/overlay2
+            /var/lib/docker/aufs
+            /var/lib/docker/containers
+          key: ${{ runner.os }}-docker-
       - name: build & publish docker image
         uses: ./.github/actions/gradle
         env:
