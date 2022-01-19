@@ -1,3 +1,14 @@
+## 0.5.0b8 (2022-01-19)
+
+### Fix
+
+- bad workflow env variable
+- wrong docker base version
+
+### Refactor
+
+- improve mapping/updating & tests
+
 ## 0.5.0b7 (2022-01-17)
 
 ### Fix
