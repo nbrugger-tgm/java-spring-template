@@ -9,17 +9,18 @@ import java.util.Set;
 
 @Repository
 public interface TodoRepository extends CrudRepository<TodoEntry, Long> {
-	TodoEntry findByName(@NotNull String itemName);
 
-	void deleteByNameAndListId(@NotNull String name, long listId);
+	void deleteByNameAndListTitle(String name, String list);
 
-	boolean existsByNameAndListId(@NotNull String itemName, long listId);
-
+	boolean existsByNameAndListTitle(
+			@NotNull String name,
+			String listTitle
+	);
 
 	@Override
 	Set<TodoEntry> findAll();
 
-	TodoEntry findByNameAndListId(String itemName, long listId);
+	TodoEntry findByNameAndListTitle(String itemName, String listId);
 
 	Set<TodoEntry> findAllByListId(long listId);
 }
