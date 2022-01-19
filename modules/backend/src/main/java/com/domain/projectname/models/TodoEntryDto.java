@@ -11,6 +11,6 @@ import java.time.LocalDate;
 public class TodoEntryDto {
 	@NonNull
 	private String    name;
-	private boolean   done  = false;
+	private Boolean   done;
 	private LocalDate dueTo = null;
 }

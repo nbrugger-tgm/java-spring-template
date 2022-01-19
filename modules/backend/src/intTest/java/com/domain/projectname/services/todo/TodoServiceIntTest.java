@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
+
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 //This test is a example integration test,
 class TodoServiceIntTest {
 	private final Logger      LOG = getLogger(TodoServiceIntTest.class);
@@ -22,8 +23,11 @@ class TodoServiceIntTest {
 
 	@Test
 	void testWorkflow() {
+		deleteAllTodoLists();
+
 		String listName = "test1";
-		var    list     = todoService.createList(new TodoListDto(listName));
+
+		var list = todoService.createList(new TodoListDto(listName));
 		assertNotNull(list, "The generated list should be returned");
 		assertThrows(
 				IllegalArgumentException.class,
@@ -31,7 +35,6 @@ class TodoServiceIntTest {
 		);
 
 		var lists = todoService.getAllLists();
-		LOG.info(lists.toString());
 		assertEquals(1, lists.size(), "There should be one list");
 		assertEquals(
 				list,
@@ -52,16 +55,30 @@ class TodoServiceIntTest {
 				"The list desc. was not updated"
 		);
 
+		list = new TodoListDto(listName, "yeeee", null);
+		todoService.updateList(listName, list);
+		updated = todoService.getList(listName);
+		assertNotNull(updated.getColor(), "Updating should not copy null values");
+		assertEquals(
+				list.getDescription(),
+				updated.getDescription(),
+				"Updating should overwrite non-null values"
+		);
+
 		var entries = todoService.getEntries(listName);
 		assertEquals(0, entries.size(), "Initially the list should have no tasks");
 
 		var item = new TodoEntryDto("yikes");
 		item.setDone(true);
-		todoService.addItem(listName, item);
+		assertTrue(
+				todoService.addItem(listName, item),
+				"adding this entry is possible and should return true"
+		);
 		assertEquals(1, todoService.getEntries(listName).size(), "The list should have one task");
+		assertTrue(todoService.getEntry(listName, item.getName()).getDone());
 
 		entries = todoService.getEntries(listName);
-		assertEquals(1, entries.size(), "The fetched list should have one task");
+		assertEquals(1, entries.size(), "A task was added so fetching the list should yield one");
 		assertEquals(
 				item.getName(),
 				entries.iterator().next().getName(),
@@ -72,7 +89,7 @@ class TodoServiceIntTest {
 		var newName     = "fancy name";
 		var entry       = todoService.getEntry(listName, item.getName());
 		var updateEntry = new TodoEntryDto(newName);
-		updateEntry.setDone(false);
+		updateEntry.setDueTo(LocalDate.now().plusDays(2));
 		todoService.updateItem(listName, entry.getName(), updateEntry);
 		assertDoesNotThrow(
 				() -> todoService.getEntry(listName, newName),
@@ -89,23 +106,41 @@ class TodoServiceIntTest {
 				"The task title should be updated"
 		);
 		item.setName(updateEntry.getName());
-		item.setDone(updateEntry.isDone());
+		item.setDueTo(updateEntry.getDueTo());
 		assertEquals(
 				item,
 				todoService.getEntry(listName, newName),
 				"The task should be updated (but just the name)"
 		);
+		assertTrue(
+				todoService.getEntry(listName, newName).getDone(),
+				"Done should not have been overwritten"
+		);
 
+		LOG.info("Delete entry {} in list {}", item.getName(), listName);
 		todoService.deleteItem(listName, item.getName());
+		var entriesAfterDelete = todoService.getEntries(listName);
 		assertEquals(
 				0,
-				todoService.getEntries(listName).size(),
-				"The list should have no tasks after removal"
+				entriesAfterDelete.size(),
+				"The list should have no tasks after removal (%s)".formatted(entriesAfterDelete)
+		);
+	}
+
+	private void deleteAllTodoLists() {
+		todoService.getAllLists().forEach(list -> todoService.deleteList(list.getTitle()));
+		assertEquals(
+				0,
+				todoService.getAllLists().size(),
+				"There should be no lists after deleting each one"
 		);
 	}
 
 	@Test
 	void testChangeListName() {
+		deleteAllTodoLists();
+
+
 		String oldName = "test3";
 		String newName = "test4";
 
@@ -117,7 +152,7 @@ class TodoServiceIntTest {
 
 		var updated = todoService.getList(newName);
 
-		assertNotNull(updated, "Fetching by the nre name should yield results");
+		assertNotNull(updated, "Fetching by the new name should yield results");
 		assertEquals(newName, updated.getTitle(), "The list title was not updated");
 		assertThrows(IllegalArgumentException.class, () -> todoService.getList(oldName));
 	}

@@ -2,10 +2,12 @@ package com.domain.projectname.services;
 
 import com.domain.projectname.entities.todo.TodoEntry;
 import com.domain.projectname.entities.todo.TodoList;
+import com.domain.projectname.general.ModelUpdater;
 import com.domain.projectname.models.TodoEntryDto;
 import com.domain.projectname.models.TodoListDto;
 import com.domain.projectname.repositories.TodoListRepository;
 import com.domain.projectname.repositories.TodoRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -18,20 +20,13 @@ import static java.lang.String.format;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 class TodoServiceImpl implements TodoService {
 	private final TodoListRepository listRepo;
 	private final TodoRepository     todoRepo;
 	private final ModelMapper        mapper;
+	private final ModelUpdater       updater;
 
-	public TodoServiceImpl(
-			TodoListRepository listRepo,
-			TodoRepository todoRepo,
-			ModelMapper mapper
-	) {
-		this.listRepo = listRepo;
-		this.todoRepo = todoRepo;
-		this.mapper   = mapper;
-	}
 
 	@Override
 	public TodoListDto createList(TodoListDto dto) {
@@ -65,16 +60,17 @@ class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteList(String listName) {
 		verifyListExistence(listName);
 		listRepo.deleteByTitle(listName);
 	}
 
 	@Override
+	@Transactional
 	public void updateList(String name, TodoListDto list) {
 		TodoList listToUpdate = fetchList(name);
-		mapper.map(list, listToUpdate);
-		listRepo.save(listToUpdate);
+		updater.update(listToUpdate, list);
 	}
 
 	private TodoList fetchList(String name) {
@@ -95,19 +91,18 @@ class TodoServiceImpl implements TodoService {
 	@Transactional
 	public void deleteItem(String listName, String itemName) {
 		verifyListExistence(listName);
-		long listId = listRepo.getIdByTitle(listName);
-		verifyItemExistence(itemName, listId);
-		todoRepo.deleteByNameAndListId(itemName, listId);
+		verifyItemExistence(itemName, listName);
+		todoRepo.deleteByNameAndListTitle(itemName, listName);
 	}
 
-	private void verifyItemExistence(String itemName, long listId) {
-		if (!todoRepo.existsByNameAndListId(itemName, listId))
-			throwEntryNotFound(itemName, listId);
+	private void verifyItemExistence(String itemName, String listName) {
+		if (!todoRepo.existsByNameAndListTitle(itemName, listName))
+			throwEntryNotFound(itemName, listName);
 	}
 
-	private void throwEntryNotFound(String itemName, long listId) {
+	private void throwEntryNotFound(String itemName, String listId) {
 		throw new IllegalArgumentException(format(
-				"Entry '%s' does not exist in list %d",
+				"Entry '%s' does not exist in list '%s'",
 				itemName, listId
 		));
 	}
@@ -118,15 +113,13 @@ class TodoServiceImpl implements TodoService {
 			String list, String itemName, TodoEntryDto item
 	) {
 		verifyListExistence(list);
-		long listId = listRepo.getIdByTitle(list);
-		verifyItemExistence(itemName, listId);
-		var entry = todoRepo.findByNameAndListId(itemName, listId);
-		mapper.map(item, entry);
+		verifyItemExistence(itemName, list);
+		var entry = todoRepo.findByNameAndListTitle(itemName, list);
+		updater.update(entry, item);
 	}
 
 	@Override
 	public Set<TodoListDto> getAllLists() {
-
 		return listRepo.findAll()
 		               .stream()
 		               .map(todo -> mapper.map(todo, TodoListDto.class))
@@ -146,18 +139,16 @@ class TodoServiceImpl implements TodoService {
 	@Override
 	public TodoEntryDto getEntry(String listName, String itemName) {
 		verifyListExistence(listName);
-		long listId = listRepo.getIdByTitle(listName);
-		verifyItemExistence(itemName, listId);
-		return mapper.map(todoRepo.findByNameAndListId(itemName, listId), TodoEntryDto.class);
+		verifyItemExistence(itemName, listName);
+		return mapper.map(todoRepo.findByNameAndListTitle(itemName, listName), TodoEntryDto.class);
 	}
 
 	@Override
 	@Transactional
 	public void setDone(String list, String itemName, boolean done) {
 		verifyListExistence(list);
-		long listId = listRepo.getIdByTitle(list);
-		verifyItemExistence(itemName, listId);
-		var entry = todoRepo.findByNameAndListId(itemName, listId);
+		verifyItemExistence(itemName, list);
+		var entry = todoRepo.findByNameAndListTitle(itemName, list);
 		entry.setDone(done);
 	}
 }

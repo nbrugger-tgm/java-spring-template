@@ -21,7 +21,7 @@ env:
   is_feature_branch: ${{ github.base_ref == 'dev'  || github.base_ref == 'hotfix' }}
   is_hotfix_branch: ${{ github.base_ref == 'hotfix' }}
   is_fork: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
-  is_dependabot: ${{ github.actor != 'dependabot[bot]' }}
+  is_dependabot: ${{ github.actor == 'dependabot[bot]' }}
 
 jobs:
   branching-check:
