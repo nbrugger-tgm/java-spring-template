@@ -13,7 +13,7 @@ ext.modules = subprojects
         .stream()
         .filter { it.projectDir.absolutePath.startsWith("${rootProject.projectDir.absolutePath}${File.separatorChar}modules") }
         .toSet()
-println "ext.modules: ${ext.modules}"
+
 apply from: "${rootDir}/modules/deployment.gradle"
 subprojects {
     if (!name.equals("client"))
