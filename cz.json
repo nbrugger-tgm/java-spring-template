@@ -1,7 +1,7 @@
 {
   "commitizen": {
     "name": "cz_conventional_commits",
-    "version": "0.5.0b10",
+    "version": "0.5.0b11",
     "version_files": [
       "modules/build.gradle",
       "README.md"

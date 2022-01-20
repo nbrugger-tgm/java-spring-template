@@ -1,0 +1,153 @@
+= Gradle
+
+This project is based on the Gradle build system.
+
+Gradle is very good for modular builds and very, very flexible in configuration. It can automate everything. You could even add C++ modules.
+
+== TL;DR
+
+The project can be completely configured using `modules/config.gradle`!
+
+== Modules
+
+This project has 3 core modules as defined in file://./DESIGN.adoc[DESIGN]. To modularize your project further, you can add more modules.
+
+New modules are automatically added to the build.gradle file. No need to do anything.
+
+=== Steps
+
+1. Create a folder with name of your module in the `modules` folder
+2. Create a file named `build.gradle` in the module folder
+
+If you have no special requirements thats it, you have a new module.
+
+* Add dependencies as you would normaly using gradle
+
+=== Functionality
+
+The freshly created module has the following functionalities;
+
+1. It can be used as a dependency in other modules and also use them `implementation project("my-module-name")`
+2. It will be *scanned by Sonar* to enforce code quality in pull requests
+3. It will be *automatically built on push* and for pull requests
+4. It will be tested by the `archTest` module if the module follows all *architecture rules*
+5. *Code coverage* will be reported
+6. Testing library is included automaticaly
+7. The project configuration is applied (java version, artifact/group name)
+
+=== Conclusion
+
+Modules are very easy to create and require very little effort and no configuration at all!
+
+A module can be easily be modified and load plugins using buildscripts (explained in the next section).
+
+A module can be a module of any language (Java, C++, JS/TS ...).
+
+A module build.gradle should only contain the dependencies and buildscript loading.
+
+=== Example
+`modules/security-util/build.gradle`
+[source,groovy]
+----
+depenencies {
+    implementation 'org.apache.commons:commons-lang3:3.5'
+    implementation 'org.apache.shiro:shiro-core:1.8.0'
+}
+loadScript("testing")
+loadScript("integrationTests")
+----
+
+== Build Scripts
+
+This project is split into many build scripts that reside in the `modules` folder. And can be loaded by modules using `loadScript(name)`
+
+These build scripts are meant to be optionally loadable by individual modules. Some of them are used for internal purposes, so even if you dont use them, you should still keep them.
+
+You can add your own build scripts to the `modules` folder. Just create a file named `<myscript>.gradle` in folder and add your build script to it.
+
+=== Usable
+|===
+|Name|Description|Usable in Submodules  |Used internally (outside of modules) | Modification recommended
+
+|sourcegen
+|adds a task to autogenerate templates
+|✔️️
+|❌
+|❌
+
+|testing
+|adds testing capabilities to the module (`src/test/java`)
+|✔️️
+|❌
+|~
+
+|integrationTests
+|Adds a task to run spring boot integration tests for the module (`src/intTest/java`)
+|✔️️
+|❌
+|~
+
+|===
+=== Internal Scripts
+|===
+|Name|Description|Usable in Submodules  |Used internally (outside of modules) | Modification recommended
+
+|build.gradle
+|The main build script for the project. Loads and configures submodules
+|❌
+|✔️
+|❌
+
+|config
+|The configuration file for the project. Use this to globally configure the project. Allready aplied to all modules.
+|already applied
+|✔️
+|✔️
+
+
+|deployment
+|Adds a task to deploy each environment in `deployment` folder with docker compose.
+|❌
+|✔️
+|❌
+
+|jacoco
+|adds codecoverage reporting
+|already applied
+|✔️
+|❌
+
+|submodule.gradle
+|Applies the base configuration to each submodule.
+|❌
+|✔️
+|❌
+
+|===
+
+=== loadScript("sourcegen")
+Replaces template expressions from all files `src/template/java` and compiles them for use in the module
+
+==== Example
+.`modules/app/build.gradle`
+[source,groovy]
+----
+project.ext.templateProperties = [
+    version: project.version //can be used in the template as `version`
+]
+
+loadScript('integrationTests')
+----
+
+.`modules/app/src/template/java/com/example/VersionService.java`
+[source,java,]
+----
+@Service
+class ApiServiceImpl implements ApiService {
+    private final String version = "${version}";
+
+    public String getVersion() {
+        return version;
+    }
+}
+----

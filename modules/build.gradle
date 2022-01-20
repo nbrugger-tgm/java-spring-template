@@ -6,14 +6,14 @@ plugins {
 //configure subprojects
 allprojects {
     apply from: "${rootDir}/modules/config.gradle"
-    version = '0.5.0b10'
+    version = '0.5.0b11'
     group = project.ext.rootPackage
 }
 ext.modules = subprojects
         .stream()
         .filter { it.projectDir.absolutePath.startsWith("${rootProject.projectDir.absolutePath}${File.separatorChar}modules") }
         .toSet()
-println "ext.modules: ${ext.modules}"
+
 apply from: "${rootDir}/modules/deployment.gradle"
 subprojects {
     if (!name.equals("client"))
