@@ -48,7 +48,7 @@ jobs:
       prerelease: ${{ steps.branch.outputs.release_stage }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
@@ -102,7 +102,7 @@ jobs:
       - semver
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
       - name: Check api changes
@@ -119,7 +119,7 @@ jobs:
           task: generateOpenApiDocs autogenClients
       - name: Checkout base branch
         if: steps.filter.outputs.api == 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.base_ref }}
           path: 'base'
@@ -164,7 +164,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
       - name: Eval merge type
@@ -196,7 +196,7 @@ jobs:
       - merge
       - semver
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ needs.merge.outputs.commit }}
       - name: Bump version
@@ -276,7 +276,7 @@ jobs:
       - release
     if: ${{ github.base_ref == 'dev'  || github.base_ref == 'hotfix' }} # use "env.is_feature_branch" when https://github.com/actions/runner/issues/480 is resolved
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ needs.merge.outputs.commit }}
       - name: deploy
@@ -293,7 +293,7 @@ jobs:
       - release
     if: ${{ github.base_ref == 'staging' }} # use "env.is_staging_branch"  when https://github.com/actions/runner/issues/480 is resolved
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ needs.merge.outputs.commit }}
       - name: deploy
@@ -310,7 +310,7 @@ jobs:
       - release
     if: ${{ github.base_ref == 'main' || github.base_ref == 'master' }} # use "env.is_release_branch" when  https://github.com/actions/runner/issues/480 is resolved
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ needs.merge.outputs.commit }}
       - name: deploy
