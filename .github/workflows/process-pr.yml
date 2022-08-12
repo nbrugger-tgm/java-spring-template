@@ -204,7 +204,7 @@ jobs:
         run: exit 1
       - name: label by changed files
         if: github.event.action == 'syncronized' || github.event.action == 'opened'
-        uses: actions/labeler@v3
+        uses: actions/labeler@v4.0.1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: label by branch
