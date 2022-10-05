@@ -11,7 +11,7 @@ jobs:
   check_reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - name: Read reviews
         uses: github-actions-tools/gh-reviews-count@v0.0.1
         id: reviewsCount
