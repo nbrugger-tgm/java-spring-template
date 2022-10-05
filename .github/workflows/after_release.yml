@@ -9,7 +9,7 @@ jobs:
   update_branches:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - name: Merge master into staging
         uses: everlytic/branch-merge@1.1.2
         with:

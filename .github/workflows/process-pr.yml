@@ -29,7 +29,7 @@ jobs:
     if: (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'edited')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - name: revoke bad fork
         if: env.is_fork == 'true' && env.is_feature_branch == 'false'
         run: |
@@ -127,7 +127,7 @@ jobs:
     name: "Formal Check"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - name: check PR name
         id: name_check
         if: (github.event.action == 'edited' || github.event.action == 'opened') && env.is_feature_branch == 'true'
