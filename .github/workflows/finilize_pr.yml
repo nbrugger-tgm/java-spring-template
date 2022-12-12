@@ -257,7 +257,7 @@ jobs:
           echo "* **8080**: The port to use for the service" >> changelog_diff.md
           echo " ## Changelog" >> changelog_diff.md
       - name: Create release
-        uses: ncipollo/release-action@v1.8.10
+        uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: "modules/app/build/libs/app-${{ needs.semver.outputs.version }}.jar"
           bodyFile: changelog_diff.md
